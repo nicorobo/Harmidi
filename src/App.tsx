@@ -1,15 +1,16 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useStore } from './store'
+import './App.css'
 
 const Cell = ({ id }: { id: number }) => {
-  return <div>{id}</div>
+  return <div className="cell">{id}</div>
 }
 
 const Row = ({ row }: { row: number }) => {
   const { ids } = useStore((state) => state.keyboardConfig)
 
   return (
-    <div>
+    <div className="row">
       {ids[row].map((i) => (
         <Cell id={i} />
       ))}
@@ -19,9 +20,8 @@ const Row = ({ row }: { row: number }) => {
 
 const Grid = () => {
   const { ids } = useStore((state) => state.keyboardConfig)
-  console.log('grid')
   return (
-    <div>
+    <div className="grid">
       {ids.map((_, i) => (
         <Row row={i} />
       ))}
@@ -33,25 +33,32 @@ const useKeyboardListener = () => {
   const keydown = useStore((state) => state.keydown)
   const keyup = useStore((state) => state.keyup)
 
-  useEffect(() => {
-    const keyDownListener = (e: KeyboardEvent) => {
+  const onKeyDown = useCallback(
+    () => (e: KeyboardEvent) => {
       if (!e.repeat) {
         keydown(e.key)
       }
-    }
-    const keyUpListener = (e: KeyboardEvent) => {
-      e.stopPropagation()
-      e.stopImmediatePropagation()
+    },
+    [keydown]
+  )
+
+  const onKeyUp = useCallback(
+    () => (e: KeyboardEvent) => {
       keyup(e.key)
-    }
-    window.addEventListener('keydown', keyDownListener)
-    window.addEventListener('keyup', keyUpListener)
+    },
+    [keyup]
+  )
+
+  useEffect(() => {
+    window.addEventListener('keydown', onKeyDown)
+    window.addEventListener('keyup', onKeyUp)
     return () => {
-      window.removeEventListener('keydown', keyDownListener)
-      window.removeEventListener('keyup', keyDownListener)
+      window.removeEventListener('keydown', onKeyDown)
+      window.removeEventListener('keyup', onKeyUp)
     }
-  }, [keydown, keyup])
+  }, [onKeyDown, onKeyUp])
 }
+
 const KeyboardListener = () => {
   useKeyboardListener()
   return null

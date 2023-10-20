@@ -1,16 +1,17 @@
 import { create } from 'zustand'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 
-type RowType = 'chord' | 'note' | 'operator'
 type CommonRowSettings = {
-  type: RowType
   channel: number
   octave: number // Maybe should be transpose?
   velocity: number
 }
 
+type ScaleSettings = { root: string; type: string }
+
 type NoteRowSettings = CommonRowSettings & {
-  scale?: string
+  type: 'scale-note'
+  scale?: ScaleSettings
 }
 
 type CommonChordRowSettings = CommonRowSettings & {
@@ -18,10 +19,12 @@ type CommonChordRowSettings = CommonRowSettings & {
 }
 
 type ScaleChordRowSettings = CommonChordRowSettings & {
-  scale?: string
+  type: 'scale-chord'
+  scale?: ScaleSettings
 }
 
 type FamilyChordRowSettings = CommonChordRowSettings & {
+  type: 'family-chord'
   family: string
 }
 
@@ -35,17 +38,24 @@ interface State {
   keydown: (key: string) => void
   keyup: (key: string) => void
   rowSettings: RowSettings
+  globalScale: ScaleSettings
 }
 
 const useStore = create<State>()((set) => ({
   active: [],
   keyboardConfig: keyboardConfigs.USEnglish,
-  scale: { root: 'C', type: 'major' },
+  globalScale: { root: 'C', type: 'major' },
   rowSettings: [
-    { type: 'chord', channel: 1, octave: 3, velocity: 100 },
-    { type: 'chord', channel: 1, octave: 3, velocity: 100, family: 'maj7' },
-    { type: 'note', channel: 1, octave: 3, velocity: 100 },
-    { type: 'note', channel: 1, octave: 3, velocity: 100 },
+    { type: 'scale-chord', channel: 1, octave: 3, velocity: 100 },
+    {
+      type: 'family-chord',
+      channel: 1,
+      octave: 3,
+      velocity: 100,
+      family: 'maj7',
+    },
+    { type: 'scale-note', channel: 1, octave: 3, velocity: 100 },
+    { type: 'scale-note', channel: 1, octave: 3, velocity: 100 },
   ],
   keydown: (key) =>
     set((state) => ({

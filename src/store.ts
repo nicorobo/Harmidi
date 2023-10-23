@@ -33,14 +33,14 @@ export type RowSettings = NoteRowSettings | ChordRowSettings
 type RowSettingsByIndex = RowSettings[]
 
 interface State {
-  active: number[]
+  active: string[]
   keyboardConfig: KeyboardConfig
   keydown: (key: string) => void
   keyup: (key: string) => void
   rowSettings: RowSettingsByIndex
 }
 
-const useStore = create<State>()((set) => ({
+const useStore = create<State>()((set, get) => ({
   active: [],
   keyboardConfig: keyboardConfigs.USEnglish,
   rowSettings: [
@@ -73,16 +73,23 @@ const useStore = create<State>()((set) => ({
       scale: { root: 'C', type: 'major pentatonic' },
     },
   ],
-  keydown: (key) =>
-    set((state) => ({
-      active: [...state.active, state.keyboardConfig.keyToId[key]],
-    })),
-  keyup: (key) =>
-    set((state) => {
-      const id = state.keyboardConfig.keyToId[key]
-      const active = state.active.filter((i) => i !== id)
-      return { active }
-    }),
+
+  keydown: (key) => {
+    if (get().keyboardConfig.keyList.includes(key)) {
+      set((state) => ({
+        active: [...state.active, key],
+      }))
+    }
+  },
+
+  keyup: (key) => {
+    if (get().keyboardConfig.keyList.includes(key)) {
+      set((state) => {
+        const active = state.active.filter((i) => i !== key)
+        return { active }
+      })
+    }
+  },
 }))
 
 export { useStore }

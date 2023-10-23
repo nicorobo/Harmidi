@@ -9,13 +9,13 @@ const useKeyboardListener = () => {
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (!e.repeat) {
-      // keydown(e.key)
+      keydown(e.key)
       actionsByKey[e.key]?.on()
     }
   }
 
   const onKeyUp = (e: KeyboardEvent) => {
-    // keyup(e.key)
+    keyup(e.key)
     actionsByKey[e.key]?.off()
   }
 

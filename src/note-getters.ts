@@ -1,4 +1,4 @@
-import { Chord, Key, Midi, Scale } from 'tonal'
+import { Chord, Key, Midi, Scale, ScaleType } from 'tonal'
 import {
   FamilyChordRowSettings,
   NoteRowSettings,
@@ -6,12 +6,12 @@ import {
 } from './store'
 import { notEmpty } from './util'
 
-const c3chromatic = Scale.degrees('C4 chromatic')
-
 // TODO We can also return the actual chord/note objects to power our UI
-export const getFamilyChords = (rowSettings: FamilyChordRowSettings) => {
+export const getFamilyChords = ({ family, octave }: FamilyChordRowSettings) => {
+  console.log(ScaleType.all().map(({ name }) => name))
+  const scaleDegrees = Scale.degrees(`C${octave} chromatic`)
   return (i: number) => {
-    const chord = Chord.getChord(rowSettings.family, c3chromatic(i + 1))
+    const chord = Chord.getChord(family, scaleDegrees(i + 1))
     const midiNotes = chord.notes
       .map((note) => Midi.toMidi(note))
       .filter(notEmpty)
@@ -20,16 +20,16 @@ export const getFamilyChords = (rowSettings: FamilyChordRowSettings) => {
 }
 
 // TODO We can also return the actual chord/note objects to power our UI
-export const getScaleChords = (rowSettings: ScaleChordRowSettings) => {
-  const key =
-    rowSettings.key.type === 'major'
-      ? Key.majorKey(rowSettings.key.root)
-      : Key.minorKey(rowSettings.key.root).natural
+export const getScaleChords = ({ key, octave }: ScaleChordRowSettings) => {
+  const keyObj =
+    key.type === 'major'
+      ? Key.majorKey(key.root)
+      : Key.minorKey(key.root).natural
   return (i: number) => {
-    const baseChord = Chord.get(key.chords[i])
+    const baseChord = Chord.get(keyObj.chords[i])
     const chord = Chord.getChord(
       baseChord.type,
-      (baseChord.tonic || 'C') + rowSettings.octave
+      (baseChord.tonic || 'C') + octave
     )
     const midiNotes = chord.notes
       .map((note) => Midi.toMidi(note))
@@ -39,8 +39,14 @@ export const getScaleChords = (rowSettings: ScaleChordRowSettings) => {
 }
 
 // TODO We can also return the actual chord/note objects to power our UI
-export const getScaleNotes = (rowSettings: NoteRowSettings) => {
+export const getScaleNotes = ({ scale, octave }: NoteRowSettings) => {
+  const scaleName = `${scale.root}${octave} ${scale.type}`
+  const scaleDegrees = Scale.degrees(scaleName)
   return (i: number) => {
-    return [60]
+    const note = Midi.toMidi(scaleDegrees(i + 1))
+    if (!note) {
+      throw new Error('Null MIDI note coming from getScaleNotes()')
+    }
+    return note
   }
 }

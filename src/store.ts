@@ -1,14 +1,12 @@
 import { create } from 'zustand'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
+import { KeySettings, ScaleSettings } from './types/scale'
 
 type CommonRowSettings = {
   channel: number
-  octave: number // Maybe should be transpose?
+  octave: number
   velocity: number
 }
-
-type ScaleSettings = { root: string; type: string }
-type KeySettings = { root: string; type: 'major' | 'minor' }
 
 export type NoteRowSettings = CommonRowSettings & {
   type: 'scale-note'
@@ -58,21 +56,21 @@ const useStore = create<State>()((set) => ({
       channel: 1,
       octave: 3,
       velocity: 100,
-      family: 'maj7',
+      family: 'min7',
     },
     {
       type: 'scale-note',
-      channel: 1,
-      octave: 3,
+      channel: 2,
+      octave: 4,
       velocity: 100,
-      scale: { root: 'A', type: 'minor' },
+      scale: { root: 'C', type: 'minor pentatonic' },
     },
     {
       type: 'scale-note',
-      channel: 1,
-      octave: 3,
+      channel: 2,
+      octave: 4,
       velocity: 100,
-      scale: { root: 'B', type: 'minor' },
+      scale: { root: 'C', type: 'major pentatonic' },
     },
   ],
   keydown: (key) =>

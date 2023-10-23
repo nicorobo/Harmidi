@@ -8,45 +8,51 @@ type CommonRowSettings = {
 }
 
 type ScaleSettings = { root: string; type: string }
+type KeySettings = { root: string; type: 'major' | 'minor' }
 
-type NoteRowSettings = CommonRowSettings & {
+export type NoteRowSettings = CommonRowSettings & {
   type: 'scale-note'
-  scale?: ScaleSettings
+  scale: ScaleSettings
 }
 
 type CommonChordRowSettings = CommonRowSettings & {
   voicing?: string
 }
 
-type ScaleChordRowSettings = CommonChordRowSettings & {
+export type ScaleChordRowSettings = CommonChordRowSettings & {
   type: 'scale-chord'
-  scale?: ScaleSettings
+  key: KeySettings
 }
 
-type FamilyChordRowSettings = CommonChordRowSettings & {
+export type FamilyChordRowSettings = CommonChordRowSettings & {
   type: 'family-chord'
   family: string
 }
 
 type ChordRowSettings = ScaleChordRowSettings | FamilyChordRowSettings
 
-type RowSettings = (NoteRowSettings | ChordRowSettings)[]
+export type RowSettings = NoteRowSettings | ChordRowSettings
+type RowSettingsByIndex = RowSettings[]
 
 interface State {
   active: number[]
   keyboardConfig: KeyboardConfig
   keydown: (key: string) => void
   keyup: (key: string) => void
-  rowSettings: RowSettings
-  globalScale: ScaleSettings
+  rowSettings: RowSettingsByIndex
 }
 
 const useStore = create<State>()((set) => ({
   active: [],
   keyboardConfig: keyboardConfigs.USEnglish,
-  globalScale: { root: 'C', type: 'major' },
   rowSettings: [
-    { type: 'scale-chord', channel: 1, octave: 3, velocity: 100 },
+    {
+      type: 'scale-chord',
+      channel: 1,
+      octave: 3,
+      velocity: 100,
+      key: { root: 'C', type: 'minor' },
+    },
     {
       type: 'family-chord',
       channel: 1,
@@ -54,8 +60,20 @@ const useStore = create<State>()((set) => ({
       velocity: 100,
       family: 'maj7',
     },
-    { type: 'scale-note', channel: 1, octave: 3, velocity: 100 },
-    { type: 'scale-note', channel: 1, octave: 3, velocity: 100 },
+    {
+      type: 'scale-note',
+      channel: 1,
+      octave: 3,
+      velocity: 100,
+      scale: { root: 'A', type: 'minor' },
+    },
+    {
+      type: 'scale-note',
+      channel: 1,
+      octave: 3,
+      velocity: 100,
+      scale: { root: 'B', type: 'minor' },
+    },
   ],
   keydown: (key) =>
     set((state) => ({

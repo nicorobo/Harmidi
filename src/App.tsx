@@ -1,13 +1,15 @@
 import { MIDIProvider } from '@react-midi/hooks'
 import { KeyboardListener } from './KeyboardListener'
 import { Grid } from './components/Grid'
-import './App.css'
+import { Box } from '@mui/material'
 
 function App() {
   return (
     <MIDIProvider>
       <KeyboardListener />
-      <Grid />
+      <Box display="flex" justifyContent={'center'} alignItems={'center'}>
+        <Grid />
+      </Box>
     </MIDIProvider>
   )
 }

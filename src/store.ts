@@ -56,7 +56,7 @@ const useStore = create<State>()((set, get) => ({
       channel: 1,
       octave: 3,
       velocity: 100,
-      family: 'min7',
+      family: 'm7',
     },
     {
       type: 'scale-note',

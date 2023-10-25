@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useStore } from '../store'
 import { Box, IconButton } from '@mui/material'
 import { Settings } from '@mui/icons-material'
+import { RowSettings } from './RowSettings'
 
 const Cell = ({ isActive }: { isActive: boolean }) => {
   return (
@@ -20,6 +21,7 @@ const Cell = ({ isActive }: { isActive: boolean }) => {
 const Row = ({ row }: { row: number }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const { keyGrid } = useStore((state) => state.keyboardConfig)
+  const settings = useStore((state) => state.rowSettings[row])
   const activeKeys = useStore((state) => state.activeKeys)
   return (
     <Box>
@@ -34,15 +36,7 @@ const Row = ({ row }: { row: number }) => {
           <Cell isActive={activeKeys.includes(i)} />
         ))}
       </Box>
-      <Box
-        maxHeight={menuOpen ? '30rem' : 0}
-        display={menuOpen ? 'flex' : 'none'}
-        border={'1px solid #ddd'}
-        p={'1rem'}
-        m={'0.35rem'}
-      >
-        hey
-      </Box>
+      {menuOpen && <RowSettings settings={settings} />}
     </Box>
   )
 }

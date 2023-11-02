@@ -12,7 +12,6 @@ const getNameFromMidiNotes = (notes: number | number[]) => {
     return Midi.midiToNoteName(notes)
   }
   const chordsDetected = Chord.detect(notes.map((n) => Midi.midiToNoteName(n)))
-  console.log(chordsDetected)
   return chordsDetected[0]
 }
 export const Row = ({ row }: { row: number }) => {

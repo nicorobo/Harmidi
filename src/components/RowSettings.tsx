@@ -250,7 +250,6 @@ export const RowSettings = ({
   const updateRowSettings = useStore((state) => state.updateRowSettings)
   const updateRowType = useStore((state) => state.updateRowType)
   const onUpdate = (settings: AllRowSettings) => {
-    console.log('woop')
     updateRowSettings(row, settings)
   }
   return (

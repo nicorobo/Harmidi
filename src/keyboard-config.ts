@@ -24,7 +24,7 @@ const getKeyList = (keyGrid: string[][]): string[] =>
 
 export const keyboardConfigs: { [key: string]: KeyboardConfig } = {
   USEnglish: {
-    keyGrid: USEnglishKeys,
-    keyList: getKeyList(USEnglishKeys),
+    keyGrid: USEnglishKeysFull,
+    keyList: getKeyList(USEnglishKeysFull),
   },
 }

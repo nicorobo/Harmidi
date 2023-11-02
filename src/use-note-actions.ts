@@ -3,7 +3,7 @@ import { AllRowSettings } from './store'
 import { KeyActions } from './use-actions-by-key'
 import { getFamilyChords, getScaleChords, getScaleNotes } from './note-getters'
 
-const getNoteFactory = (rowSettings: AllRowSettings) => {
+export const getNoteFactory = (rowSettings: AllRowSettings) => {
   if (rowSettings.type === 'family-chord') {
     return getFamilyChords(rowSettings)
   } else if (rowSettings.type === 'scale-chord') {
@@ -30,11 +30,9 @@ export const useNoteActions = () => {
       const notes = noteFactory(i)
       actions[letters[i]] = {
         on: () => {
-          console.log('playing notes: ', notes)
           noteOn(notes, noteSettings)
         },
         off: () => {
-          console.log('stopping notes: ', notes)
           noteOff(notes, noteSettings)
         },
       }

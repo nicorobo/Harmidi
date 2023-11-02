@@ -6,15 +6,14 @@ import {
   useStore,
 } from '../store'
 import {
-  Box,
   Slider,
   Select,
   MenuItem,
-  InputLabel,
-  FormControl,
   ToggleButton,
   ToggleButtonGroup,
   Stack,
+  Typography,
+  Box,
 } from '@mui/material'
 import { useRef } from 'react'
 
@@ -38,6 +37,13 @@ const rootNotes = [
   'G',
 ]
 
+const labelStyle = {
+  textTransform: 'uppercase',
+  color: '#ae67ff',
+  fontWeight: 600,
+  fontSize: '0.75rem',
+}
+
 const SharedSettings = ({
   settings,
   onUpdate,
@@ -47,44 +53,55 @@ const SharedSettings = ({
 }) => {
   const defaultVelocity = useRef(settings.velocity)
   return (
-    <Stack>
-      <ToggleButtonGroup
-        exclusive
-        size="small"
-        value={settings.channel}
-        onChange={(_, channel) => onUpdate({ ...settings, channel })}
-      >
-        {channels.map((channel) => (
-          <ToggleButton key={channel} value={channel + 1}>
-            {channel + 1}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-      <ToggleButtonGroup
-        exclusive
-        size="small"
-        value={settings.octave}
-        onChange={(_, octave) => onUpdate({ ...settings, octave })}
-      >
-        <ToggleButton value={-3}>{-3}</ToggleButton>
-        <ToggleButton value={-2}>{-2}</ToggleButton>
-        <ToggleButton value={-1}>{-1}</ToggleButton>
-        <ToggleButton value={0}>{0}</ToggleButton>
-        <ToggleButton value={1}>{1}</ToggleButton>
-        <ToggleButton value={2}>{2}</ToggleButton>
-        <ToggleButton value={3}>{3}</ToggleButton>
-      </ToggleButtonGroup>
-      <Slider
-        size="small"
-        min={0}
-        max={127}
-        step={1}
-        defaultValue={defaultVelocity.current}
-        sx={{ mx: '1rem' }}
-        onChangeCommitted={(_, value) =>
-          onUpdate({ ...settings, velocity: value as number })
-        }
-      />
+    <Stack spacing={2}>
+      <Stack direction="row" spacing={4}>
+        <Stack>
+          <Typography sx={labelStyle}>Channel</Typography>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={settings.channel}
+            onChange={(_, channel) => onUpdate({ ...settings, channel })}
+          >
+            {channels.map((channel) => (
+              <ToggleButton key={channel} value={channel + 1}>
+                {channel + 1}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+        </Stack>
+        <Stack>
+          <Typography sx={labelStyle}>Octave</Typography>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={settings.octave}
+            onChange={(_, octave) => onUpdate({ ...settings, octave })}
+          >
+            <ToggleButton value={-3}>{-3}</ToggleButton>
+            <ToggleButton value={-2}>{-2}</ToggleButton>
+            <ToggleButton value={-1}>{-1}</ToggleButton>
+            <ToggleButton value={0}>{0}</ToggleButton>
+            <ToggleButton value={1}>{1}</ToggleButton>
+            <ToggleButton value={2}>{2}</ToggleButton>
+            <ToggleButton value={3}>{3}</ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+      </Stack>
+      <Box>
+        <Typography sx={labelStyle}>Velocity</Typography>
+        <Slider
+          size="small"
+          min={0}
+          max={127}
+          step={1}
+          valueLabelDisplay="auto"
+          defaultValue={defaultVelocity.current}
+          onChangeCommitted={(_, value) =>
+            onUpdate({ ...settings, velocity: value as number })
+          }
+        />
+      </Box>
     </Stack>
   )
 }
@@ -101,13 +118,12 @@ const FamilyChordRowSettings = ({
   onUpdate: (settings: AllRowSettings) => void
 }) => {
   return (
-    <Stack gap={'1rem'}>
+    <Stack spacing={2}>
       <SharedSettings settings={settings} onUpdate={onUpdate} />
-      <FormControl>
-        <InputLabel id="chord-type-label">Chord Type</InputLabel>
+      <Box>
+        <Typography sx={labelStyle}>Chord Type</Typography>
         <Select
-          label={'Chord Type'}
-          labelId="chord-type-label"
+          size="small"
           value={settings.family}
           onChange={(e) => onUpdate({ ...settings, family: e.target.value })}
         >
@@ -117,7 +133,7 @@ const FamilyChordRowSettings = ({
             </MenuItem>
           ))}
         </Select>
-      </FormControl>
+      </Box>
     </Stack>
   )
 }
@@ -129,35 +145,46 @@ const ScaleChordRowSettings = ({
   onUpdate: (settings: AllRowSettings) => void
 }) => {
   return (
-    <Stack gap={'1rem'}>
+    <Stack spacing={2}>
       <SharedSettings settings={settings} onUpdate={onUpdate} />
-      <Stack direction={'row'}>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={settings.key.root}
-          onChange={(_, root) =>
-            onUpdate({ ...settings, key: { ...settings.key, root } })
-          }
-        >
-          {rootNotes.map((note) => (
-            <ToggleButton key={note} value={note}>
-              {note}
+      <Box>
+        <Typography sx={labelStyle}>Key</Typography>
+        <Stack direction={'row'} spacing={2}>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={settings.key.root}
+            onChange={(_, root) =>
+              onUpdate({ ...settings, key: { ...settings.key, root } })
+            }
+          >
+            {rootNotes.map((note) => (
+              <ToggleButton
+                key={note}
+                value={note}
+                sx={{ textTransform: 'capitalize' }}
+              >
+                {note}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={settings.key.type}
+            onChange={(_, type) =>
+              onUpdate({ ...settings, key: { ...settings.key, type } })
+            }
+          >
+            <ToggleButton value={'minor'} sx={{ textTransform: 'capitalize' }}>
+              Minor
             </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={settings.key.type}
-          onChange={(_, type) =>
-            onUpdate({ ...settings, key: { ...settings.key, type } })
-          }
-        >
-          <ToggleButton value={'minor'}>Minor</ToggleButton>
-          <ToggleButton value={'major'}>Major</ToggleButton>
-        </ToggleButtonGroup>
-      </Stack>
+            <ToggleButton value={'major'} sx={{ textTransform: 'capitalize' }}>
+              Major
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
+      </Box>
     </Stack>
   )
 }
@@ -169,40 +196,47 @@ const NoteRowSettings = ({
   onUpdate: (settings: AllRowSettings) => void
 }) => {
   return (
-    <Stack gap={'1rem'}>
+    <Stack spacing={2}>
       <SharedSettings settings={settings} onUpdate={onUpdate} />
-      <Stack direction={'row'}>
-        <ToggleButtonGroup
-          exclusive
-          size="small"
-          value={settings.scale.root}
-          onChange={(_, root) =>
-            onUpdate({ ...settings, scale: { ...settings.scale, root } })
-          }
-        >
-          {rootNotes.map((note) => (
-            <ToggleButton key={note} value={note}>
-              {note}
-            </ToggleButton>
-          ))}
-        </ToggleButtonGroup>
-        <Select
-          size="small"
-          value={settings.scale.type}
-          onChange={(e) =>
-            onUpdate({
-              ...settings,
-              scale: { ...settings.scale, type: e.target.value as ScaleType },
-            })
-          }
-        >
-          {availableScales.map((scale) => (
-            <MenuItem key={scale} value={scale}>
-              {scale}
-            </MenuItem>
-          ))}
-        </Select>
-      </Stack>
+      <Box>
+        <Typography sx={labelStyle}>Scale</Typography>
+        <Stack direction={'row'} spacing={2}>
+          <ToggleButtonGroup
+            exclusive
+            size="small"
+            value={settings.scale.root}
+            onChange={(_, root) =>
+              onUpdate({ ...settings, scale: { ...settings.scale, root } })
+            }
+          >
+            {rootNotes.map((note) => (
+              <ToggleButton
+                key={note}
+                value={note}
+                sx={{ textTransform: 'capitalize' }}
+              >
+                {note}
+              </ToggleButton>
+            ))}
+          </ToggleButtonGroup>
+          <Select
+            size="small"
+            value={settings.scale.type}
+            onChange={(e) =>
+              onUpdate({
+                ...settings,
+                scale: { ...settings.scale, type: e.target.value as ScaleType },
+              })
+            }
+          >
+            {availableScales.map((scale) => (
+              <MenuItem key={scale} value={scale}>
+                {scale}
+              </MenuItem>
+            ))}
+          </Select>
+        </Stack>
+      </Box>
     </Stack>
   )
 }
@@ -220,20 +254,36 @@ export const RowSettings = ({
     updateRowSettings(row, settings)
   }
   return (
-    <Box border={'1px solid #ddd'} p={'1rem'} m={'0.35rem'}>
+    <Stack
+      spacing={2}
+      sx={{ border: '1px solid #ddd', p: '1rem', m: '0.35rem' }}
+    >
       <ToggleButtonGroup
         exclusive
         size="small"
         value={settings.type}
+        sx={{ textTransform: 'capitalize' }}
         onChange={(_, value) => updateRowType(row, value)}
       >
-        <ToggleButton size="small" value="scale-note">
+        <ToggleButton
+          size="small"
+          value="scale-note"
+          sx={{ textTransform: 'capitalize' }}
+        >
           Notes
         </ToggleButton>
-        <ToggleButton size="small" value="scale-chord">
+        <ToggleButton
+          size="small"
+          value="scale-chord"
+          sx={{ textTransform: 'capitalize' }}
+        >
           Scale chords
         </ToggleButton>
-        <ToggleButton size="small" value="family-chord">
+        <ToggleButton
+          size="small"
+          value="family-chord"
+          sx={{ textTransform: 'capitalize' }}
+        >
           Family chords
         </ToggleButton>
       </ToggleButtonGroup>
@@ -246,6 +296,6 @@ export const RowSettings = ({
       {settings.type === 'scale-note' && (
         <NoteRowSettings settings={settings} onUpdate={onUpdate} />
       )}
-    </Box>
+    </Stack>
   )
 }

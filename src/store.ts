@@ -29,51 +29,81 @@ export type FamilyChordRowSettings = CommonChordRowSettings & {
 
 type ChordRowSettings = ScaleChordRowSettings | FamilyChordRowSettings
 
-export type RowSettings = NoteRowSettings | ChordRowSettings
-type RowSettingsByIndex = RowSettings[]
+type RowType = 'scale-note' | 'scale-chord' | 'family-chord'
+export type AllRowSettings = NoteRowSettings | ChordRowSettings
+
+export type RowSettings = {
+  type: RowType
+  settings: {
+    'scale-note': NoteRowSettings
+    'scale-chord': ScaleChordRowSettings
+    'family-chord': FamilyChordRowSettings
+  }
+}
+
+type Settings = RowSettings[]
 
 interface State {
   activeKeys: string[]
   keyboardConfig: KeyboardConfig
   keydown: (key: string) => void
   keyup: (key: string) => void
-  rowSettings: RowSettingsByIndex
+  settings: Settings
+  updateRowType: (row: number, type: RowType) => void
+  updateRowSettings: (row: number, settings: AllRowSettings) => void
 }
+
+const getDefaultScaleChordSettings = (
+  overrides?: Partial<ScaleChordRowSettings>
+): ScaleChordRowSettings => ({
+  type: 'scale-chord',
+  channel: 1,
+  octave: 0,
+  velocity: 100,
+  key: { root: 'C', type: 'minor' },
+  ...overrides,
+})
+
+const getDefaultFamilyChordSettings = (
+  overrides?: Partial<FamilyChordRowSettings>
+): FamilyChordRowSettings => ({
+  type: 'family-chord',
+  channel: 1,
+  octave: 0,
+  velocity: 100,
+  family: 'm7',
+  ...overrides,
+})
+
+const getDefaultNoteSettings = (
+  overrides?: Partial<NoteRowSettings>
+): NoteRowSettings => ({
+  type: 'scale-note',
+  channel: 2,
+  octave: 0,
+  velocity: 100,
+  scale: { root: 'C', type: 'minor pentatonic' },
+  ...overrides,
+})
+
+const getDefaultRowSettings = (type: RowType) => ({
+  type,
+  settings: {
+    'scale-chord': getDefaultScaleChordSettings(),
+    'family-chord': getDefaultFamilyChordSettings(),
+    'scale-note': getDefaultNoteSettings(),
+  },
+})
 
 const useStore = create<State>()((set, get) => ({
   activeKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
-  rowSettings: [
-    {
-      type: 'scale-chord',
-      channel: 1,
-      octave: 3,
-      velocity: 100,
-      key: { root: 'C', type: 'minor' },
-    },
-    {
-      type: 'family-chord',
-      channel: 1,
-      octave: 3,
-      velocity: 100,
-      family: 'm7',
-    },
-    {
-      type: 'scale-note',
-      channel: 2,
-      octave: 4,
-      velocity: 100,
-      scale: { root: 'C', type: 'minor pentatonic' },
-    },
-    {
-      type: 'scale-note',
-      channel: 2,
-      octave: 4,
-      velocity: 100,
-      scale: { root: 'C', type: 'major pentatonic' },
-    },
+  settings: [
+    getDefaultRowSettings('scale-chord'),
+    getDefaultRowSettings('family-chord'),
+    getDefaultRowSettings('scale-note'),
+    getDefaultRowSettings('scale-note'),
   ],
-
   keydown: (key) => {
     if (get().keyboardConfig.keyList.includes(key)) {
       set((state) => ({
@@ -89,6 +119,31 @@ const useStore = create<State>()((set, get) => ({
         return { activeKeys: active }
       })
     }
+  },
+  updateRowType: (row, type) => {
+    set((state) => ({
+      ...state,
+      settings: state.settings.map((existingSettings, i) =>
+        i === row ? { ...existingSettings, type } : existingSettings
+      ),
+    }))
+  },
+  updateRowSettings: (row, settings) => {
+    set((state) => ({
+      ...state,
+      settings: state.settings.map((existingSettings, i) => {
+        if (i !== row) {
+          return existingSettings
+        }
+        return {
+          ...existingSettings,
+          settings: {
+            ...existingSettings.settings,
+            [existingSettings.type]: settings,
+          },
+        }
+      }),
+    }))
   },
 }))
 

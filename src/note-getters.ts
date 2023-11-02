@@ -1,4 +1,4 @@
-import { Chord, Key, Midi, Scale, ScaleType } from 'tonal'
+import { Chord, Key, Midi, Scale } from 'tonal'
 import {
   FamilyChordRowSettings,
   NoteRowSettings,
@@ -8,8 +8,7 @@ import { notEmpty } from './util'
 
 // TODO We can also return the actual chord/note objects to power our UI
 export const getFamilyChords = ({ family, octave }: FamilyChordRowSettings) => {
-  console.log(ScaleType.all().map(({ name }) => name))
-  const scaleDegrees = Scale.degrees(`C${octave} chromatic`)
+  const scaleDegrees = Scale.degrees(`C${octave + 3} chromatic`)
   return (i: number) => {
     const chord = Chord.getChord(family, scaleDegrees(i + 1))
     const midiNotes = chord.notes
@@ -29,7 +28,7 @@ export const getScaleChords = ({ key, octave }: ScaleChordRowSettings) => {
     const baseChord = Chord.get(keyObj.chords[i])
     const chord = Chord.getChord(
       baseChord.type,
-      (baseChord.tonic || 'C') + octave
+      (baseChord.tonic || 'C') + (octave + 3)
     )
     const midiNotes = chord.notes
       .map((note) => Midi.toMidi(note))
@@ -40,7 +39,7 @@ export const getScaleChords = ({ key, octave }: ScaleChordRowSettings) => {
 
 // TODO We can also return the actual chord/note objects to power our UI
 export const getScaleNotes = ({ scale, octave }: NoteRowSettings) => {
-  const scaleName = `${scale.root}${octave} ${scale.type}`
+  const scaleName = `${scale.root}${octave + 3} ${scale.type}`
   const scaleDegrees = Scale.degrees(scaleName)
   return (i: number) => {
     const note = Midi.toMidi(scaleDegrees(i + 1))

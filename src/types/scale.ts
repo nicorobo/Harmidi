@@ -26,7 +26,7 @@ type ScaleRoot =
 
 // These scale names are compatible with Tonal
 // https://github.com/tonaljs/tonal/tree/main/packages/scale-type
-type ScaleType =
+export type ScaleType =
   | 'major pentatonic'
   | 'major'
   | 'minor'

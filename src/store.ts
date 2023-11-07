@@ -11,6 +11,7 @@ type CommonRowSettings = {
 export type NoteRowSettings = CommonRowSettings & {
   type: 'scale-note'
   scale: ScaleSettings
+  translate: number
 }
 
 type CommonChordRowSettings = CommonRowSettings & {
@@ -25,6 +26,7 @@ export type ScaleChordRowSettings = CommonChordRowSettings & {
 export type FamilyChordRowSettings = CommonChordRowSettings & {
   type: 'family-chord'
   family: string
+  translate: number
 }
 
 type ChordRowSettings = ScaleChordRowSettings | FamilyChordRowSettings
@@ -72,6 +74,7 @@ const getDefaultFamilyChordSettings = (
   octave: 0,
   velocity: 100,
   family: 'm7',
+  translate: 0,
   ...overrides,
 })
 
@@ -82,6 +85,7 @@ const getDefaultNoteSettings = (
   channel: 2,
   octave: 0,
   velocity: 100,
+  translate: 0,
   scale: { root: 'C', type: 'minor pentatonic' },
   ...overrides,
 })

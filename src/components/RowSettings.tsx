@@ -14,12 +14,16 @@ import {
   Stack,
   Typography,
   Box,
+  IconButton,
+  ButtonGroup,
+  Button,
 } from '@mui/material'
 import { useRef } from 'react'
 
 import { ChordType } from 'tonal'
 import { availableScales } from '../constants'
 import { ScaleType } from '../types/scale'
+import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
 const rootNotes = [
@@ -120,23 +124,48 @@ const FamilyChordRowSettings = ({
   return (
     <Stack spacing={2}>
       <SharedSettings settings={settings} onUpdate={onUpdate} />
-      <Box>
-        <Typography sx={labelStyle}>Chord Type</Typography>
-        <Select
-          size="small"
-          value={settings.family}
-          onChange={(e) => onUpdate({ ...settings, family: e.target.value })}
-        >
-          {chordTypes.map(({ name, value }) => (
-            <MenuItem key={value} value={value}>
-              {value} {name && `(${name})`}
-            </MenuItem>
-          ))}
-        </Select>
-      </Box>
+      <Stack direction="row" spacing={2}>
+        <Box>
+          <Typography sx={labelStyle}>Chord Type</Typography>
+          <Select
+            size="small"
+            value={settings.family}
+            onChange={(e) => onUpdate({ ...settings, family: e.target.value })}
+          >
+            {chordTypes.map(({ name, value }) => (
+              <MenuItem key={value} value={value}>
+                {value} {name && `(${name})`}
+              </MenuItem>
+            ))}
+          </Select>
+        </Box>
+        <Box>
+          <Typography sx={labelStyle}>Translate</Typography>
+          <ButtonGroup variant="contained">
+            <IconButton
+              onClick={() =>
+                onUpdate({ ...settings, translate: settings.translate - 1 })
+              }
+            >
+              <ChevronLeft />
+            </IconButton>
+            <Button onClick={() => onUpdate({ ...settings, translate: 0 })}>
+              {settings.translate}
+            </Button>
+            <IconButton
+              onClick={() =>
+                onUpdate({ ...settings, translate: settings.translate + 1 })
+              }
+            >
+              <ChevronRight />
+            </IconButton>
+          </ButtonGroup>
+        </Box>
+      </Stack>
     </Stack>
   )
 }
+
 const ScaleChordRowSettings = ({
   settings,
   onUpdate,
@@ -188,6 +217,7 @@ const ScaleChordRowSettings = ({
     </Stack>
   )
 }
+
 const NoteRowSettings = ({
   settings,
   onUpdate,
@@ -235,6 +265,28 @@ const NoteRowSettings = ({
               </MenuItem>
             ))}
           </Select>
+          <Box>
+            <Typography sx={labelStyle}>Translate</Typography>
+            <ButtonGroup variant="contained">
+              <IconButton
+                onClick={() =>
+                  onUpdate({ ...settings, translate: settings.translate - 1 })
+                }
+              >
+                <ChevronLeft />
+              </IconButton>
+              <Button onClick={() => onUpdate({ ...settings, translate: 0 })}>
+                {settings.translate}
+              </Button>
+              <IconButton
+                onClick={() =>
+                  onUpdate({ ...settings, translate: settings.translate + 1 })
+                }
+              >
+                <ChevronRight />
+              </IconButton>
+            </ButtonGroup>
+          </Box>
         </Stack>
       </Box>
     </Stack>

@@ -35,7 +35,7 @@ type ChordRowSettings = ScaleChordRowSettings | FamilyChordRowSettings
 
 type RowType = 'scale-note' | 'scale-chord' | 'family-chord'
 export type RowSettings = NoteRowSettings | ChordRowSettings
-type Settings = RowSettings[]
+export type Settings = RowSettings[]
 
 interface State {
   activeKeys: string[]
@@ -89,7 +89,7 @@ const useStore = create<State>()((set, get) => ({
   keyboardConfig: keyboardConfigs.USEnglish,
   settings: [
     getDefaultScaleChordSettings({ muteOnPlayRows: [0, 1] }),
-    getDefaultFamilyChordSettings(),
+    getDefaultFamilyChordSettings({ muteOnPlayRows: [0, 1] }),
     getDefaultNoteSettings(),
     getDefaultNoteSettings(),
   ],

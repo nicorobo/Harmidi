@@ -1,4 +1,4 @@
-type RowByKey = { [key: string]: number }
+export type RowByKey = { [key: string]: number }
 export type KeyboardConfig = {
   keyGrid: string[][]
   keyList: string[]

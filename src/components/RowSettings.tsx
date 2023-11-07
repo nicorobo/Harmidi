@@ -1,7 +1,7 @@
 import {
   FamilyChordRowSettings,
   NoteRowSettings,
-  AllRowSettings,
+  RowSettings as RowSettingsType,
   ScaleChordRowSettings,
   useStore,
 } from '../store'
@@ -52,8 +52,8 @@ const SharedSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: AllRowSettings
-  onUpdate: (settings: AllRowSettings) => void
+  settings: RowSettingsType
+  onUpdate: (settings: RowSettingsType) => void
 }) => {
   const defaultVelocity = useRef(settings.velocity)
   return (
@@ -119,7 +119,7 @@ const FamilyChordRowSettings = ({
   onUpdate,
 }: {
   settings: FamilyChordRowSettings
-  onUpdate: (settings: AllRowSettings) => void
+  onUpdate: (settings: RowSettingsType) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -171,7 +171,7 @@ const ScaleChordRowSettings = ({
   onUpdate,
 }: {
   settings: ScaleChordRowSettings
-  onUpdate: (settings: AllRowSettings) => void
+  onUpdate: (settings: RowSettingsType) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -223,7 +223,7 @@ const NoteRowSettings = ({
   onUpdate,
 }: {
   settings: NoteRowSettings
-  onUpdate: (settings: AllRowSettings) => void
+  onUpdate: (settings: RowSettingsType) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -297,11 +297,11 @@ export const RowSettings = ({
   settings,
 }: {
   row: number
-  settings: AllRowSettings
+  settings: RowSettingsType
 }) => {
   const updateRowSettings = useStore((state) => state.updateRowSettings)
   const updateRowType = useStore((state) => state.updateRowType)
-  const onUpdate = (settings: AllRowSettings) => {
+  const onUpdate = (settings: RowSettingsType) => {
     updateRowSettings(row, settings)
   }
   return (

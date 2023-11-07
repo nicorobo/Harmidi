@@ -9,10 +9,7 @@ export const useActionsByKey = (): KeyActions => {
 
   const actions: KeyActions = {}
   for (let i = 0; i < keyGrid.length; i++) {
-    Object.assign(
-      actions,
-      getActionsByRow(keyGrid[i], settings[i].settings[settings[i].type])
-    )
+    Object.assign(actions, getActionsByRow(keyGrid[i], settings[i]))
   }
   return actions
 }

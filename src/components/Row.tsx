@@ -17,9 +17,9 @@ const getNameFromMidiNotes = (notes: number | number[]) => {
 export const Row = ({ row }: { row: number }) => {
   const [menuOpen, setMenuOpen] = useState(false)
   const { keyGrid } = useStore((state) => state.keyboardConfig)
-  const { type, settings } = useStore((state) => state.settings[row])
+  const settings = useStore((state) => state.settings[row])
   const activeKeys = useStore((state) => state.activeKeys)
-  const noteFactory = getNoteFactory(settings[type])
+  const noteFactory = getNoteFactory(settings)
 
   return (
     <Box>
@@ -43,7 +43,7 @@ export const Row = ({ row }: { row: number }) => {
           )
         })}
       </Box>
-      {menuOpen && <RowSettings row={row} settings={settings[type]} />}
+      {menuOpen && <RowSettings row={row} settings={settings} />}
     </Box>
   )
 }

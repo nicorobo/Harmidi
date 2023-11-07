@@ -6,6 +6,10 @@ type CommonRowSettings = {
   channel: number
   octave: number
   velocity: number
+  chokeGroup: {
+    on: number[]
+    off: number[]
+  }
 }
 
 export type NoteRowSettings = CommonRowSettings & {
@@ -32,17 +36,7 @@ export type FamilyChordRowSettings = CommonChordRowSettings & {
 type ChordRowSettings = ScaleChordRowSettings | FamilyChordRowSettings
 
 type RowType = 'scale-note' | 'scale-chord' | 'family-chord'
-export type AllRowSettings = NoteRowSettings | ChordRowSettings
-
-export type RowSettings = {
-  type: RowType
-  settings: {
-    'scale-note': NoteRowSettings
-    'scale-chord': ScaleChordRowSettings
-    'family-chord': FamilyChordRowSettings
-  }
-}
-
+export type RowSettings = NoteRowSettings | ChordRowSettings
 type Settings = RowSettings[]
 
 interface State {
@@ -52,17 +46,22 @@ interface State {
   keyup: (key: string) => void
   settings: Settings
   updateRowType: (row: number, type: RowType) => void
-  updateRowSettings: (row: number, settings: AllRowSettings) => void
+  updateRowSettings: (row: number, settings: RowSettings) => void
+}
+
+const defaultSettings = {
+  channel: 2,
+  octave: 0,
+  velocity: 100,
+  chokeGroup: { on: [], off: [] },
 }
 
 const getDefaultScaleChordSettings = (
   overrides?: Partial<ScaleChordRowSettings>
 ): ScaleChordRowSettings => ({
   type: 'scale-chord',
-  channel: 1,
-  octave: 0,
-  velocity: 100,
   key: { root: 'C', type: 'minor' },
+  ...defaultSettings,
   ...overrides,
 })
 
@@ -70,11 +69,9 @@ const getDefaultFamilyChordSettings = (
   overrides?: Partial<FamilyChordRowSettings>
 ): FamilyChordRowSettings => ({
   type: 'family-chord',
-  channel: 1,
-  octave: 0,
-  velocity: 100,
   family: 'm7',
   translate: 0,
+  ...defaultSettings,
   ...overrides,
 })
 
@@ -82,31 +79,20 @@ const getDefaultNoteSettings = (
   overrides?: Partial<NoteRowSettings>
 ): NoteRowSettings => ({
   type: 'scale-note',
-  channel: 2,
-  octave: 0,
-  velocity: 100,
   translate: 0,
   scale: { root: 'C', type: 'minor pentatonic' },
+  ...defaultSettings,
   ...overrides,
-})
-
-const getDefaultRowSettings = (type: RowType) => ({
-  type,
-  settings: {
-    'scale-chord': getDefaultScaleChordSettings(),
-    'family-chord': getDefaultFamilyChordSettings(),
-    'scale-note': getDefaultNoteSettings(),
-  },
 })
 
 const useStore = create<State>()((set, get) => ({
   activeKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
   settings: [
-    getDefaultRowSettings('scale-chord'),
-    getDefaultRowSettings('family-chord'),
-    getDefaultRowSettings('scale-note'),
-    getDefaultRowSettings('scale-note'),
+    getDefaultScaleChordSettings(),
+    getDefaultFamilyChordSettings(),
+    getDefaultNoteSettings(),
+    getDefaultNoteSettings(),
   ],
   keydown: (key) => {
     if (get().keyboardConfig.keyList.includes(key)) {
@@ -127,11 +113,25 @@ const useStore = create<State>()((set, get) => ({
   updateRowType: (row, type) => {
     set((state) => ({
       ...state,
-      settings: state.settings.map((existingSettings, i) =>
-        i === row ? { ...existingSettings, type } : existingSettings
-      ),
+      settings: state.settings.map((existingSettings, i) => {
+        if (i !== row) {
+          return existingSettings
+        }
+        const { channel, velocity, octave, chokeGroup } = existingSettings
+        const override = { channel, velocity, octave, chokeGroup }
+        if (type === 'family-chord') {
+          return getDefaultFamilyChordSettings(override)
+        } else if (type === 'scale-chord') {
+          return getDefaultScaleChordSettings(override)
+        } else if (type === 'scale-note') {
+          return getDefaultNoteSettings(override)
+        } else {
+          throw new Error(`Cannot update row ${row} to type ${type}`)
+        }
+      }),
     }))
   },
+  // Consider allowing partial updates here.
   updateRowSettings: (row, settings) => {
     set((state) => ({
       ...state,
@@ -139,13 +139,7 @@ const useStore = create<State>()((set, get) => ({
         if (i !== row) {
           return existingSettings
         }
-        return {
-          ...existingSettings,
-          settings: {
-            ...existingSettings.settings,
-            [existingSettings.type]: settings,
-          },
-        }
+        return settings
       }),
     }))
   },

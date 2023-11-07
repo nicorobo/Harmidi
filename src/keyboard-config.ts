@@ -1,6 +1,8 @@
+type RowByKey = { [key: string]: number }
 export type KeyboardConfig = {
   keyGrid: string[][]
   keyList: string[]
+  rowByKey: RowByKey
 }
 
 const USEnglishKeys = [
@@ -22,9 +24,20 @@ const getKeyList = (keyGrid: string[][]): string[] =>
     return list
   }, [])
 
+const getRowByKey = (keyGrid: string[][]): RowByKey => {
+  const dict: RowByKey = {}
+  for (let i = 0; i < keyGrid.length; i++) {
+    for (let j = 0; j < keyGrid[i].length; j++) {
+      dict[keyGrid[i][j]] = i
+    }
+  }
+  return dict
+}
+
 export const keyboardConfigs: { [key: string]: KeyboardConfig } = {
   USEnglish: {
     keyGrid: USEnglishKeysFull,
     keyList: getKeyList(USEnglishKeysFull),
+    rowByKey: getRowByKey(USEnglishKeysFull),
   },
 }

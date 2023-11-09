@@ -92,20 +92,37 @@ const SharedSettings = ({
           </ToggleButtonGroup>
         </Stack>
       </Stack>
-      <Box>
-        <Typography sx={labelStyle}>Velocity</Typography>
-        <Slider
-          size="small"
-          min={0}
-          max={127}
-          step={1}
-          valueLabelDisplay="auto"
-          defaultValue={defaultVelocity.current}
-          onChangeCommitted={(_, value) =>
-            onUpdate({ ...settings, velocity: value as number })
-          }
-        />
-      </Box>
+      <Stack direction="row" spacing={4}>
+        <Box flexGrow={1}>
+          <Typography sx={labelStyle}>Velocity</Typography>
+          <Slider
+            size="small"
+            min={0}
+            max={127}
+            step={1}
+            valueLabelDisplay="auto"
+            defaultValue={defaultVelocity.current}
+            onChangeCommitted={(_, value) =>
+              onUpdate({ ...settings, velocity: value as number })
+            }
+          />
+        </Box>
+        <Box>
+          <Typography sx={labelStyle}>Mute</Typography>
+          <ToggleButtonGroup
+            size="small"
+            value={settings.muteOnPlayRows}
+            onChange={(_, muteGroups) =>
+              onUpdate({ ...settings, muteOnPlayRows: muteGroups })
+            }
+          >
+            <ToggleButton value={0}>A</ToggleButton>
+            <ToggleButton value={1}>B</ToggleButton>
+            <ToggleButton value={2}>C</ToggleButton>
+            <ToggleButton value={3}>D</ToggleButton>
+          </ToggleButtonGroup>
+        </Box>
+      </Stack>
     </Stack>
   )
 }

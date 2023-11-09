@@ -6,8 +6,8 @@ type CommonRowSettings = {
   channel: number
   octave: number
   velocity: number
-  muteOnPlayRows: number[]
-  playOnReleaseRows: number[]
+  hold: boolean
+  muteOnPlayRows: number[] // As this affects the behavior of other zones, perhaps
 }
 
 export type NoteRowSettings = CommonRowSettings & {
@@ -51,8 +51,8 @@ const defaultSettings = {
   channel: 1,
   octave: 0,
   velocity: 100,
+  hold: false,
   muteOnPlayRows: [],
-  playOnReleaseRows: [],
 }
 
 const getDefaultScaleChordSettings = (
@@ -88,8 +88,8 @@ const useStore = create<State>()((set, get) => ({
   activeKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
   settings: [
-    getDefaultScaleChordSettings({ muteOnPlayRows: [0, 1] }),
-    getDefaultFamilyChordSettings({ muteOnPlayRows: [] }),
+    getDefaultScaleChordSettings({ muteOnPlayRows: [0], hold: true }),
+    getDefaultFamilyChordSettings({ muteOnPlayRows: [1] }),
     getDefaultNoteSettings(),
     getDefaultNoteSettings(),
   ],
@@ -116,14 +116,12 @@ const useStore = create<State>()((set, get) => ({
         if (i !== row) {
           return existingSettings
         }
-        const { channel, velocity, octave, muteOnPlayRows, playOnReleaseRows } =
-          existingSettings
+        const { channel, velocity, octave, muteOnPlayRows } = existingSettings
         const override = {
           channel,
           velocity,
           octave,
           muteOnPlayRows,
-          playOnReleaseRows,
         }
         if (type === 'family-chord') {
           return getDefaultFamilyChordSettings(override)

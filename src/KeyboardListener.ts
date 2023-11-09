@@ -124,6 +124,7 @@ const useKeyboardListener = () => {
   }>({})
   const [stack, setStack] = useState<string[][]>([])
   const { keyList, rowByKey } = useStore((state) => state.keyboardConfig)
+  const activeKeys = useStore((state) => state.activeKeys)
   const settings = useStore((state) => state.settings)
   const keydown = useStore((state) => state.keydown)
   const keyup = useStore((state) => state.keyup)
@@ -131,7 +132,26 @@ const useKeyboardListener = () => {
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (!e.repeat && keyList.includes(e.key)) {
-      const newStack = addKeyToStack({ stack, settings, key: e.key, rowByKey })
+      const currentRow = rowByKey[e.key]
+      const { hold, muteOnPlayRows } = settings[currentRow]
+      const keyOff = hold && activeKeys.includes(e.key)
+      let newStack = stack
+
+      // This is obviously messy but I'm reluctant ro refactor until I'm sure I'm sticking with all this logic
+      if (hold && !keyOff && muteOnPlayRows.includes(currentRow)) {
+        // We need to clear the stack of any existing keys in this row
+        const keysToRelease = activeKeys.filter(
+          (k) => rowByKey[k] === currentRow
+        )
+        newStack = keysToRelease.reduce(
+          (stack, key) =>
+            removeKeyFromStack({ stack, settings, key, rowByKey }),
+          stack
+        )
+        keysToRelease.forEach(keyup)
+      }
+      const params = { stack: newStack, settings, key: e.key, rowByKey }
+      newStack = keyOff ? removeKeyFromStack(params) : addKeyToStack(params)
 
       // Compare previous top to the current top to decide what to on and what to off.
       const currentTop = stack.at(-1)
@@ -144,8 +164,11 @@ const useKeyboardListener = () => {
         actionsByKey[k]?.on()
         setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
       })
-
-      keydown(e.key)
+      if (keyOff) {
+        keyup(e.key)
+      } else {
+        keydown(e.key)
+      }
       setStack(newStack)
       console.log('stack [on ]: ', JSON.stringify(newStack))
     }
@@ -153,6 +176,11 @@ const useKeyboardListener = () => {
 
   const onKeyUp = (e: KeyboardEvent) => {
     if (keyList.includes(e.key)) {
+      const { hold } = settings[rowByKey[e.key]]
+      if (hold) {
+        return
+      }
+
       const newStack = removeKeyFromStack({
         stack,
         settings,

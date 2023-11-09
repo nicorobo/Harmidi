@@ -17,6 +17,7 @@ import {
   IconButton,
   ButtonGroup,
   Button,
+  Switch,
 } from '@mui/material'
 import { useRef } from 'react'
 
@@ -121,6 +122,13 @@ const SharedSettings = ({
             <ToggleButton value={2}>C</ToggleButton>
             <ToggleButton value={3}>D</ToggleButton>
           </ToggleButtonGroup>
+        </Box>
+        <Box>
+          <Typography sx={labelStyle}>Hold</Typography>
+          <Switch
+            checked={settings.hold}
+            onChange={(_, hold) => onUpdate({ ...settings, hold })}
+          />
         </Box>
       </Stack>
     </Stack>

@@ -4,7 +4,7 @@ import { useActionsByKey } from './use-actions-by-key'
 import { RowByKey } from './keyboard-config'
 
 // Certainly theres a better way to do this. Consider building these arrays in the functions itself, or doing this in a single pass.
-const compareArrays = (a1: string[], a2: string[]) => ({
+const compareArrays = (a1: string[] = [], a2: string[] = []) => ({
   added: a2.filter((key) => !a1.includes(key)),
   // neutral: a2.filter((key) => a1.includes(key)),
   removed: a1.filter((key) => !a2.includes(key)),
@@ -36,13 +36,12 @@ const addKeyToStack = ({
   settings: Settings
   rowByKey: RowByKey
 }) => {
-  const newStack = [...stack]
   const keyRow = rowByKey[key]
   const { muteOnPlayRows } = settings[keyRow]
-  const currentTop = stack.length ? stack[stack.length - 1] : null
+  const currentTop = stack.at(-1)
 
   if (!currentTop) {
-    // There are no other keys playing,
+    // There are no other keys playing
     return [[key]]
   }
 
@@ -52,20 +51,28 @@ const addKeyToStack = ({
     .some((k) => settings[rowByKey[k]].muteOnPlayRows.includes(keyRow))
 
   if (muted) {
-    // Here is where I want to maybe blend levels
-    newStack.splice(-2, 0, [key])
-    return newStack
+    // This logic is very similar to what we do when removing a key from a row, we could maybe comine them.
+    const layerBeneath = stack.at(-2)
+    if (layerBeneath) {
+      const nextLayers = organizeLevels(
+        layerBeneath,
+        [[], [key]],
+        muteOnPlayRows,
+        rowByKey
+      )
+      return stack.toSpliced(-2, 1, ...nextLayers)
+    }
+    return stack.toSpliced(-1, 0, [key])
   }
 
   // We are creating two arrays, one with the currently playing elements that have been muted, and one for the currently playing elements
-  const nextTop = organizeLevels(
+  const nextLayers = organizeLevels(
     currentTop,
     [[], [key]],
     muteOnPlayRows,
     rowByKey
   )
-  newStack.splice(-1, 1, ...nextTop)
-  return newStack
+  return stack.toSpliced(-1, 1, ...nextLayers)
 }
 
 const removeKeyFromStack = ({
@@ -79,8 +86,6 @@ const removeKeyFromStack = ({
   settings: Settings
   rowByKey: RowByKey
 }) => {
-  const newStack = [...stack]
-
   // Traverse stack in reverse until finding the key's level
   for (let i = stack.length - 1; i >= 0; i--) {
     const index = stack[i].indexOf(key)
@@ -88,8 +93,9 @@ const removeKeyFromStack = ({
       continue
     }
     const newLayer = [...stack[i]].filter((_, i) => i !== index)
-    const layerBeneath = i - 1 >= 0 ? stack[i - 1] : null
+    const layerBeneath = stack[i - 1]
     if (layerBeneath) {
+      // There is a layer beneath and we need to decide how its affected by the key's removal
       const mutedRows = newLayer.reduce((prev, cur) => {
         prev.push(...settings[rowByKey[cur]].muteOnPlayRows)
         return prev
@@ -101,17 +107,15 @@ const removeKeyFromStack = ({
         rowByKey
       )
 
-      newStack.splice(i - 1, 2, ...nextLayers)
-      return newStack
+      return stack.toSpliced(i - 1, 2, ...nextLayers)
     } else {
       // The removed key was on the bottom layer,
-      newStack.splice(i, 1, newLayer)
-      return newStack
+      return stack.toSpliced(i, 1, newLayer)
     }
   }
 
   // Key was not found in the stack
-  return newStack
+  return stack
 }
 
 const useKeyboardListener = () => {
@@ -130,11 +134,9 @@ const useKeyboardListener = () => {
       const newStack = addKeyToStack({ stack, settings, key: e.key, rowByKey })
 
       // Compare previous top to the current top to decide what to on and what to off.
-      const currentTop = stack[stack.length - 1]
-      const newTop = newStack[newStack.length - 1]
-      const { added, removed } = currentTop
-        ? compareArrays(currentTop, newTop)
-        : { added: newTop, removed: [] }
+      const currentTop = stack.at(-1)
+      const newTop = newStack.at(-1)
+      const { added, removed } = compareArrays(currentTop, newTop)
 
       // Take relevant action for added & removed keys
       removed.forEach((k) => offActionsByKey[k]?.())
@@ -145,6 +147,7 @@ const useKeyboardListener = () => {
 
       keydown(e.key)
       setStack(newStack)
+      console.log('stack [on ]: ', JSON.stringify(newStack))
     }
   }
 
@@ -157,23 +160,20 @@ const useKeyboardListener = () => {
         rowByKey,
       })
 
-      const currentTop = stack[stack.length - 1]
-      const newTop = newStack[newStack.length - 1]
+      const currentTop = stack.at(-1)
+      const newTop = newStack.at(-1)
+      const { added, removed } = compareArrays(currentTop, newTop)
 
-      if (currentTop) {
-        const { added, removed } = newTop
-          ? compareArrays(currentTop, newTop)
-          : { added: [], removed: currentTop }
+      // Take relevant action for added & removed keys
+      removed.forEach((k) => offActionsByKey[k]?.())
+      added.forEach((k) => {
+        actionsByKey[k]?.on()
+        setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
+      })
 
-        // Take relevant action for added & removed keys
-        removed.forEach((k) => offActionsByKey[k]?.())
-        added.forEach((k) => {
-          actionsByKey[k]?.on()
-          setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
-        })
-      }
       keyup(e.key)
       setStack(newStack)
+      console.log('stack [off]: ', JSON.stringify(newStack))
     }
   }
 

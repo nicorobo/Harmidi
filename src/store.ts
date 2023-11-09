@@ -89,7 +89,7 @@ const useStore = create<State>()((set, get) => ({
   keyboardConfig: keyboardConfigs.USEnglish,
   settings: [
     getDefaultScaleChordSettings({ muteOnPlayRows: [0, 1] }),
-    getDefaultFamilyChordSettings({ muteOnPlayRows: [0, 1] }),
+    getDefaultFamilyChordSettings({ muteOnPlayRows: [] }),
     getDefaultNoteSettings(),
     getDefaultNoteSettings(),
   ],

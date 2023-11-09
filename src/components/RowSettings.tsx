@@ -292,6 +292,7 @@ const NoteRowSettings = ({
     </Stack>
   )
 }
+
 export const RowSettings = ({
   row,
   settings,

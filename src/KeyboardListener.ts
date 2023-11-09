@@ -80,45 +80,37 @@ const removeKeyFromStack = ({
   rowByKey: RowByKey
 }) => {
   const newStack = [...stack]
-  const keyRow = rowByKey[key]
-  const { muteOnPlayRows } = settings[keyRow]
-  const currentTop = stack.length ? stack[stack.length - 1] : null
 
+  // Traverse stack in reverse until finding the key's level
   for (let i = stack.length - 1; i >= 0; i--) {
     const index = stack[i].indexOf(key)
-    if (index > -1) {
-      const nextLayer = [...stack[i]].filter((_, i) => i !== index)
-      if (i - 1 >= 0) {
-        const mutedRows = nextLayer.reduce((prev, cur) => {
-          prev.push(...settings[rowByKey[cur]].muteOnPlayRows)
-          return prev
-        }, [] as number[])
-        const nextLayers = stack[i - 1]
-          .reduce(
-            (prev, cur) => {
-              const i = mutedRows.includes(rowByKey[cur]) ? 0 : 1
-              prev[i].push(cur)
-              return prev
-            },
-            [[], nextLayer] as string[][]
-          )
-          .filter((arr) => arr.length)
+    if (index < 0) {
+      continue
+    }
+    const newLayer = [...stack[i]].filter((_, i) => i !== index)
+    const layerBeneath = i - 1 >= 0 ? stack[i - 1] : null
+    if (layerBeneath) {
+      const mutedRows = newLayer.reduce((prev, cur) => {
+        prev.push(...settings[rowByKey[cur]].muteOnPlayRows)
+        return prev
+      }, [] as number[])
+      const nextLayers = organizeLevels(
+        layerBeneath,
+        [[], [...newLayer]],
+        mutedRows,
+        rowByKey
+      )
 
-        nextStack.splice(i - 1, 2, ...nextLayers)
-      } else {
-        nextStack.splice(i, 1, nextLayer)
-      }
-      break
+      newStack.splice(i - 1, 2, ...nextLayers)
+      return newStack
+    } else {
+      // The removed key was on the bottom layer,
+      newStack.splice(i, 1, newLayer)
+      return newStack
     }
   }
-  // We are creating two arrays, one with the currently playing elements that have been muted, and one for the currently playing elements
-  const nextTop = organizeLevels(
-    currentTop,
-    [[], [key]],
-    muteOnPlayRows,
-    rowByKey
-  )
-  newStack.splice(-1, 1, ...nextTop)
+
+  // Key was not found in the stack
   return newStack
 }
 
@@ -145,10 +137,10 @@ const useKeyboardListener = () => {
         : { added: newTop, removed: [] }
 
       // Take relevant action for added & removed keys
-      removed.forEach((key) => offActionsByKey[key]?.())
-      added.forEach((key) => {
-        actionsByKey[key]?.on()
-        setOffActionsByKey((a) => ({ ...a, [key]: actionsByKey[key]?.off }))
+      removed.forEach((k) => offActionsByKey[k]?.())
+      added.forEach((k) => {
+        actionsByKey[k]?.on()
+        setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
       })
 
       keydown(e.key)
@@ -158,92 +150,30 @@ const useKeyboardListener = () => {
 
   const onKeyUp = (e: KeyboardEvent) => {
     if (keyList.includes(e.key)) {
-      const s = settings[rowByKey[e.key]]
-      const currentTop = stack.length ? stack[stack.length - 1] : null
-      const currentSecondTop = stack.length > 1 ? stack[stack.length - 2] : null
-      console.log('currentTop: ', JSON.stringify(currentTop))
-      // I should be able to use .toSpliced but have to find a way to use the polyfill
-      let nextStack = [...stack]
+      const newStack = removeKeyFromStack({
+        stack,
+        settings,
+        key: e.key,
+        rowByKey,
+      })
+
+      const currentTop = stack[stack.length - 1]
+      const newTop = newStack[newStack.length - 1]
 
       if (currentTop) {
-        const index = currentTop.indexOf(e.key)
-        // Removing a key that is currently playing
-        if (index > -1) {
-          const nextTop = [...currentTop].filter((_, i) => i !== index)
-          if (currentSecondTop) {
-            const mutedRows = nextTop.reduce((prev, cur) => {
-              prev.push(...settings[rowByKey[cur]].muteOnPlayRows)
-              return prev
-            }, [] as number[])
-            const nextTops = currentSecondTop
-              .reduce(
-                (prev, cur) => {
-                  const i = mutedRows.includes(rowByKey[cur]) ? 0 : 1
-                  prev[i].push(cur)
-                  return prev
-                },
-                [[], nextTop] as string[][]
-              )
-              .filter((arr) => arr.length)
-
-            nextStack.splice(-2, 2, ...nextTops)
-          } else {
-            nextStack = [nextTop]
-          }
-        } else {
-          // Removing key not currently playing
-          for (let i = stack.length - 1; i >= 0; i--) {
-            const index = stack[i].indexOf(e.key)
-            if (index > -1) {
-              const nextLayer = [...stack[i]].filter((_, i) => i !== index)
-              if (i - 1 >= 0) {
-                const mutedRows = nextLayer.reduce((prev, cur) => {
-                  prev.push(...settings[rowByKey[cur]].muteOnPlayRows)
-                  return prev
-                }, [] as number[])
-                const nextLayers = stack[i - 1]
-                  .reduce(
-                    (prev, cur) => {
-                      const i = mutedRows.includes(rowByKey[cur]) ? 0 : 1
-                      prev[i].push(cur)
-                      return prev
-                    },
-                    [[], nextLayer] as string[][]
-                  )
-                  .filter((arr) => arr.length)
-
-                nextStack.splice(i - 1, 2, ...nextLayers)
-              } else {
-                nextStack.splice(i, 1, nextLayer)
-              }
-              break
-            }
-          }
-          // find which level the key is in
-          // remove it, and replace the previous and current rows
-        }
-      }
-
-      keyup(e.key)
-
-      const nextTop = nextStack.length ? nextStack[nextStack.length - 1] : null
-      if (currentTop) {
-        const { added, removed } = nextTop
-          ? compareArrays(currentTop, nextTop)
+        const { added, removed } = newTop
+          ? compareArrays(currentTop, newTop)
           : { added: [], removed: currentTop }
-        console.log({ added, removed })
-        for (let key of removed) {
-          if (offActionsByKey[key]) {
-            offActionsByKey[key]()
-          }
-        }
-        for (let key of added) {
-          actionsByKey[key]?.on()
-          setOffActionsByKey((a) => ({ ...a, [key]: actionsByKey[key]?.off }))
-        }
+
+        // Take relevant action for added & removed keys
+        removed.forEach((k) => offActionsByKey[k]?.())
+        added.forEach((k) => {
+          actionsByKey[k]?.on()
+          setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
+        })
       }
-      console.log('setting stack: ', JSON.stringify(nextStack))
-      setStack(nextStack)
+      keyup(e.key)
+      setStack(newStack)
     }
   }
 

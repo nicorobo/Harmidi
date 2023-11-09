@@ -1,9 +1,9 @@
 import { useMIDIOutput } from '@react-midi/hooks'
-import { RowSettings } from './store'
+import { ZoneSettings } from './store'
 import { KeyActions } from './use-actions-by-key'
 import { getFamilyChords, getScaleChords, getScaleNotes } from './note-getters'
 
-export const getNoteFactory = (rowSettings: RowSettings) => {
+export const getNoteFactory = (rowSettings: ZoneSettings) => {
   if (rowSettings.type === 'family-chord') {
     return getFamilyChords(rowSettings)
   } else if (rowSettings.type === 'scale-chord') {
@@ -16,7 +16,7 @@ export const getNoteFactory = (rowSettings: RowSettings) => {
 export const useNoteActions = () => {
   const { noteOn, noteOff } = useMIDIOutput()
 
-  const factory = (letters: string[], rowSettings: RowSettings) => {
+  const factory = (letters: string[], rowSettings: ZoneSettings) => {
     const actions: KeyActions = {}
     if (!noteOn || !noteOff) {
       return actions

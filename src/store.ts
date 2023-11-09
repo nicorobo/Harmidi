@@ -2,40 +2,40 @@ import { create } from 'zustand'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 import { KeySettings, ScaleSettings } from './types/scale'
 
-type CommonRowSettings = {
+type CommonZoneSettings = {
   channel: number
   octave: number
   velocity: number
   hold: boolean
-  muteOnPlayRows: number[] // As this affects the behavior of other zones, perhaps
+  muteZones: number[] // As this affects the behavior of other zones, perhaps
 }
 
-export type NoteRowSettings = CommonRowSettings & {
+export type NoteZoneSettings = CommonZoneSettings & {
   type: 'scale-note'
   scale: ScaleSettings
   translate: number
 }
 
-type CommonChordRowSettings = CommonRowSettings & {
+type CommonChordZoneSettings = CommonZoneSettings & {
   voicing?: string
 }
 
-export type ScaleChordRowSettings = CommonChordRowSettings & {
+export type ScaleChordZoneSettings = CommonChordZoneSettings & {
   type: 'scale-chord'
   key: KeySettings
 }
 
-export type FamilyChordRowSettings = CommonChordRowSettings & {
+export type FamilyChordZoneSettings = CommonChordZoneSettings & {
   type: 'family-chord'
   family: string
   translate: number
 }
 
-type ChordRowSettings = ScaleChordRowSettings | FamilyChordRowSettings
+type ChordZoneSettings = ScaleChordZoneSettings | FamilyChordZoneSettings
 
-type RowType = 'scale-note' | 'scale-chord' | 'family-chord'
-export type RowSettings = NoteRowSettings | ChordRowSettings
-export type Settings = RowSettings[]
+type ZoneType = 'scale-note' | 'scale-chord' | 'family-chord'
+export type ZoneSettings = NoteZoneSettings | ChordZoneSettings
+export type Settings = ZoneSettings[]
 
 interface State {
   activeKeys: string[]
@@ -43,8 +43,8 @@ interface State {
   keydown: (key: string) => void
   keyup: (key: string) => void
   settings: Settings
-  updateRowType: (row: number, type: RowType) => void
-  updateRowSettings: (row: number, settings: RowSettings) => void
+  updateZoneType: (zone: number, type: ZoneType) => void
+  updateZoneSettings: (zone: number, settings: ZoneSettings) => void
 }
 
 const defaultSettings = {
@@ -52,12 +52,12 @@ const defaultSettings = {
   octave: 0,
   velocity: 100,
   hold: false,
-  muteOnPlayRows: [],
+  muteZones: [],
 }
 
 const getDefaultScaleChordSettings = (
-  overrides?: Partial<ScaleChordRowSettings>
-): ScaleChordRowSettings => ({
+  overrides?: Partial<ScaleChordZoneSettings>
+): ScaleChordZoneSettings => ({
   type: 'scale-chord',
   key: { root: 'C', type: 'minor' },
   ...defaultSettings,
@@ -65,8 +65,8 @@ const getDefaultScaleChordSettings = (
 })
 
 const getDefaultFamilyChordSettings = (
-  overrides?: Partial<FamilyChordRowSettings>
-): FamilyChordRowSettings => ({
+  overrides?: Partial<FamilyChordZoneSettings>
+): FamilyChordZoneSettings => ({
   type: 'family-chord',
   family: 'm7',
   translate: 0,
@@ -75,8 +75,8 @@ const getDefaultFamilyChordSettings = (
 })
 
 const getDefaultNoteSettings = (
-  overrides?: Partial<NoteRowSettings>
-): NoteRowSettings => ({
+  overrides?: Partial<NoteZoneSettings>
+): NoteZoneSettings => ({
   type: 'scale-note',
   translate: 0,
   scale: { root: 'C', type: 'minor pentatonic' },
@@ -84,12 +84,30 @@ const getDefaultNoteSettings = (
   ...overrides,
 })
 
+const switchZoneType = (type: ZoneType, settings: ZoneSettings) => {
+  const { channel, velocity, octave, muteZones } = settings
+  const override = {
+    channel,
+    velocity,
+    octave,
+    muteZones,
+  }
+  switch (type) {
+    case 'family-chord':
+      return getDefaultFamilyChordSettings(override)
+    case 'scale-chord':
+      return getDefaultScaleChordSettings(override)
+    case 'scale-note':
+      return getDefaultNoteSettings(override)
+  }
+}
+
 const useStore = create<State>()((set, get) => ({
   activeKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
   settings: [
-    getDefaultScaleChordSettings({ muteOnPlayRows: [0], hold: true }),
-    getDefaultFamilyChordSettings({ muteOnPlayRows: [1] }),
+    getDefaultScaleChordSettings({ muteZones: [0], hold: true }),
+    getDefaultFamilyChordSettings({ muteZones: [1] }),
     getDefaultNoteSettings(),
     getDefaultNoteSettings(),
   ],
@@ -109,42 +127,19 @@ const useStore = create<State>()((set, get) => ({
       })
     }
   },
-  updateRowType: (row, type) => {
+  updateZoneType: (zone, type) =>
     set((state) => ({
       ...state,
-      settings: state.settings.map((existingSettings, i) => {
-        if (i !== row) {
-          return existingSettings
-        }
-        const { channel, velocity, octave, muteOnPlayRows } = existingSettings
-        const override = {
-          channel,
-          velocity,
-          octave,
-          muteOnPlayRows,
-        }
-        if (type === 'family-chord') {
-          return getDefaultFamilyChordSettings(override)
-        } else if (type === 'scale-chord') {
-          return getDefaultScaleChordSettings(override)
-        } else if (type === 'scale-note') {
-          return getDefaultNoteSettings(override)
-        } else {
-          throw new Error(`Cannot update row ${row} to type ${type}`)
-        }
-      }),
-    }))
-  },
+      settings: state.settings.with(
+        zone,
+        switchZoneType(type, state.settings[zone])
+      ),
+    })),
   // Consider allowing partial updates here.
-  updateRowSettings: (row, settings) => {
+  updateZoneSettings: (zone, settings) => {
     set((state) => ({
       ...state,
-      settings: state.settings.map((existingSettings, i) => {
-        if (i !== row) {
-          return existingSettings
-        }
-        return settings
-      }),
+      settings: state.settings.with(zone, settings),
     }))
   },
 }))

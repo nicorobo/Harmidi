@@ -1,8 +1,8 @@
 import {
-  FamilyChordRowSettings,
-  NoteRowSettings,
-  RowSettings as RowSettingsType,
-  ScaleChordRowSettings,
+  FamilyChordZoneSettings,
+  NoteZoneSettings,
+  ZoneSettings as RowSettingsType,
+  ScaleChordZoneSettings,
   useStore,
 } from '../store'
 import {
@@ -112,9 +112,9 @@ const SharedSettings = ({
           <Typography sx={labelStyle}>Mute</Typography>
           <ToggleButtonGroup
             size="small"
-            value={settings.muteOnPlayRows}
+            value={settings.muteZones}
             onChange={(_, muteGroups) =>
-              onUpdate({ ...settings, muteOnPlayRows: muteGroups })
+              onUpdate({ ...settings, muteZones: muteGroups })
             }
           >
             <ToggleButton value={0}>A</ToggleButton>
@@ -143,7 +143,7 @@ const FamilyChordRowSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: FamilyChordRowSettings
+  settings: FamilyChordZoneSettings
   onUpdate: (settings: RowSettingsType) => void
 }) => {
   return (
@@ -195,7 +195,7 @@ const ScaleChordRowSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: ScaleChordRowSettings
+  settings: ScaleChordZoneSettings
   onUpdate: (settings: RowSettingsType) => void
 }) => {
   return (
@@ -247,7 +247,7 @@ const NoteRowSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: NoteRowSettings
+  settings: NoteZoneSettings
   onUpdate: (settings: RowSettingsType) => void
 }) => {
   return (
@@ -325,8 +325,8 @@ export const RowSettings = ({
   row: number
   settings: RowSettingsType
 }) => {
-  const updateRowSettings = useStore((state) => state.updateRowSettings)
-  const updateRowType = useStore((state) => state.updateRowType)
+  const updateRowSettings = useStore((state) => state.updateZoneSettings)
+  const updateRowType = useStore((state) => state.updateZoneType)
   const onUpdate = (settings: RowSettingsType) => {
     updateRowSettings(row, settings)
   }

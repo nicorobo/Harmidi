@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Settings, useStore } from './store'
 import { useActionsByKey } from './use-actions-by-key'
-import { RowByKey } from './keyboard-config'
+import { ZoneByKey } from './keyboard-config'
 
 // Certainly theres a better way to do this. Consider building these arrays in the functions itself, or doing this in a single pass.
 const compareArrays = (a1: string[] = [], a2: string[] = []) => ({
@@ -14,12 +14,12 @@ const compareArrays = (a1: string[] = [], a2: string[] = []) => ({
 const organizeLevels = (
   baseArray: string[],
   init: string[][],
-  mutedRows: number[],
-  rowByKey: RowByKey
+  mutedZones: number[],
+  zoneByKey: ZoneByKey
 ) =>
   baseArray
     .reduce((prev, cur) => {
-      const i = mutedRows.includes(rowByKey[cur]) ? 0 : 1
+      const i = mutedZones.includes(zoneByKey[cur]) ? 0 : 1
       prev[i].push(cur)
       return prev
     }, init)
@@ -29,15 +29,15 @@ const addKeyToStack = ({
   key,
   stack,
   settings,
-  rowByKey,
+  zoneByKey,
 }: {
   key: string
   stack: string[][]
   settings: Settings
-  rowByKey: RowByKey
+  zoneByKey: ZoneByKey
 }) => {
-  const keyRow = rowByKey[key]
-  const { muteOnPlayRows } = settings[keyRow]
+  const zone = zoneByKey[key]
+  const { muteZones: muteOnPlayRows } = settings[zone]
   const currentTop = stack.at(-1)
 
   if (!currentTop) {
@@ -47,8 +47,8 @@ const addKeyToStack = ({
 
   // check if keys in top will mute new key
   const muted = currentTop
-    .filter((k) => !muteOnPlayRows.includes(rowByKey[k]))
-    .some((k) => settings[rowByKey[k]].muteOnPlayRows.includes(keyRow))
+    .filter((k) => !muteOnPlayRows.includes(zoneByKey[k]))
+    .some((k) => settings[zoneByKey[k]].muteZones.includes(zone))
 
   if (muted) {
     // This logic is very similar to what we do when removing a key from a row, we could maybe comine them.
@@ -58,7 +58,7 @@ const addKeyToStack = ({
         layerBeneath,
         [[], [key]],
         muteOnPlayRows,
-        rowByKey
+        zoneByKey
       )
       return stack.toSpliced(-2, 1, ...nextLayers)
     }
@@ -70,7 +70,7 @@ const addKeyToStack = ({
     currentTop,
     [[], [key]],
     muteOnPlayRows,
-    rowByKey
+    zoneByKey
   )
   return stack.toSpliced(-1, 1, ...nextLayers)
 }
@@ -79,12 +79,12 @@ const removeKeyFromStack = ({
   key,
   stack,
   settings,
-  rowByKey,
+  zoneByKey,
 }: {
   key: string
   stack: string[][]
   settings: Settings
-  rowByKey: RowByKey
+  zoneByKey: ZoneByKey
 }) => {
   // Traverse stack in reverse until finding the key's level
   for (let i = stack.length - 1; i >= 0; i--) {
@@ -97,14 +97,14 @@ const removeKeyFromStack = ({
     if (layerBeneath) {
       // There is a layer beneath and we need to decide how its affected by the key's removal
       const mutedRows = newLayer.reduce((prev, cur) => {
-        prev.push(...settings[rowByKey[cur]].muteOnPlayRows)
+        prev.push(...settings[zoneByKey[cur]].muteZones)
         return prev
       }, [] as number[])
       const nextLayers = organizeLevels(
         layerBeneath,
         [[], [...newLayer]],
         mutedRows,
-        rowByKey
+        zoneByKey
       )
 
       return stack.toSpliced(i - 1, 2, ...nextLayers)
@@ -123,7 +123,7 @@ const useKeyboardListener = () => {
     [key: string]: () => void
   }>({})
   const [stack, setStack] = useState<string[][]>([])
-  const { keyList, rowByKey } = useStore((state) => state.keyboardConfig)
+  const { keyList, zoneByKey } = useStore((state) => state.keyboardConfig)
   const activeKeys = useStore((state) => state.activeKeys)
   const settings = useStore((state) => state.settings)
   const keydown = useStore((state) => state.keydown)
@@ -132,25 +132,23 @@ const useKeyboardListener = () => {
 
   const onKeyDown = (e: KeyboardEvent) => {
     if (!e.repeat && keyList.includes(e.key)) {
-      const currentRow = rowByKey[e.key]
-      const { hold, muteOnPlayRows } = settings[currentRow]
+      const zone = zoneByKey[e.key]
+      const { hold, muteZones: muteOnPlayRows } = settings[zone]
       const keyOff = hold && activeKeys.includes(e.key)
       let newStack = stack
 
       // This is obviously messy but I'm reluctant ro refactor until I'm sure I'm sticking with all this logic
-      if (hold && !keyOff && muteOnPlayRows.includes(currentRow)) {
+      if (hold && !keyOff && muteOnPlayRows.includes(zone)) {
         // We need to clear the stack of any existing keys in this row
-        const keysToRelease = activeKeys.filter(
-          (k) => rowByKey[k] === currentRow
-        )
+        const keysToRelease = activeKeys.filter((k) => zoneByKey[k] === zone)
         newStack = keysToRelease.reduce(
           (stack, key) =>
-            removeKeyFromStack({ stack, settings, key, rowByKey }),
+            removeKeyFromStack({ stack, settings, key, zoneByKey }),
           stack
         )
         keysToRelease.forEach(keyup)
       }
-      const params = { stack: newStack, settings, key: e.key, rowByKey }
+      const params = { stack: newStack, settings, key: e.key, zoneByKey }
       newStack = keyOff ? removeKeyFromStack(params) : addKeyToStack(params)
 
       // Compare previous top to the current top to decide what to on and what to off.
@@ -176,7 +174,7 @@ const useKeyboardListener = () => {
 
   const onKeyUp = (e: KeyboardEvent) => {
     if (keyList.includes(e.key)) {
-      const { hold } = settings[rowByKey[e.key]]
+      const { hold } = settings[zoneByKey[e.key]]
       if (hold) {
         return
       }
@@ -185,7 +183,7 @@ const useKeyboardListener = () => {
         stack,
         settings,
         key: e.key,
-        rowByKey,
+        zoneByKey,
       })
 
       const currentTop = stack.at(-1)

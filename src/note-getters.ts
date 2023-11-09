@@ -1,8 +1,8 @@
 import { Chord, Key, Midi, Scale } from 'tonal'
 import {
-  FamilyChordRowSettings,
-  NoteRowSettings,
-  ScaleChordRowSettings,
+  FamilyChordZoneSettings,
+  NoteZoneSettings,
+  ScaleChordZoneSettings,
 } from './store'
 import { notEmpty } from './util'
 
@@ -11,7 +11,7 @@ export const getFamilyChords = ({
   family,
   octave,
   translate,
-}: FamilyChordRowSettings) => {
+}: FamilyChordZoneSettings) => {
   const scaleDegrees = Scale.steps(`C${octave + 3} chromatic`)
   return (i: number) => {
     const chord = Chord.getChord(family, scaleDegrees(i + translate))
@@ -23,7 +23,7 @@ export const getFamilyChords = ({
 }
 
 // TODO We can also return the actual chord/note objects to power our UI
-export const getScaleChords = ({ key, octave }: ScaleChordRowSettings) => {
+export const getScaleChords = ({ key, octave }: ScaleChordZoneSettings) => {
   const keyObj =
     key.type === 'major'
       ? Key.majorKey(key.root)
@@ -46,7 +46,7 @@ export const getScaleNotes = ({
   scale,
   octave,
   translate,
-}: NoteRowSettings) => {
+}: NoteZoneSettings) => {
   const scaleName = `${scale.root}${octave + 3} ${scale.type}`
   const scaleDegrees = Scale.steps(scaleName)
   return (i: number) => {

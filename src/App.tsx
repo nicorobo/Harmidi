@@ -1,5 +1,5 @@
 import { MIDIProvider } from '@react-midi/hooks'
-import { KeyboardListener } from './KeyboardListener'
+import { KeyboardListener } from './KeyboardListenerAlt'
 import { Grid } from './components/Grid'
 import { Box } from '@mui/material'
 

@@ -38,7 +38,6 @@ export type ZoneSettings = NoteZoneSettings | ChordZoneSettings
 export type Settings = ZoneSettings[]
 
 interface State {
-  activeKeys: string[]
   pressedKeys: string[]
   keyboardConfig: KeyboardConfig
   keydown: (key: string) => void
@@ -103,42 +102,7 @@ const switchZoneType = (type: ZoneType, settings: ZoneSettings) => {
   }
 }
 
-// I don't think we need the whole state but who knows.
-const addKey = (
-  key: string,
-  { activeKeys, settings, keyboardConfig: { zoneByKey } }: State
-) => {
-  const zone = zoneByKey[key]
-  const { hold, muteZones } = settings[zone]
-  const selfMuting = muteZones.includes(zone)
-  const isActive = activeKeys.includes(key)
-  if (hold && isActive) {
-    // Turn key off
-    return activeKeys.filter((k) => k !== key)
-  }
-  if (hold && selfMuting) {
-    // Clear keys in same zone and add key
-    return activeKeys.filter((k) => zoneByKey[k] !== zone).concat(key)
-  }
-  return activeKeys.concat(key)
-}
-
-// I don't think we need the whole state but who knows.
-const removeKey = (
-  key: string,
-  { activeKeys, settings, keyboardConfig: { zoneByKey } }: State
-) => {
-  const zone = zoneByKey[key]
-  const { hold } = settings[zone]
-  if (hold) {
-    // We only handle hold zones during keydown
-    return activeKeys
-  }
-  return activeKeys.filter((k) => k !== key)
-}
-
 const useStore = create<State>()((set) => ({
-  activeKeys: [],
   pressedKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
   settings: [
@@ -152,7 +116,6 @@ const useStore = create<State>()((set) => ({
       return {
         ...state,
         pressedKeys: [...state.pressedKeys, key],
-        activeKeys: addKey(key, state),
       }
     }),
 
@@ -161,7 +124,6 @@ const useStore = create<State>()((set) => ({
       return {
         ...state,
         pressedKeys: state.pressedKeys.filter((k) => k !== key),
-        activeKeys: removeKey(key, state),
       }
     }),
   updateZoneType: (zone, type) =>

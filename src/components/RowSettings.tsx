@@ -127,7 +127,9 @@ const SharedSettings = ({
           <Typography sx={labelStyle}>Hold</Typography>
           <Switch
             checked={settings.hold}
-            onChange={(_, hold) => onUpdate({ ...settings, hold })}
+            onChange={(_, hold) => {
+              onUpdate({ ...settings, hold })
+            }}
           />
         </Box>
       </Stack>

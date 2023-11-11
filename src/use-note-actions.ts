@@ -30,7 +30,7 @@ export const useNoteActions = () => {
       const notes = noteFactory(i)
       actions[letters[i]] = {
         on: () => {
-          // console.log(performance.measure('note on', 'keydown'))
+          console.log(performance.measure('note on', 'keydown'))
           noteOn(notes, noteSettings)
         },
         off: () => {

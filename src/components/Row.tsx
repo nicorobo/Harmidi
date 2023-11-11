@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import { useStore } from '../store'
 import { Box, IconButton } from '@mui/material'
 import { Settings } from '@mui/icons-material'
@@ -6,6 +6,7 @@ import { RowSettings } from './RowSettings'
 import { Cell } from './Cell'
 import { getNoteFactory } from '../use-note-actions'
 import { Midi, Chord } from 'tonal'
+import { EngineContext } from '../Engine'
 
 const getNameFromMidiNotes = (notes: number | number[]) => {
   if (typeof notes === 'number') {
@@ -16,9 +17,9 @@ const getNameFromMidiNotes = (notes: number | number[]) => {
 }
 export const Row = ({ row }: { row: number }) => {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { activeKeys } = useContext(EngineContext)
   const { keyGrid } = useStore((state) => state.keyboardConfig)
   const settings = useStore((state) => state.settings[row])
-  const activeKeys = useStore((state) => state.activeKeys)
   const noteFactory = getNoteFactory(settings)
 
   return (

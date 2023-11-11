@@ -1,10 +1,8 @@
 import { useStore } from '../store'
 import { Box } from '@mui/material'
 import { Row } from './Row'
-import { useEngine } from '../useEngine'
 
 export const Grid = () => {
-  useEngine()
   const { keyGrid } = useStore((state) => state.keyboardConfig)
   return (
     <Box>

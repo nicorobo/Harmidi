@@ -7,10 +7,12 @@ const useKeyboardListener = () => {
   const keyup = useStore((state) => state.keyup)
 
   const onKeyDown = ({ key, repeat }: KeyboardEvent) => {
+    // performance.mark('keydown')
     !repeat && zoneByKey.hasOwnProperty(key) && keydown(key)
   }
 
   const onKeyUp = ({ key }: KeyboardEvent) => {
+    // performance.mark('keyup')
     zoneByKey.hasOwnProperty(key) && keyup(key)
   }
 

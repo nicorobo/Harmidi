@@ -12,7 +12,7 @@ dist
 dist-ssr
 *.local
 
-*ideas.txt
+ideas*.txt
 .yalc
 yalc.lock
 

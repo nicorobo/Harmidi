@@ -1,10 +1,4 @@
-import {
-  FamilyChordZoneSettings,
-  NoteZoneSettings,
-  ZoneSettings as RowSettingsType,
-  ScaleChordZoneSettings,
-  useStore,
-} from '../store'
+import { useStore } from '../store'
 import {
   Slider,
   Select,
@@ -25,6 +19,12 @@ import { ChordType } from 'tonal'
 import { availableScales } from '../constants'
 import { ScaleType } from '../types/scale'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
+import {
+  ChordFamilyZoneSettings,
+  ChordZoneSettings,
+  NoteZoneSettings,
+  ZoneSettings,
+} from '../zone-settings'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
 const rootNotes = [
@@ -53,8 +53,8 @@ const SharedSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: RowSettingsType
-  onUpdate: (settings: RowSettingsType) => void
+  settings: ZoneSettings
+  onUpdate: (settings: ZoneSettings) => void
 }) => {
   const defaultVelocity = useRef(settings.velocity)
   return (
@@ -145,8 +145,8 @@ const FamilyChordRowSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: FamilyChordZoneSettings
-  onUpdate: (settings: RowSettingsType) => void
+  settings: ChordZoneSettings
+  onUpdate: (settings: ZoneSettings) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -197,8 +197,8 @@ const ScaleChordRowSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: ScaleChordZoneSettings
-  onUpdate: (settings: RowSettingsType) => void
+  settings: ChordFamilyZoneSettings
+  onUpdate: (settings: ZoneSettings) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -250,7 +250,7 @@ const NoteRowSettings = ({
   onUpdate,
 }: {
   settings: NoteZoneSettings
-  onUpdate: (settings: RowSettingsType) => void
+  onUpdate: (settings: ZoneSettings) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -325,11 +325,11 @@ export const RowSettings = ({
   settings,
 }: {
   row: number
-  settings: RowSettingsType
+  settings: ZoneSettings
 }) => {
   const updateRowSettings = useStore((state) => state.updateZoneSettings)
   const updateRowType = useStore((state) => state.updateZoneType)
-  const onUpdate = (settings: RowSettingsType) => {
+  const onUpdate = (settings: ZoneSettings) => {
     updateRowSettings(row, settings)
   }
   return (
@@ -366,13 +366,13 @@ export const RowSettings = ({
           Family chords
         </ToggleButton>
       </ToggleButtonGroup>
-      {settings.type === 'family-chord' && (
+      {settings.type === 'chord' && (
         <FamilyChordRowSettings settings={settings} onUpdate={onUpdate} />
       )}
-      {settings.type === 'scale-chord' && (
+      {settings.type === 'chord-family' && (
         <ScaleChordRowSettings settings={settings} onUpdate={onUpdate} />
       )}
-      {settings.type === 'scale-note' && (
+      {settings.type === 'note' && (
         <NoteRowSettings settings={settings} onUpdate={onUpdate} />
       )}
     </Stack>

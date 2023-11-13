@@ -1,5 +1,5 @@
-export type ScaleSettings = { root: ScaleRoot; type: ScaleType }
-export type KeySettings = { root: ScaleRoot; type: 'major' | 'minor' }
+export type MusicalScale = { root: ScaleRoot; type: ScaleType }
+export type MusicalKey = { root: ScaleRoot; type: 'major' | 'minor' }
 
 type ScaleRoot =
   | 'Ab'

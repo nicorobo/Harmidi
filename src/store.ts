@@ -10,6 +10,18 @@ import {
 } from './zone-settings'
 
 export type Settings = ZoneSettings[]
+export type ZoneByKey = { [key: string]: number }
+
+// Zones are not associated to rows, but by default the zones are rows.
+const getRowByKey = (keyGrid: string[][]): ZoneByKey => {
+  const dict: ZoneByKey = {}
+  for (let i = 0; i < keyGrid.length; i++) {
+    for (let j = 0; j < keyGrid[i].length; j++) {
+      dict[keyGrid[i][j]] = i
+    }
+  }
+  return dict
+}
 
 interface State {
   pressedKeys: string[]
@@ -19,11 +31,27 @@ interface State {
   settings: Settings
   updateZoneType: (zone: number, type: ZoneType) => void
   updateZoneSettings: (zone: number, settings: ZoneSettings) => void
+  zoneByKey: ZoneByKey
+  updateKeyZone: (key: string, zone: number) => void
+  selectedZone: number | null
+  setSelectedZone: (zone: number | null) => void
 }
 
 const useStore = create<State>()((set) => ({
   pressedKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
+  zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid), // Initially, each row is its own zone
+  updateKeyZone: (key, zone) =>
+    set((state) => ({
+      ...state,
+      zoneByKey: { ...state.zoneByKey, [key]: zone },
+    })),
+  selectedZone: 0,
+  setSelectedZone: (zone) =>
+    set((state) => ({
+      ...state,
+      selectedZone: zone,
+    })),
   settings: [
     getDefaultChordFamilySettings({ muteZones: [0], hold: true }),
     getDefaultChordSettings({ muteZones: [1] }),

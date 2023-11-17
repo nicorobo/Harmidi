@@ -1,7 +1,6 @@
 import { useContext, useEffect } from 'react'
-import { Settings, useStore } from './store'
+import { Settings, useStore, ZoneByKey } from './store'
 import { EngineContext } from './Engine'
-import { ZoneByKey } from './keyboard-config'
 
 type GetActiveKeysArgs = {
   key: string
@@ -50,7 +49,7 @@ const removeKey = ({
 
 const useKeyboardListener = () => {
   const { activeKeys, setActiveKeys } = useContext(EngineContext)
-  const { zoneByKey } = useStore((state) => state.keyboardConfig)
+  const zoneByKey = useStore((state) => state.zoneByKey)
   const settings = useStore((state) => state.settings)
   const keydown = useStore((state) => state.keydown)
   const keyup = useStore((state) => state.keyup)

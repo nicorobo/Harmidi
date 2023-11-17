@@ -1,8 +1,6 @@
-export type ZoneByKey = { [key: string]: number }
 export type KeyboardConfig = {
   keyGrid: string[][]
   keyList: string[]
-  zoneByKey: ZoneByKey
 }
 
 const USEnglishKeys = [
@@ -25,21 +23,9 @@ const getKeyList = (keyGrid: string[][]): string[] =>
     return list
   }, [])
 
-// Zones are not associated to rows, but by default the zones are rows.
-const getRowByKey = (keyGrid: string[][]): ZoneByKey => {
-  const dict: ZoneByKey = {}
-  for (let i = 0; i < keyGrid.length; i++) {
-    for (let j = 0; j < keyGrid[i].length; j++) {
-      dict[keyGrid[i][j]] = i
-    }
-  }
-  return dict
-}
-
 export const keyboardConfigs: { [key: string]: KeyboardConfig } = {
   USEnglish: {
     keyGrid: USEnglishKeysFull,
     keyList: getKeyList(USEnglishKeysFull),
-    zoneByKey: getRowByKey(USEnglishKeysFull),
   },
 }

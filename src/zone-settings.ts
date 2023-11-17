@@ -8,6 +8,7 @@ export type ZoneType = 'note' | 'chord' | 'chord-family'
 
 type CommonSettings = {
   type: ZoneType
+  color: string
   // keyOverrides: { [key: string]: KeySettings }
 }
 
@@ -60,6 +61,7 @@ export const getDefaultChordFamilySettings = (
 ): ChordFamilyZoneSettings => ({
   type: 'chord-family',
   key: { root: 'C', type: 'minor' },
+  color: '#818FB4',
   ...defaultSettings,
   ...overrides,
 })
@@ -70,6 +72,7 @@ export const getDefaultChordSettings = (
   type: 'chord',
   family: 'm7',
   translate: 0,
+  color: '#363062',
   ...defaultSettings,
   ...overrides,
 })
@@ -79,6 +82,7 @@ export const getDefaultNoteSettings = (
 ): NoteZoneSettings => ({
   type: 'note',
   translate: 0,
+  color: '#435585',
   scale: { root: 'C', type: 'minor pentatonic' },
   ...defaultSettings,
   ...overrides,

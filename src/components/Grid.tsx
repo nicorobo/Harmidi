@@ -1,5 +1,5 @@
 import { useStore } from '../store'
-import { Box } from '@mui/material'
+import { Box } from '@mui/joy'
 import { Row } from './Row'
 
 export const Grid = () => {

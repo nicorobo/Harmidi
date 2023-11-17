@@ -3,7 +3,6 @@ import {
   Slider,
   Select,
   MenuItem,
-  ToggleButton,
   ToggleButtonGroup,
   Stack,
   Typography,
@@ -12,7 +11,8 @@ import {
   ButtonGroup,
   Button,
   Switch,
-} from '@mui/material'
+  Sheet,
+} from '@mui/joy'
 import { useRef } from 'react'
 
 import { ChordType } from 'tonal'
@@ -23,7 +23,7 @@ import {
   ChordFamilyZoneSettings,
   ChordZoneSettings,
   NoteZoneSettings,
-  ZoneSettings,
+  ZoneSettings as ZoneSettingsType,
 } from '../zone-settings'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
@@ -53,8 +53,8 @@ const SharedSettings = ({
   settings,
   onUpdate,
 }: {
-  settings: ZoneSettings
-  onUpdate: (settings: ZoneSettings) => void
+  settings: ZoneSettingsType
+  onUpdate: (settings: ZoneSettingsType) => void
 }) => {
   const defaultVelocity = useRef(settings.velocity)
   return (
@@ -62,22 +62,22 @@ const SharedSettings = ({
       <Stack direction="row" spacing={4}>
         <Stack>
           <Typography sx={labelStyle}>Channel</Typography>
-          <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             exclusive
-            size="small"
+            size="sm"
             value={settings.channel}
             onChange={(_, channel) => onUpdate({ ...settings, channel })}
           >
             {channels.map((channel) => (
-              <ToggleButton key={channel} value={channel + 1}>
+              <Button key={channel} value={channel + 1}>
                 {channel + 1}
-              </ToggleButton>
+              </Button>
             ))}
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
         </Stack>
         <Stack>
           <Typography sx={labelStyle}>Octave</Typography>
-          <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             exclusive
             size="small"
             value={settings.octave}
@@ -90,14 +90,14 @@ const SharedSettings = ({
             <ToggleButton value={1}>{1}</ToggleButton>
             <ToggleButton value={2}>{2}</ToggleButton>
             <ToggleButton value={3}>{3}</ToggleButton>
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
         </Stack>
       </Stack>
       <Stack direction="row" spacing={4}>
         <Box flexGrow={1}>
           <Typography sx={labelStyle}>Velocity</Typography>
           <Slider
-            size="small"
+            size="sm"
             min={0}
             max={127}
             step={1}
@@ -110,8 +110,8 @@ const SharedSettings = ({
         </Box>
         <Box>
           <Typography sx={labelStyle}>Mute</Typography>
-          <ToggleButtonGroup
-            size="small"
+          {/* <ToggleButtonGroup
+            size="sm"
             value={settings.muteZones}
             onChange={(_, muteGroups) =>
               onUpdate({ ...settings, muteZones: muteGroups })
@@ -121,14 +121,14 @@ const SharedSettings = ({
             <ToggleButton value={1}>B</ToggleButton>
             <ToggleButton value={2}>C</ToggleButton>
             <ToggleButton value={3}>D</ToggleButton>
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
         </Box>
         <Box>
           <Typography sx={labelStyle}>Hold</Typography>
           <Switch
             checked={settings.hold}
-            onChange={(_, hold) => {
-              onUpdate({ ...settings, hold })
+            onChange={(e) => {
+              onUpdate({ ...settings, hold: e.target.checked })
             }}
           />
         </Box>
@@ -141,12 +141,12 @@ const chordTypes = ChordType.all().map(({ name, aliases }) => ({
   value: aliases[0],
 }))
 
-const FamilyChordRowSettings = ({
+const FamilyChordZoneSettings = ({
   settings,
   onUpdate,
 }: {
   settings: ChordZoneSettings
-  onUpdate: (settings: ZoneSettings) => void
+  onUpdate: (settings: ZoneSettingsType) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -154,7 +154,7 @@ const FamilyChordRowSettings = ({
       <Stack direction="row" spacing={2}>
         <Box>
           <Typography sx={labelStyle}>Chord Type</Typography>
-          <Select
+          {/* <Select
             size="small"
             value={settings.family}
             onChange={(e) => onUpdate({ ...settings, family: e.target.value })}
@@ -164,11 +164,11 @@ const FamilyChordRowSettings = ({
                 {value} {name && `(${name})`}
               </MenuItem>
             ))}
-          </Select>
+          </Select> */}
         </Box>
         <Box>
           <Typography sx={labelStyle}>Translate</Typography>
-          <ButtonGroup variant="contained">
+          <ButtonGroup>
             <IconButton
               onClick={() =>
                 onUpdate({ ...settings, translate: settings.translate - 1 })
@@ -193,12 +193,12 @@ const FamilyChordRowSettings = ({
   )
 }
 
-const ScaleChordRowSettings = ({
+const ScaleChordZoneSettings = ({
   settings,
   onUpdate,
 }: {
   settings: ChordFamilyZoneSettings
-  onUpdate: (settings: ZoneSettings) => void
+  onUpdate: (settings: ZoneSettingsType) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -206,7 +206,7 @@ const ScaleChordRowSettings = ({
       <Box>
         <Typography sx={labelStyle}>Key</Typography>
         <Stack direction={'row'} spacing={2}>
-          <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             exclusive
             size="small"
             value={settings.key.root}
@@ -223,8 +223,8 @@ const ScaleChordRowSettings = ({
                 {note}
               </ToggleButton>
             ))}
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
+          </ToggleButtonGroup> */}
+          {/* <ToggleButtonGroup
             exclusive
             size="small"
             value={settings.key.type}
@@ -238,19 +238,19 @@ const ScaleChordRowSettings = ({
             <ToggleButton value={'major'} sx={{ textTransform: 'capitalize' }}>
               Major
             </ToggleButton>
-          </ToggleButtonGroup>
+          </ToggleButtonGroup> */}
         </Stack>
       </Box>
     </Stack>
   )
 }
 
-const NoteRowSettings = ({
+const NoteZoneSettings = ({
   settings,
   onUpdate,
 }: {
   settings: NoteZoneSettings
-  onUpdate: (settings: ZoneSettings) => void
+  onUpdate: (settings: ZoneSettingsType) => void
 }) => {
   return (
     <Stack spacing={2}>
@@ -258,7 +258,7 @@ const NoteRowSettings = ({
       <Box>
         <Typography sx={labelStyle}>Scale</Typography>
         <Stack direction={'row'} spacing={2}>
-          <ToggleButtonGroup
+          {/* <ToggleButtonGroup
             exclusive
             size="small"
             value={settings.scale.root}
@@ -275,9 +275,9 @@ const NoteRowSettings = ({
                 {note}
               </ToggleButton>
             ))}
-          </ToggleButtonGroup>
-          <Select
-            size="small"
+          </ToggleButtonGroup> */}
+          {/* <Select
+            size="sm"
             value={settings.scale.type}
             onChange={(e) =>
               onUpdate({
@@ -285,16 +285,10 @@ const NoteRowSettings = ({
                 scale: { ...settings.scale, type: e.target.value as ScaleType },
               })
             }
-          >
-            {availableScales.map((scale) => (
-              <MenuItem key={scale} value={scale}>
-                {scale}
-              </MenuItem>
-            ))}
-          </Select>
+          ></Select> */}
           <Box>
             <Typography sx={labelStyle}>Translate</Typography>
-            <ButtonGroup variant="contained">
+            <ButtonGroup>
               <IconButton
                 onClick={() =>
                   onUpdate({ ...settings, translate: settings.translate - 1 })
@@ -320,61 +314,38 @@ const NoteRowSettings = ({
   )
 }
 
-export const RowSettings = ({
-  row,
+export const ZoneSettings = ({
+  zoneIndex,
   settings,
 }: {
-  row: number
-  settings: ZoneSettings
+  zoneIndex: number
+  settings: ZoneSettingsType
 }) => {
-  const updateRowSettings = useStore((state) => state.updateZoneSettings)
-  const updateRowType = useStore((state) => state.updateZoneType)
-  const onUpdate = (settings: ZoneSettings) => {
-    updateRowSettings(row, settings)
+  const updateZoneSettings = useStore((state) => state.updateZoneSettings)
+  // const updateRowType = useStore((state) => state.updateZoneType)
+  const onUpdate = (settings: ZoneSettingsType) => {
+    updateZoneSettings(zoneIndex, settings)
   }
+  const zoneType = settings.type
+  if (zoneType === 'chord') {
+    return <FamilyChordZoneSettings settings={settings} onUpdate={onUpdate} />
+  } else if (zoneType === 'chord-family') {
+    return <ScaleChordZoneSettings settings={settings} onUpdate={onUpdate} />
+  } else {
+    return <NoteZoneSettings settings={settings} onUpdate={onUpdate} />
+  }
+}
+
+export const ZoneSettingsPanel = ({
+  zoneIndex,
+  settings,
+}: {
+  zoneIndex: number
+  settings: ZoneSettingsType
+}) => {
   return (
-    <Stack
-      spacing={2}
-      sx={{ border: '1px solid #ddd', p: '1rem', m: '0.35rem' }}
-    >
-      <ToggleButtonGroup
-        exclusive
-        size="small"
-        value={settings.type}
-        sx={{ textTransform: 'capitalize' }}
-        onChange={(_, value) => updateRowType(row, value)}
-      >
-        <ToggleButton
-          size="small"
-          value="scale-note"
-          sx={{ textTransform: 'capitalize' }}
-        >
-          Notes
-        </ToggleButton>
-        <ToggleButton
-          size="small"
-          value="scale-chord"
-          sx={{ textTransform: 'capitalize' }}
-        >
-          Scale chords
-        </ToggleButton>
-        <ToggleButton
-          size="small"
-          value="family-chord"
-          sx={{ textTransform: 'capitalize' }}
-        >
-          Family chords
-        </ToggleButton>
-      </ToggleButtonGroup>
-      {settings.type === 'chord' && (
-        <FamilyChordRowSettings settings={settings} onUpdate={onUpdate} />
-      )}
-      {settings.type === 'chord-family' && (
-        <ScaleChordRowSettings settings={settings} onUpdate={onUpdate} />
-      )}
-      {settings.type === 'note' && (
-        <NoteRowSettings settings={settings} onUpdate={onUpdate} />
-      )}
-    </Stack>
+    <Sheet sx={{ p: '1rem' }}>
+      <ZoneSettings zoneIndex={zoneIndex} settings={settings} />
+    </Sheet>
   )
 }

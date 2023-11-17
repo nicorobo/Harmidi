@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react'
 import { useActionsByKey } from './use-actions-by-key'
-import { Settings, useStore } from './store'
-import { ZoneByKey } from './keyboard-config'
+import { Settings, useStore, ZoneByKey } from './store'
 
 type GetPlayingKeysArgs = {
   activeKeys: string[]
@@ -67,7 +66,7 @@ export const EngineProvider = ({ children }: Props) => {
     [key: string]: () => void
   }>({})
   const settings = useStore((store) => store.settings)
-  const { zoneByKey } = useStore((store) => store.keyboardConfig)
+  const zoneByKey = useStore((state) => state.zoneByKey)
   const [activeKeys, setActiveKeysState] = useState<string[]>([])
 
   const setActiveKeys = (keys: string[]) => {

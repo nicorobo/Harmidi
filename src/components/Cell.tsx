@@ -1,13 +1,22 @@
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/joy'
+import { useStore } from '../store'
 
 const activeColor = '#d9d8ff'
 export const Cell = ({
-  name,
+  cell,
   isActive,
 }: {
-  name: string
+  cell: string
   isActive: boolean
 }) => {
+  const setKeyZone = useStore((state) => state.updateKeyZone)
+  const selectedZone = useStore((state) => state.selectedZone)
+  const zone = useStore((state) => state.zoneByKey[cell])
+  const handleClick = () => {
+    if (zone !== selectedZone && selectedZone !== null) {
+      setKeyZone(cell, selectedZone)
+    }
+  }
   return (
     <Box
       height={'3rem'}
@@ -17,12 +26,14 @@ export const Cell = ({
       borderRadius={'15% 15% 15% 0'}
       border={`1px solid ${isActive ? activeColor : '#ddd'}`}
       boxSizing={'border-box'}
+      sx={{ opacity: selectedZone !== null && selectedZone !== zone ? 0.5 : 1 }}
       bgcolor={isActive ? activeColor : 'none'}
       display={'flex'}
       flexDirection={'column-reverse'}
       overflow={'clip'}
+      onClick={handleClick}
     >
-      <Typography sx={{ fontSize: '0.6rem', color: '#777' }}>{name}</Typography>
+      {'ABCDEFG'[zone]}
     </Box>
   )
 }

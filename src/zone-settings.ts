@@ -7,14 +7,13 @@ export type ZoneType = 'note' | 'chord' | 'chord-family'
 // type KeySettings = string
 
 type CommonSettings = {
-  type: ZoneType
   color: string
   // keyOverrides: { [key: string]: KeySettings }
 }
 
 type CommonOutputSettings = { channel: number }
 
-type CommonLivePlaySettings = CommonSettings &
+export type CommonLivePlaySettings = CommonSettings &
   CommonOutputSettings & {
     octave: number
     velocity: number

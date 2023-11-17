@@ -1,6 +1,6 @@
 import { useStore } from '../store'
 import { Box, Stack } from '@mui/joy'
-import { ZoneSettingsPanel } from './ZoneSettings'
+import { ZoneSettingsPanel } from './zone-settings/ZoneSettings'
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 export const SideNav = () => {

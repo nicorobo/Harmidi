@@ -1,7 +1,7 @@
 export type MusicalScale = { root: ScaleRoot; type: ScaleType }
 export type MusicalKey = { root: ScaleRoot; type: 'major' | 'minor' }
 
-type ScaleRoot =
+export type ScaleRoot =
   | 'Ab'
   | 'A'
   | 'A#'

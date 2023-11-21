@@ -37,7 +37,7 @@ const ChannelInput = ({
         onChange={(_, value) => isNumber(value) && onChange(value)}
       >
         {channels.map((channel) => (
-          <Option value={channel}>{channel + 1}</Option>
+          <Option value={channel}>{channel}</Option>
         ))}
       </Select>
     </Stack>
@@ -310,16 +310,14 @@ export const SharedSettings = ({
   return (
     <Stack spacing={2}>
       <Stack direction="row" spacing={4}>
-        <Stack>
-          <ChannelInput
-            channel={settings.channel}
-            onChange={(channel) => onUpdate({ channel })}
-          />
-          <OcatveInput
-            octaveOffset={settings.octave}
-            onChange={(octave) => onUpdate({ octave })}
-          />
-        </Stack>
+        <ChannelInput
+          channel={settings.channel}
+          onChange={(channel) => onUpdate({ channel })}
+        />
+        <OcatveInput
+          octaveOffset={settings.octave}
+          onChange={(octave) => onUpdate({ octave })}
+        />
       </Stack>
       <Stack direction="row" spacing={4}>
         <VelocityInput

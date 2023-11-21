@@ -21,7 +21,6 @@ export const useActionsByKey = (): KeyActions => {
   const { keyGrid } = useStore((state) => state.keyboardConfig)
   const keyCoordinates = getKeyCoordinates(keyGrid)
   const keysByZone = invertBy(zoneByKey)
-  console.log(keysByZone)
   const getActionsByZone = useNoteActions()
 
   const actions: KeyActions = {}
@@ -29,7 +28,8 @@ export const useActionsByKey = (): KeyActions => {
     // TODO depending on whether a zone is ordered from top/bottom, left/right, right/left or bottom/top, we can change this sort function.
     const keys = sortBy(
       keysByZone[Number(zone)],
-      (key) => keyCoordinates[key].y
+      (key) => keyCoordinates[key].y,
+      (key) => keyCoordinates[key].x
     )
     Object.assign(actions, getActionsByZone(keys, settings[Number(zone)]))
   }

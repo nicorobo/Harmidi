@@ -23,14 +23,12 @@ export const NoteSettings = ({
     <Stack spacing={2}>
       <SharedSettings settings={settings} onUpdate={onUpdate} />
       <RootNoteInput
-        value={settings.scale.root}
-        onChange={(root) => onUpdate({ scale: { ...settings.scale, root } })}
+        value={settings.root}
+        onChange={(root) => onUpdate({ root })}
       />
       <ScaleInput
-        value={settings.scale.type}
-        onChange={(scale) =>
-          onUpdate({ scale: { ...settings.scale, type: scale } })
-        }
+        value={settings.scaleType}
+        onChange={(scaleType) => onUpdate({ scaleType })}
       />
       <TranslateInput
         value={settings.translate}

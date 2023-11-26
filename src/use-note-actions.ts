@@ -1,17 +1,7 @@
 import { useMIDIOutput } from '@react-midi/hooks'
 import { KeyActions } from './use-actions-by-key'
-import { getChords, getFamilyChords, getNotes } from './note-getters'
+import { getNotes } from './note-getters'
 import { ZoneSettings } from './zone-settings'
-
-export const getNoteFactory = (zoneSettings: ZoneSettings) => {
-  if (zoneSettings.type === 'chord') {
-    return getChords(zoneSettings)
-  } else if (zoneSettings.type === 'chord-family') {
-    return getFamilyChords(zoneSettings)
-  } else {
-    return getNotes(zoneSettings)
-  }
-}
 
 export const useNoteActions = () => {
   const { noteOn, noteOff } = useMIDIOutput()
@@ -21,7 +11,7 @@ export const useNoteActions = () => {
     if (!noteOn || !noteOff) {
       return actions
     }
-    const noteFactory = getNoteFactory(zoneSettings)
+    const noteFactory = getNotes(zoneSettings)
     const noteSettings = {
       velocity: zoneSettings.velocity,
       channel: zoneSettings.channel,
@@ -37,6 +27,7 @@ export const useNoteActions = () => {
           // console.log(performance.measure('off', 'keyup'))
           noteOff(notes, noteSettings)
         },
+        // TODO consider putting the stringified notes here, or chord names etc.. other metadata
       }
     }
     return actions

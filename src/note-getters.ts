@@ -1,10 +1,6 @@
 import { Chord, Key, Midi, Scale } from 'tonal'
 import { notEmpty } from './util'
-import {
-  NoteZoneSettings,
-  ChordFamilyZoneSettings,
-  ChordZoneSettings,
-} from './zone-settings'
+import { NoteZoneSettings } from './zone-settings'
 
 // TODO We can also return the actual chord/note objects to power our UI
 export const getChords = ({ family, octave, translate }: ChordZoneSettings) => {
@@ -38,6 +34,22 @@ export const getFamilyChords = ({ key, octave }: ChordFamilyZoneSettings) => {
 }
 
 // TODO We can also return the actual chord/note objects to power our UI
+export const getNotesOld = ({
+  root,
+  scaleType,
+  octave,
+  translate,
+}: NoteZoneSettings) => {
+  const scaleName = `${root}${octave + 3} ${scaleType}`
+  const scaleDegrees = Scale.steps(scaleName)
+  return (i: number) => {
+    const note = Midi.toMidi(scaleDegrees(i + translate))
+    if (!note) {
+      throw new Error('Null MIDI note coming from getNotes()')
+    }
+    return note
+  }
+}
 export const getNotes = ({ scale, octave, translate }: NoteZoneSettings) => {
   const scaleName = `${scale.root}${octave + 3} ${scale.type}`
   const scaleDegrees = Scale.steps(scaleName)

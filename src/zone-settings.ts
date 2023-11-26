@@ -49,7 +49,7 @@ export type NoteZoneSettings = CommonSettings & {
   hold: boolean
   translate: number
   muteZones: number[]
-  voices: { semitones: number; velocity: number; on: boolean }[]
+  voices: { offset: number; velocity: number; on: boolean }[]
   root: ScaleRoot
   quantize: boolean
   scaleType: ScaleType

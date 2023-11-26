@@ -7,6 +7,16 @@ import {
   TranslateInput,
 } from './SharedSettings'
 import { useStore } from '../../store'
+import { VoicesInput } from './VoicesInput'
+import '../VoicesStyle.css'
+
+const labels = [
+  { value: -24, label: '-24st' },
+  { value: -12, label: '-12st' },
+  { value: 0, label: '0st' },
+  { value: 12, label: '12st' },
+  { value: 24, label: '24st' },
+]
 
 export const NoteSettings = ({
   settings,
@@ -22,6 +32,15 @@ export const NoteSettings = ({
   return (
     <Stack spacing={2}>
       <SharedSettings settings={settings} onUpdate={onUpdate} />
+      <VoicesInput
+        voices={settings.voices}
+        min={-24}
+        max={24}
+        step={1}
+        maxVoices={6}
+        labels={labels}
+        onChange={(voices) => onUpdate({ voices })}
+      />
       <RootNoteInput
         value={settings.root}
         onChange={(root) => onUpdate({ root })}

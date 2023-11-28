@@ -27,13 +27,19 @@ export const useActionsByKey = (): KeyActions => {
 
   const actions: KeyActions = {}
   for (const zone in keysByZone) {
+    const zoneSettings = settings[Number(zone)]
+    const { leftToRight, topToBottom, reverse } = zoneSettings.orientation
     // TODO depending on whether a zone is ordered from top/bottom, left/right, right/left or bottom/top, we can change this sort function.
+    const sortVertical = (key: string) =>
+      topToBottom ? keyCoordinates[key].y : -keyCoordinates[key].y
+    const sortHorizontal = (key: string) =>
+      leftToRight ? keyCoordinates[key].x : -keyCoordinates[key].x
     const keys = sortBy(
       keysByZone[Number(zone)],
-      (key) => keyCoordinates[key].y,
-      (key) => keyCoordinates[key].x
+      (key) => (reverse ? sortHorizontal(key) : sortVertical(key)),
+      (key) => (reverse ? sortVertical(key) : sortHorizontal(key))
     )
-    Object.assign(actions, getActionsByZone(keys, settings[Number(zone)]))
+    Object.assign(actions, getActionsByZone(keys, zoneSettings))
   }
   return actions
 }

@@ -11,7 +11,13 @@ import {
   ToggleButtonGroup,
 } from '@mui/joy'
 import { InputLabel } from './InputLabel'
-import { ArrowLeft, ChevronLeft, ChevronRight } from '@mui/icons-material'
+import {
+  ChevronLeft,
+  ChevronRight,
+  ExpandLess,
+  ExpandMore,
+  Refresh,
+} from '@mui/icons-material'
 import isNumber from 'lodash/isNumber'
 import { useRef, useState } from 'react'
 import { useStore } from '../../store'
@@ -21,6 +27,7 @@ import { Chord, ChordType, Interval } from 'tonal'
 import { ScaleRoot, ScaleType } from '../../types/scale'
 import { Voice } from './VoicesInput'
 import { notEmpty } from '../../util'
+import { OrientationSettings } from '../../zone-settings'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
 export const ChannelInput = ({
@@ -299,30 +306,41 @@ export const TranslateInput = ({
   )
 }
 
-// export const OrientationInput = ({
-//   ori,
-//   onChange,
-// }: {
-//   value: OrientationType
-//   onChange: (orientation: OrientationType) => void
-// }) => {
-//   return (
-//     <Stack>
-//       <InputLabel title="Orientation" />
-//       <ButtonGroup>
-//         <IconButton>
-//           <ArrowLeft />
-//         </IconButton>
-//         <IconButton>
-//           <ArrowLeft />
-//         </IconButton>
-//         <IconButton>
-//           <ArrowLeft />
-//         </IconButton>
-//       </ButtonGroup>
-//     </Stack>
-//   )
-// }
+export const OrientationInput = ({
+  value,
+  onChange,
+}: {
+  value: OrientationSettings
+  onChange: (orientation: OrientationSettings) => void
+}) => {
+  const toggleLeftToRight = () =>
+    onChange({ ...value, leftToRight: !value.leftToRight })
+  const toggleTopToBottom = () =>
+    onChange({ ...value, topToBottom: !value.topToBottom })
+  const toggleReverse = () => onChange({ ...value, reverse: !value.reverse })
+  const orientationButtons = [
+    <IconButton onClick={toggleLeftToRight}>
+      {value.leftToRight ? <ChevronRight /> : <ChevronLeft />}
+    </IconButton>,
+    <IconButton onClick={toggleTopToBottom}>
+      {value.topToBottom ? <ExpandMore /> : <ExpandLess />}
+    </IconButton>,
+  ]
+  if (value.reverse) {
+    orientationButtons.reverse()
+  }
+  return (
+    <Stack>
+      <InputLabel title="Orientation" />
+      <ButtonGroup>
+        {...orientationButtons}
+        <IconButton onClick={toggleReverse}>
+          <Refresh />
+        </IconButton>
+      </ButtonGroup>
+    </Stack>
+  )
+}
 
 const chordTypes = ChordType.all().map(({ name, aliases }) => ({
   name,

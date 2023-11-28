@@ -6,6 +6,7 @@ import {
   HoldToggleInput,
   MuteZoneInput,
   OcatveInput,
+  OrientationInput,
   QuantizeInput,
   RootNoteInput,
   ScaleInput,
@@ -37,6 +38,10 @@ export const NoteSettings = ({
   return (
     <Stack spacing={4}>
       <Stack spacing={2}>
+        <OrientationInput
+          value={settings.orientation}
+          onChange={(orientation) => onUpdate({ orientation })}
+        />
         <Stack direction="row" justifyContent={'space-between'}>
           <ChannelInput
             channel={settings.channel}

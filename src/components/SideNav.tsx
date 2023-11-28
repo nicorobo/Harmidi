@@ -23,7 +23,7 @@ export const SideNav = () => {
               ':hover': {
                 background: selectedZone === i ? '#ccc' : '#eee',
               },
-              background: selectedZone === i ? 'lightblue' : 'white',
+              background: selectedZone === i ? '#d9d8ff' : 'white',
             }}
           >
             {alphabet[i]}

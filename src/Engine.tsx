@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useActionsByKey } from './use-actions-by-key'
 import { Settings, useStore, ZoneByKey } from './store'
+import { noop } from 'lodash'
 
 type GetPlayingKeysArgs = {
   activeKeys: string[]
@@ -47,7 +48,8 @@ const getPlayingKeys = ({
 export const EngineContext = React.createContext<{
   activeKeys: string[]
   setActiveKeys: (keys: string[]) => void
-}>({ activeKeys: [], setActiveKeys: () => {} })
+  getNotesByKey: (key: string) => number[]
+}>({ activeKeys: [], setActiveKeys: noop, getNotesByKey: () => [] })
 
 const compareArrays = (a1: string[] = [], a2: string[] = []) => ({
   added: a2.filter((key) => !a1.includes(key)),
@@ -81,8 +83,17 @@ export const EngineProvider = ({ children }: Props) => {
     setActiveKeysState(keys)
   }
 
+  const getNotesByKey = (key: string) => {
+    if (actionsByKey[key]) {
+      return actionsByKey[key]?.notes
+    }
+    return []
+  }
+
   return (
-    <EngineContext.Provider value={{ activeKeys, setActiveKeys }}>
+    <EngineContext.Provider
+      value={{ activeKeys, setActiveKeys, getNotesByKey }}
+    >
       {children}
     </EngineContext.Provider>
   )

@@ -14,7 +14,9 @@ const getKeyCoordinates = (grid: string[][]) => {
 }
 
 // TODO reconsider this; we don't have to have this have the idea of keys built in, it could just be numbers and then the consumer handles the key part.
-export type KeyActions = { [key: string]: { on: () => void; off: () => void } }
+export type KeyActions = {
+  [key: string]: { on: () => void; off: () => void; notes: number[] }
+}
 export const useActionsByKey = (): KeyActions => {
   const settings = useStore((state) => state.settings)
   const zoneByKey = useStore((state) => state.zoneByKey)

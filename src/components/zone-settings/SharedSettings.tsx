@@ -11,7 +11,7 @@ import {
   ToggleButtonGroup,
 } from '@mui/joy'
 import { InputLabel } from './InputLabel'
-import { ChevronLeft, ChevronRight } from '@mui/icons-material'
+import { ArrowLeft, ChevronLeft, ChevronRight } from '@mui/icons-material'
 import isNumber from 'lodash/isNumber'
 import { useRef, useState } from 'react'
 import { useStore } from '../../store'
@@ -298,6 +298,31 @@ export const TranslateInput = ({
     </Stack>
   )
 }
+
+// export const OrientationInput = ({
+//   ori,
+//   onChange,
+// }: {
+//   value: OrientationType
+//   onChange: (orientation: OrientationType) => void
+// }) => {
+//   return (
+//     <Stack>
+//       <InputLabel title="Orientation" />
+//       <ButtonGroup>
+//         <IconButton>
+//           <ArrowLeft />
+//         </IconButton>
+//         <IconButton>
+//           <ArrowLeft />
+//         </IconButton>
+//         <IconButton>
+//           <ArrowLeft />
+//         </IconButton>
+//       </ButtonGroup>
+//     </Stack>
+//   )
+// }
 
 const chordTypes = ChordType.all().map(({ name, aliases }) => ({
   name,

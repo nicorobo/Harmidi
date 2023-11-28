@@ -4,9 +4,11 @@ import { useStore } from '../store'
 const activeColor = '#d9d8ff'
 export const Cell = ({
   cell,
+  title,
   isActive,
 }: {
   cell: string
+  title: string
   isActive: boolean
 }) => {
   const setKeyZone = useStore((state) => state.updateKeyZone)
@@ -31,9 +33,11 @@ export const Cell = ({
       display={'flex'}
       flexDirection={'column-reverse'}
       overflow={'clip'}
+      color={'#333'}
+      fontSize={'0.6rem'}
       onClick={handleClick}
     >
-      {'ABCDEFG'[zone]}
+      {title}
     </Box>
   )
 }

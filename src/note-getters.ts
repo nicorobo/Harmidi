@@ -58,8 +58,11 @@ export const getNotes = ({
   octave,
   translate,
 }: NoteZoneSettings) => {
-  const scaleName = `${root}${octave + 3} ${scaleType}`
+  const scaleName = `${root}${octave + 3} ${
+    quantize.root ? scaleType : 'chromatic'
+  }`
   const scaleDegrees = Scale.steps(scaleName)
+  const toScale = Midi.pcsetNearest(Scale.get(`${root} ${scaleType}`).chroma)
 
   // 1. Find the root (take scale quantization into account)
   // 2. Map voices to notes
@@ -73,7 +76,14 @@ export const getNotes = ({
         Note.transpose(centerNote, Interval.fromSemitones(offset))
       )
     // TODO Here we'll quantize them again
-    const midiNotes = voices.map((note) => Midi.toMidi(note)).filter(notEmpty)
+    const midiNotes = voices
+      .map((note) => {
+        const midiNote = Midi.toMidi(note)
+        return quantize.voices && midiNote !== null
+          ? toScale(midiNote)
+          : midiNote
+      })
+      .filter(notEmpty)
     return midiNotes
   }
 }

@@ -13,7 +13,12 @@ function App() {
         <CssBaseline />
         <Stack direction={'row'}>
           <SideNav />
-          <Box display="flex" justifyContent={'center'} alignItems={'center'}>
+          <Box
+            display="flex"
+            justifyContent={'center'}
+            alignItems={'center'}
+            width={'100%'}
+          >
             <Grid />
           </Box>
         </Stack>

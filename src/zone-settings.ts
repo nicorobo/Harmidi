@@ -13,6 +13,11 @@ type CommonSettings = {
 }
 
 type QuantizeSettings = { root: boolean; voices: boolean }
+type OrientationSettings = {
+  leftToRight: boolean
+  topToBottom: boolean
+  reverse: boolean
+}
 
 export type NoteZoneSettings = CommonSettings & {
   channel: number
@@ -26,6 +31,7 @@ export type NoteZoneSettings = CommonSettings & {
   scaleType: ScaleType
   customScale: number[]
   quantize: QuantizeSettings
+  orientation: OrientationSettings
 }
 
 export type ZoneSettings = NoteZoneSettings
@@ -43,6 +49,7 @@ const defaultSettings = {
   quantize: { root: false, voices: false },
   scaleType: 'minor' as ScaleType,
   customScale: [],
+  orientation: { leftToRight: true, topToBottom: true, reverse: false },
 }
 
 export const getDefaultNoteSettings = (

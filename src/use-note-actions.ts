@@ -27,6 +27,7 @@ export const useNoteActions = () => {
           // console.log(performance.measure('off', 'keyup'))
           noteOff(notes, noteSettings)
         },
+        notes,
         // TODO consider putting the stringified notes here, or chord names etc.. other metadata
       }
     }

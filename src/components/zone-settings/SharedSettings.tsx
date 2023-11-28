@@ -1,6 +1,7 @@
 import {
   Button,
   ButtonGroup,
+  Checkbox,
   IconButton,
   Option,
   Select,
@@ -9,19 +10,20 @@ import {
   Switch,
   ToggleButtonGroup,
 } from '@mui/joy'
-import { CommonLivePlaySettings, ZoneSettings } from '../../zone-settings'
 import { InputLabel } from './InputLabel'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import isNumber from 'lodash/isNumber'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useStore } from '../../store'
 import { toNumber } from 'lodash'
 import { availableScales } from '../../constants'
-import { ChordType } from 'tonal'
+import { Chord, ChordType, Interval } from 'tonal'
 import { ScaleRoot, ScaleType } from '../../types/scale'
+import { Voice } from './VoicesInput'
+import { notEmpty } from '../../util'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
-const ChannelInput = ({
+export const ChannelInput = ({
   channel,
   onChange,
 }: {
@@ -37,14 +39,14 @@ const ChannelInput = ({
         onChange={(_, value) => isNumber(value) && onChange(value)}
       >
         {channels.map((channel) => (
-          <Option value={channel}>{channel}</Option>
+          <Option value={channel}>{channel + 1}</Option>
         ))}
       </Select>
     </Stack>
   )
 }
 
-const StepperInput = ({
+export const StepperInput = ({
   value,
   min,
   max,
@@ -73,7 +75,7 @@ const StepperInput = ({
   )
 }
 
-const OcatveInput = ({
+export const OcatveInput = ({
   octaveOffset,
   onChange,
 }: {
@@ -94,7 +96,7 @@ const OcatveInput = ({
   )
 }
 
-const VelocityInput = ({
+export const VelocityInput = ({
   velocity,
   onChange,
 }: {
@@ -118,7 +120,7 @@ const VelocityInput = ({
   )
 }
 
-const MuteZoneInput = ({
+export const MuteZoneInput = ({
   muteZones,
   onChange,
 }: {
@@ -147,7 +149,7 @@ const MuteZoneInput = ({
   )
 }
 
-const HoldToggleInput = ({
+export const HoldToggleInput = ({
   value,
   onChange,
 }: {
@@ -189,7 +191,7 @@ export const RootNoteInput = ({
   onChange: (note: ScaleRoot) => void
 }) => {
   return (
-    <Stack>
+    <Stack flexGrow={1}>
       <InputLabel title="Root" />
       <Select
         size="sm"
@@ -234,7 +236,7 @@ export const ScaleInput = ({
   onChange: (type: ScaleType) => void
 }) => {
   return (
-    <Stack>
+    <Stack flexGrow={1}>
       <InputLabel title="Scale" />
       <Select
         size="sm"
@@ -245,6 +247,33 @@ export const ScaleInput = ({
           <Option value={scale}>{scale}</Option>
         ))}
       </Select>
+    </Stack>
+  )
+}
+
+type QuantizeSettings = { root: boolean; voices: boolean }
+export const QuantizeInput = ({
+  quantize,
+  onChange,
+}: {
+  quantize: QuantizeSettings
+  onChange: (value: QuantizeSettings) => void
+}) => {
+  return (
+    <Stack>
+      <InputLabel title="Quantize" />
+      <Stack direction={'row'} spacing={2}>
+        <Checkbox
+          label="Root"
+          checked={quantize.root}
+          onChange={(e) => onChange({ ...quantize, root: e.target.checked })}
+        />
+        <Checkbox
+          label="Voices"
+          checked={quantize.voices}
+          onChange={(e) => onChange({ ...quantize, voices: e.target.checked })}
+        />
+      </Stack>
     </Stack>
   )
 }
@@ -275,63 +304,66 @@ const chordTypes = ChordType.all().map(({ name, aliases }) => ({
   value: aliases[0],
 }))
 
+// const Reset
+
 export const ChordInput = ({
-  value,
   onChange,
 }: {
-  value: string
-  onChange: (chordType: string) => void
+  onChange: (voices: Voice[]) => void
 }) => {
+  const [chord, setChord] = useState<string | null>(null)
+  const updateVoices = (cho = chord) => {
+    console.log('updating voices with chord: ', cho)
+    const offsets = cho
+      ? Chord.getChord(cho)
+          .intervals.map((interval) => Interval.semitones(interval))
+          .filter(notEmpty)
+      : [0]
+    const voices = offsets.map((offset) => ({
+      offset,
+      velocity: 100,
+      on: true,
+    }))
+    onChange(voices)
+  }
+  const onChordSelected = (value: string | null) => {
+    setChord(value)
+    updateVoices(value)
+  }
   return (
     <Stack>
       <InputLabel title="Chord" />
-      <Select
-        size="sm"
-        value={value}
-        onChange={(_, val) => onChange(val as string)}
-      >
-        {chordTypes.map(({ name, value }) => (
-          <Option key={value} value={value}>
-            {value} {name && `(${name})`}
-          </Option>
-        ))}
-      </Select>
-    </Stack>
-  )
-}
 
-export const SharedSettings = ({
-  settings,
-  onUpdate,
-}: {
-  settings: ZoneSettings
-  onUpdate: (settings: Partial<CommonLivePlaySettings>) => void
-}) => {
-  return (
-    <Stack spacing={2}>
-      <Stack direction="row" spacing={4}>
-        <ChannelInput
-          channel={settings.channel}
-          onChange={(channel) => onUpdate({ channel })}
-        />
-        <OcatveInput
-          octaveOffset={settings.octave}
-          onChange={(octave) => onUpdate({ octave })}
-        />
-      </Stack>
-      <Stack direction="row" spacing={4}>
-        <VelocityInput
-          velocity={settings.velocity}
-          onChange={(velocity) => onUpdate({ velocity })}
-        />
-        <MuteZoneInput
-          muteZones={settings.muteZones}
-          onChange={(muteZones) => onUpdate({ muteZones })}
-        />
-        <HoldToggleInput
-          value={settings.hold}
-          onChange={(hold) => onUpdate({ hold })}
-        />
+      <Stack direction="row">
+        <Select
+          size="sm"
+          value={chord}
+          sx={{
+            flexGrow: 1,
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+          }}
+          onChange={(_, value) => onChordSelected(value)}
+        >
+          {chordTypes.map(({ name, value }) => (
+            <Option key={value} value={value}>
+              {value} {name && `(${name})`}
+            </Option>
+          ))}
+        </Select>
+        <ButtonGroup>
+          <Button
+            sx={{
+              borderTopLeftRadius: 0,
+              borderBottomLeftRadius: 0,
+              borderLeft: 0,
+            }}
+            onClick={() => updateVoices()}
+          >
+            Reset
+          </Button>
+          <Button onClick={() => updateVoices(null)}>Single</Button>
+        </ButtonGroup>
       </Stack>
     </Stack>
   )

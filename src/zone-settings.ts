@@ -1,4 +1,4 @@
-import { MusicalKey, MusicalScale, ScaleRoot, ScaleType } from './types/scale'
+import { ScaleRoot, ScaleType } from './types/scale'
 
 export type ZoneType = 'note' | 'chord' | 'chord-family'
 // | 'operator' | 'sequencer'
@@ -12,36 +12,8 @@ type CommonSettings = {
   // keyOverrides: { [key: string]: KeySettings }
 }
 
-// type CommonOutputSettings = { channel: number }
+type QuantizeSettings = { root: boolean; voices: boolean }
 
-// export type CommonLivePlaySettings = CommonSettings &
-//   CommonOutputSettings & {
-//     octave: number
-//     velocity: number
-//     hold: boolean
-//     muteZones: number[]
-//   }
-
-// export type NoteZoneSettings = CommonLivePlaySettings & {
-//   type: 'note'
-//   scale: MusicalScale
-//   translate: number
-// }
-
-// type CommonChordZoneSettings = CommonLivePlaySettings & {
-//   voicing?: string
-// }
-
-// export type ChordZoneSettings = CommonChordZoneSettings & {
-//   type: 'chord'
-//   family: string
-//   translate: number
-// }
-
-// export type ChordFamilyZoneSettings = CommonChordZoneSettings & {
-//   type: 'chord-family'
-//   key: MusicalKey
-// }
 export type NoteZoneSettings = CommonSettings & {
   channel: number
   octave: number
@@ -51,9 +23,9 @@ export type NoteZoneSettings = CommonSettings & {
   muteZones: number[]
   voices: { offset: number; velocity: number; on: boolean }[]
   root: ScaleRoot
-  quantize: boolean
   scaleType: ScaleType
   customScale: number[]
+  quantize: QuantizeSettings
 }
 
 export type ZoneSettings = NoteZoneSettings
@@ -66,30 +38,12 @@ const defaultSettings = {
   hold: false,
   translate: 0,
   muteZones: [],
-  voices: [],
+  voices: [{ offset: 0, velocity: 100, on: true }],
   root: 'C' as ScaleRoot,
-  quantize: false,
+  quantize: { root: false, voices: false },
   scaleType: 'minor' as ScaleType,
   customScale: [],
 }
-
-// export const getDefaultChordFamilySettings = (
-//   overrides?: Partial<NoteZoneSettings>
-// ): NoteZoneSettings => ({
-//   ...defaultSettings,
-//   ...overrides,
-// })
-
-// export const getDefaultChordSettings = (
-//   overrides?: Partial<ChordZoneSettings>
-// ): ChordZoneSettings => ({
-//   type: 'chord',
-//   family: 'm7',
-//   translate: 0,
-//   color: '#363062',
-//   ...defaultSettings,
-//   ...overrides,
-// })
 
 export const getDefaultNoteSettings = (
   overrides?: Partial<NoteZoneSettings>
@@ -97,21 +51,3 @@ export const getDefaultNoteSettings = (
   ...defaultSettings,
   ...overrides,
 })
-
-// export const switchZoneType = (type: ZoneType, settings: ZoneSettings) => {
-//   const { channel, velocity, octave, muteZones } = settings
-//   const override = {
-//     channel,
-//     velocity,
-//     octave,
-//     muteZones,
-//   }
-//   switch (type) {
-//     case 'note':
-//       return getDefaultNoteSettings(override)
-//     case 'chord':
-//       return getDefaultChordSettings(override)
-//     case 'chord-family':
-//       return getDefaultChordFamilySettings(override)
-//   }
-// }

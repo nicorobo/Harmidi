@@ -1,17 +1,21 @@
+import { Box, Tooltip } from '@mui/joy'
+import { noop } from 'lodash'
 import { useState, useRef } from 'react'
 
+// TODO This whole file needs some TLC
 // TODO make this all more general/reusable later
-// Depending on range and rail's width we can change how many markers we make.
 // TODO show value (should be a callback)
-type Voice = { offset: number; velocity: number; on: boolean }
+export type Voice = { offset: number; velocity: number; on: boolean }
 type VoicesInputProps = {
   voices: Voice[]
   maxVoices: number
   min: number // min semitone offset
   max: number // max semitone offset
-  step: number
   onChange: (voices: Voice[]) => void
   labels: { value: number; label: string }[]
+  // getValue
+  // getColor
+  // getDefaultPoint
 }
 
 export const VoicesInput = ({
@@ -38,7 +42,6 @@ export const VoicesInput = ({
     const distance = e.clientX - initialX
     const segCount = distance / oneSeg
     const newOffsetRaw = voices[i].offset + segCount
-    // TODO instead of Math.round(), use step prop
     const newOffset = Math.round(Math.max(min, Math.min(max, newOffsetRaw)))
     if (newOffset !== dragValue && !occupiedOffsets.includes(newOffset)) {
       setDragValue(newOffset)
@@ -80,44 +83,49 @@ export const VoicesInput = ({
     }
   }
   return (
-    <span className="slider">
-      <span
+    <Box sx={sliderStyle}>
+      <Box
         ref={trackRef}
-        className="track"
+        sx={trackStyle}
         style={{ cursor: canAddPoint ? 'pointer' : 'inherit' }}
-        onPointerMove={canAddPoint ? onMouseMoveTrack : () => {}}
-        onPointerLeave={canAddPoint ? onMouseOutTrack : () => {}}
-        onPointerDown={canAddPoint ? onMouseDown : () => {}}
+        onPointerMove={canAddPoint ? onMouseMoveTrack : noop}
+        onPointerLeave={canAddPoint ? onMouseOutTrack : noop}
+        onPointerDown={canAddPoint ? onMouseDown : noop}
       >
         {ghostPoint !== null && (
-          <span
-            className="point ghost-point"
-            style={{ left: `${valueToPercentage(ghostPoint) * 100}%` }}
+          <Box
+            sx={ghostPointStyle}
+            left={`${valueToPercentage(ghostPoint) * 100}%`}
           />
         )}
         {voices.map((voice, i) => {
-          const per = valueToPercentage(
-            dragging === i ? dragValue : voice.offset
-          )
+          const isDragging = dragging === i
+          const per = valueToPercentage(isDragging ? dragValue : voice.offset)
           return (
-            <span
-              className="point"
-              key={'point' + i}
-              onPointerDown={(e) => onPointMouseDown(e, i)}
-              onPointerUp={
-                dragging === i ? (e) => onPointMouseUp(e, i) : () => {}
-              }
-              onPointerMove={
-                dragging === i ? (e) => onPointMouseMove(e, i) : () => {}
-              }
-              onDoubleClick={() =>
-                onChange(voices.filter((_, ind) => i !== ind))
-              }
-              style={{ left: `${per * 100}%` }}
-            />
+            <Tooltip
+              title={dragging === i ? dragValue : voice.offset}
+              placement="top"
+              arrow
+            >
+              <Box
+                sx={pointStyle}
+                key={'point' + i}
+                onPointerDown={(e) => onPointMouseDown(e, i)}
+                onPointerUp={isDragging ? (e) => onPointMouseUp(e, i) : noop}
+                onPointerMove={
+                  isDragging ? (e) => onPointMouseMove(e, i) : noop
+                }
+                onDoubleClick={
+                  voices.length > 1
+                    ? () => onChange(voices.filter((_, j) => i !== j))
+                    : noop
+                }
+                style={{ left: `${per * 100}%` }}
+              />
+            </Tooltip>
           )
         })}
-      </span>
+      </Box>
       {/* {Array(range - 1)
         .fill(0)
         .map((_, i) => {
@@ -130,16 +138,81 @@ export const VoicesInput = ({
           );
         })} */}
       {labels.map(({ value, label }) => {
-        const per = valueToPercentage(value) * 100
+        const leftPercentage = valueToPercentage(value) * 100
         return (
           <>
-            <span className="mark" style={{ left: `${per}%` }} />
-            <span className="label" style={{ left: `${per}%` }}>
+            <Box sx={markStyle} left={`${leftPercentage}%`} />
+            <Box sx={labelStyle} left={`${leftPercentage}%`}>
               {label}
-            </span>
+            </Box>
           </>
         )
       })}
-    </span>
+    </Box>
   )
+}
+
+const sliderStyle = {
+  width: '100%',
+  position: 'relative',
+  display: 'flex',
+}
+const trackStyle = {
+  height: '6px',
+  width: '100%',
+  background: 'rgb(207, 207, 207)',
+  borderRadius: '65px',
+  display: 'inline-block',
+  before: {
+    position: 'absolute',
+    background: 'rgb(207, 207, 207)',
+    height: '6px',
+    width: '6px',
+    borderRadius: '50% 0 0 50%',
+    left: '-3px',
+  },
+  after: {
+    position: 'absolute',
+    background: 'rgb(207, 207, 207)',
+    height: '6px',
+    width: '6px',
+    borderRadius: '0 50% 50% 0',
+    right: '-3px',
+  },
+}
+
+const pointStyle = {
+  height: '13px',
+  width: '13px',
+  top: '50%',
+  position: 'absolute',
+  backgroundColor: '#ae67ff',
+  display: 'flex',
+  borderRadius: '50%',
+  transform: 'translate(-50%, -50%)',
+  cursor: 'pointer',
+  zIndex: '10',
+}
+
+const ghostPointStyle = {
+  ...pointStyle,
+  opacity: '0.5',
+  pointerEvents: 'none',
+}
+const markStyle = {
+  height: '2px',
+  width: '2px',
+  top: '50%',
+  position: 'absolute',
+  backgroundColor: 'rgb(255, 255, 255)',
+  display: 'flex',
+  borderRadius: '50%',
+  transform: 'translate(-50%, -50%)',
+  pointerEvents: 'none',
+}
+const labelStyle = {
+  position: 'absolute',
+  color: '#ae67ff',
+  fontSize: '0.7rem',
+  transform: 'translate(-50%, 0.5rem)',
 }

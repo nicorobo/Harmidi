@@ -1,36 +1,46 @@
 import { useStore } from '../store'
-import { Box, Stack } from '@mui/joy'
+import { Box, List, ListItem, ListItemButton } from '@mui/joy'
 import { ZoneSettingsPanel } from './zone-settings/ZoneSettings'
+import { KeyMappingPanel } from './KeyMappingPanel'
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 export const SideNav = () => {
   const selectedZone = useStore((state) => state.selectedZone)
   const setSelectedZone = useStore((state) => state.setSelectedZone)
   const zones = useStore((state) => state.settings)
+  const isKeyMapping = useStore((state) => state.isKeyMapping)
+  const setIsKeyMapping = useStore((state) => state.setIsKeyMapping)
+
+  const zoneSelected = (i: number) => {
+    setIsKeyMapping(false)
+    setSelectedZone(selectedZone === i ? null : i)
+  }
   return (
     <Box display="flex">
-      <Stack>
+      <List>
         {zones.map((_, i) => (
-          <Box
-            display="flex"
-            justifyContent={'center'}
-            alignItems={'center'}
-            height="2.5rem"
-            width="2.5rem"
-            onClick={() => setSelectedZone(selectedZone === i ? null : i)}
-            sx={{
-              cursor: 'pointer',
-              ':hover': {
-                background: selectedZone === i ? '#ccc' : '#eee',
-              },
-              background: selectedZone === i ? '#d9d8ff' : 'white',
-            }}
-          >
-            {alphabet[i]}
-          </Box>
+          <ListItem>
+            <ListItemButton
+              selected={selectedZone === i}
+              onClick={() => zoneSelected(i)}
+            >
+              {alphabet[i]}
+            </ListItemButton>
+          </ListItem>
         ))}
-      </Stack>
-      {selectedZone !== null && (
+        <ListItem>
+          <ListItemButton onClick={() => setIsKeyMapping(true)}>
+            KM
+          </ListItemButton>
+        </ListItem>
+      </List>
+      {isKeyMapping && (
+        <KeyMappingPanel
+          selectedZone={selectedZone}
+          setSelectedZone={setSelectedZone}
+        />
+      )}
+      {selectedZone !== null && !isKeyMapping && (
         <ZoneSettingsPanel
           zoneIndex={selectedZone}
           settings={zones[selectedZone]}

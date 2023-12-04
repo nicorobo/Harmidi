@@ -13,7 +13,7 @@ type CommonSettings = {
 }
 
 type QuantizeSettings = { root: boolean; voices: boolean }
-type OrientationSettings = {
+export type OrientationSettings = {
   leftToRight: boolean
   topToBottom: boolean
   reverse: boolean

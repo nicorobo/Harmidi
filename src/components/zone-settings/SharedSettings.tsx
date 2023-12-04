@@ -16,7 +16,7 @@ import {
   ChevronRight,
   ExpandLess,
   ExpandMore,
-  Refresh,
+  SwapHoriz,
 } from '@mui/icons-material'
 import isNumber from 'lodash/isNumber'
 import { useRef, useState } from 'react'
@@ -335,7 +335,7 @@ export const OrientationInput = ({
       <ButtonGroup>
         {...orientationButtons}
         <IconButton onClick={toggleReverse}>
-          <Refresh />
+          <SwapHoriz />
         </IconButton>
       </ButtonGroup>
     </Stack>

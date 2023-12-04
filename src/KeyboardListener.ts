@@ -53,11 +53,19 @@ const useKeyboardListener = () => {
   const settings = useStore((state) => state.settings)
   const keydown = useStore((state) => state.keydown)
   const keyup = useStore((state) => state.keyup)
+  const isKeyMapping = useStore((state) => state.isKeyMapping)
+  const selectedZone = useStore((state) => state.selectedZone)
+  const updateKeyZone = useStore((state) => state.updateKeyZone)
+  const keyMapMode = isKeyMapping && selectedZone !== null
 
   const onKeyDown = ({ key, repeat }: KeyboardEvent) => {
     performance.mark('keydown')
     if (!repeat && zoneByKey.hasOwnProperty(key)) {
-      setActiveKeys(addKey({ key, activeKeys, settings, zoneByKey }))
+      if (keyMapMode) {
+        updateKeyZone(key, selectedZone)
+      } else {
+        setActiveKeys(addKey({ key, activeKeys, settings, zoneByKey }))
+      }
       keydown(key)
     }
   }
@@ -65,7 +73,9 @@ const useKeyboardListener = () => {
   const onKeyUp = ({ key }: KeyboardEvent) => {
     performance.mark('keyup')
     if (zoneByKey.hasOwnProperty(key)) {
-      setActiveKeys(removeKey({ key, activeKeys, settings, zoneByKey }))
+      if (!keyMapMode) {
+        setActiveKeys(removeKey({ key, activeKeys, settings, zoneByKey }))
+      }
       keyup(key)
     }
   }

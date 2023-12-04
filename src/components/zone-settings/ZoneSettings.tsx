@@ -11,7 +11,7 @@ export const ZoneSettingsPanel = ({
   settings: ZoneSettingsType
 }) => {
   return (
-    <Sheet>
+    <Sheet sx={{ width: '350px' }}>
       <ZoneSettingsHeader zoneIndex={zoneIndex} />
       <Box sx={{ p: '1rem' }}>
         <NoteSettings zoneIndex={zoneIndex} settings={settings} />

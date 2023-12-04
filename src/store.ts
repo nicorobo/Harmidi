@@ -6,11 +6,12 @@ export type Settings = ZoneSettings[]
 export type ZoneByKey = { [key: string]: number }
 
 // Zones are not associated to rows, but by default the zones are rows.
-const getRowByKey = (keyGrid: string[][]): ZoneByKey => {
+// We can also pass in a zone, which will "fill" the grid.
+const getRowByKey = (keyGrid: string[][], zone?: number): ZoneByKey => {
   const dict: ZoneByKey = {}
   for (let i = 0; i < keyGrid.length; i++) {
     for (let j = 0; j < keyGrid[i].length; j++) {
-      dict[keyGrid[i][j]] = i
+      dict[keyGrid[i][j]] = zone ?? i
     }
   }
   return dict
@@ -28,16 +29,25 @@ interface State {
   updateKeyZone: (key: string, zone: number) => void
   selectedZone: number | null
   setSelectedZone: (zone: number | null) => void
+  isKeyMapping: boolean
+  setIsKeyMapping: (isKeyMapping: boolean) => void
+  fillKeyZone: (zone: number) => void
 }
 
 const useStore = create<State>()((set) => ({
   pressedKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
+  isKeyMapping: false,
   zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid), // Initially, each row is its own zone
   updateKeyZone: (key, zone) =>
     set((state) => ({
       ...state,
       zoneByKey: { ...state.zoneByKey, [key]: zone },
+    })),
+  fillKeyZone: (zone) =>
+    set((state) => ({
+      ...state,
+      zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid, zone),
     })),
   selectedZone: 0,
   setSelectedZone: (zone) =>
@@ -81,6 +91,8 @@ const useStore = create<State>()((set) => ({
       settings: state.settings.with(zone, settings),
     }))
   },
+  setIsKeyMapping: (isKeyMapping) =>
+    set((state) => ({ ...state, isKeyMapping })),
 }))
 
 export { useStore }

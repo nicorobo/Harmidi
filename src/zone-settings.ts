@@ -20,6 +20,7 @@ export type OrientationSettings = {
 }
 
 export type NoteZoneSettings = CommonSettings & {
+  zoneType: 'note'
   channel: number
   octave: number
   velocity: number
@@ -34,9 +35,16 @@ export type NoteZoneSettings = CommonSettings & {
   orientation: OrientationSettings
 }
 
+export type OperatorZoneSettings = CommonSettings & {
+  zoneType: 'operator'
+  channel: number
+  hold: boolean
+}
+
 export type ZoneSettings = NoteZoneSettings
 
-const defaultSettings = {
+const defaultNoteZoneSettings = {
+  zoneType: 'note' as 'note',
   channel: 1,
   color: '#818FB4',
   octave: 0,
@@ -55,6 +63,10 @@ const defaultSettings = {
 export const getDefaultNoteSettings = (
   overrides?: Partial<NoteZoneSettings>
 ): NoteZoneSettings => ({
-  ...defaultSettings,
+  ...defaultNoteZoneSettings,
   ...overrides,
 })
+
+export type OperatorZoneSettings = CommonSettings & {
+  zoneType: 'operator'
+}

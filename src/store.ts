@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 import { ZoneSettings, getDefaultNoteSettings } from './zone-settings'
+import { createSelectors } from './create-selectors'
 
 export type Settings = ZoneSettings[]
 export type ZoneByKey = { [key: string]: number }
@@ -34,27 +35,24 @@ interface State {
   fillKeyZone: (zone: number) => void
 }
 
-const useStore = create<State>()((set) => ({
+const useStoreBase = create<State>()((set) => ({
   pressedKeys: [],
   keyboardConfig: keyboardConfigs.USEnglish,
   isKeyMapping: false,
   zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid), // Initially, each row is its own zone
   updateKeyZone: (key, zone) =>
     set((state) => ({
-      ...state,
       zoneByKey: { ...state.zoneByKey, [key]: zone },
     })),
   fillKeyZone: (zone) =>
-    set((state) => ({
-      ...state,
+    set({
       zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid, zone),
-    })),
+    }),
   selectedZone: 0,
-  setSelectedZone: (zone) =>
-    set((state) => ({
-      ...state,
-      selectedZone: zone,
-    })),
+  setSelectedZone: (selectedZone) =>
+    set({
+      selectedZone,
+    }),
   settings: [
     getDefaultNoteSettings(),
     getDefaultNoteSettings(),
@@ -64,7 +62,6 @@ const useStore = create<State>()((set) => ({
   keydown: (key) =>
     set((state) => {
       return {
-        ...state,
         pressedKeys: [...state.pressedKeys, key],
       }
     }),
@@ -72,7 +69,6 @@ const useStore = create<State>()((set) => ({
   keyup: (key) =>
     set((state) => {
       return {
-        ...state,
         pressedKeys: state.pressedKeys.filter((k) => k !== key),
       }
     }),
@@ -87,12 +83,11 @@ const useStore = create<State>()((set) => ({
   // Consider allowing partial updates here.
   updateZoneSettings: (zone, settings) => {
     set((state) => ({
-      ...state,
       settings: state.settings.with(zone, settings),
     }))
   },
-  setIsKeyMapping: (isKeyMapping) =>
-    set((state) => ({ ...state, isKeyMapping })),
+  setIsKeyMapping: (isKeyMapping) => set({ isKeyMapping }),
 }))
 
+const useStore = createSelectors(useStoreBase)
 export { useStore }

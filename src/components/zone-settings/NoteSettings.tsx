@@ -1,5 +1,5 @@
 import { Stack } from '@mui/joy'
-import { NoteZoneSettings } from '../../zone-settings'
+import { NoteZone } from '../../zone-settings'
 import {
   ChannelInput,
   ChordInput,
@@ -24,56 +24,50 @@ const labels = [
   { value: 24, label: '24st' },
 ]
 
-export const NoteSettings = ({
-  settings,
-  zoneIndex,
-}: {
-  settings: NoteZoneSettings
-  zoneIndex: number
-}) => {
-  const updateZoneSettings = useStore((state) => state.updateZoneSettings)
-  const onUpdate = (update: Partial<NoteZoneSettings>) => {
-    updateZoneSettings(zoneIndex, { ...settings, ...update })
+export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
+  const updateZoneSettings = useStore((state) => state.updateZone)
+  const onUpdate = (update: Partial<NoteZone>) => {
+    updateZoneSettings(zone.id, { ...zone, ...update })
   }
   return (
     <Stack spacing={4}>
       <Stack spacing={2}>
         <OrientationInput
-          value={settings.orientation}
+          value={zone.orientation}
           onChange={(orientation) => onUpdate({ orientation })}
         />
         <Stack direction="row" justifyContent={'space-between'}>
           <ChannelInput
-            channel={settings.channel}
+            channel={zone.channel}
             onChange={(channel) => onUpdate({ channel })}
           />
           <OcatveInput
-            octaveOffset={settings.octave}
+            octaveOffset={zone.octave}
             onChange={(octave) => onUpdate({ octave })}
           />
           <TranslateInput
-            value={settings.translate}
+            value={zone.translate}
             onChange={(translate) => onUpdate({ translate })}
           />
         </Stack>
         <Stack direction="row" spacing={4}>
           <VelocityInput
-            velocity={settings.velocity}
+            velocity={zone.velocity}
             onChange={(velocity) => onUpdate({ velocity })}
           />
           <MuteZoneInput
-            muteZones={settings.muteZones}
+            muteZones={zone.muteZones}
             onChange={(muteZones) => onUpdate({ muteZones })}
           />
           <HoldToggleInput
-            value={settings.hold}
+            value={zone.hold}
             onChange={(hold) => onUpdate({ hold })}
           />
         </Stack>
       </Stack>
       <ChordInput onChange={(voices) => onUpdate({ voices })} />
       <VoicesInput
-        voices={settings.voices}
+        voices={zone.voices}
         min={-24}
         max={24}
         maxVoices={6}
@@ -81,16 +75,16 @@ export const NoteSettings = ({
         onChange={(voices) => onUpdate({ voices })}
       />
       <QuantizeInput
-        quantize={settings.quantize}
+        quantize={zone.quantize}
         onChange={(quantize) => onUpdate({ quantize })}
       />
       <Stack direction="row" spacing={2} justifyContent={'space-between'}>
         <RootNoteInput
-          value={settings.root}
+          value={zone.root}
           onChange={(root) => onUpdate({ root })}
         />
         <ScaleInput
-          value={settings.scaleType}
+          value={zone.scaleType}
           onChange={(scaleType) => onUpdate({ scaleType })}
         />
       </Stack>

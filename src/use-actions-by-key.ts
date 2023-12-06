@@ -2,6 +2,7 @@ import { useStore } from './store'
 import { useNoteActions } from './use-note-actions'
 import invertBy from 'lodash/invertBy'
 import sortBy from 'lodash/sortBy'
+import { isNoteZone } from './zone-settings'
 
 const getKeyCoordinates = (grid: string[][]) => {
   const coordinates: { [key: string]: { x: number; y: number } } = {}
@@ -18,28 +19,33 @@ export type KeyActions = {
   [key: string]: { on: () => void; off: () => void; notes: number[] }
 }
 export const useActionsByKey = (): KeyActions => {
-  const settings = useStore((state) => state.settings)
-  const zoneByKey = useStore((state) => state.zoneByKey)
-  const { keyGrid } = useStore((state) => state.keyboardConfig)
+  const zones = useStore.use.zones()
+  const zoneIdByKey = useStore.use.zoneIdByKey()
+  const { keyGrid } = useStore.use.keyboardConfig()
   const keyCoordinates = getKeyCoordinates(keyGrid)
-  const keysByZone = invertBy(zoneByKey)
+  const keysByZoneId = invertBy(zoneIdByKey)
+  console.log(zoneIdByKey, keysByZoneId)
   const getActionsByZone = useNoteActions()
-
+  // TODO get this to work with non note zones
   const actions: KeyActions = {}
-  for (const zone in keysByZone) {
-    const zoneSettings = settings[Number(zone)]
-    const { leftToRight, topToBottom, reverse } = zoneSettings.orientation
-    // TODO depending on whether a zone is ordered from top/bottom, left/right, right/left or bottom/top, we can change this sort function.
+  console.log(keyCoordinates)
+  for (const zoneId in keysByZoneId) {
+    const zone = zones[zoneId]
+    if (!isNoteZone(zone)) {
+      continue
+    }
+    const { leftToRight, topToBottom, reverse } = zone.orientation
     const sortVertical = (key: string) =>
       topToBottom ? keyCoordinates[key].y : -keyCoordinates[key].y
     const sortHorizontal = (key: string) =>
       leftToRight ? keyCoordinates[key].x : -keyCoordinates[key].x
+    console.log(zoneId, keysByZoneId[zoneId])
     const keys = sortBy(
-      keysByZone[Number(zone)],
+      keysByZoneId[zoneId],
       (key) => (reverse ? sortHorizontal(key) : sortVertical(key)),
       (key) => (reverse ? sortVertical(key) : sortHorizontal(key))
     )
-    Object.assign(actions, getActionsByZone(keys, zoneSettings))
+    Object.assign(actions, getActionsByZone(keys, zone))
   }
   return actions
 }

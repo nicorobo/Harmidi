@@ -1,24 +1,19 @@
 import { useContext, useEffect } from 'react'
-import { Settings, useStore, ZoneByKey } from './store'
+import { useStore, ZoneIdByKey, Zones } from './store'
 import { EngineContext } from './Engine'
 
 type GetActiveKeysArgs = {
   key: string
   activeKeys: string[]
-  settings: Settings
-  zoneByKey: ZoneByKey
+  zones: Zones
+  zoneIdByKey: ZoneIdByKey
 }
 
 // I don't think we need the whole state but who knows.
-const addKey = ({
-  key,
-  activeKeys,
-  settings,
-  zoneByKey,
-}: GetActiveKeysArgs) => {
-  const zone = zoneByKey[key]
-  const { hold, muteZones } = settings[zone]
-  const selfMuting = muteZones.includes(zone)
+const addKey = ({ key, activeKeys, zones, zoneIdByKey }: GetActiveKeysArgs) => {
+  const zoneId = zoneIdByKey[key]
+  const { hold, muteZones } = { muteZones: [] as string[], ...zones[zoneId] } // A quick fix for handling all zones
+  const selfMuting = muteZones.includes(zoneId)
   const isActive = activeKeys.includes(key)
   if (hold && isActive) {
     // Turn key off
@@ -26,7 +21,7 @@ const addKey = ({
   }
   if (hold && selfMuting) {
     // Clear keys in same zone and add key
-    return activeKeys.filter((k) => zoneByKey[k] !== zone).concat(key)
+    return activeKeys.filter((k) => zoneIdByKey[k] !== zoneId).concat(key)
   }
   return activeKeys.concat(key)
 }
@@ -35,11 +30,11 @@ const addKey = ({
 const removeKey = ({
   key,
   activeKeys,
-  settings,
-  zoneByKey,
+  zones,
+  zoneIdByKey,
 }: GetActiveKeysArgs) => {
-  const zone = zoneByKey[key]
-  const { hold } = settings[zone]
+  const zoneId = zoneIdByKey[key]
+  const { hold } = zones[zoneId]
   if (hold) {
     // We only handle hold zones during keydown
     return activeKeys
@@ -49,22 +44,22 @@ const removeKey = ({
 
 const useKeyboardListener = () => {
   const { activeKeys, setActiveKeys } = useContext(EngineContext)
-  const zoneByKey = useStore((state) => state.zoneByKey)
-  const settings = useStore((state) => state.settings)
-  const keydown = useStore((state) => state.keydown)
-  const keyup = useStore((state) => state.keyup)
-  const isKeyMapping = useStore((state) => state.isKeyMapping)
-  const selectedZone = useStore((state) => state.selectedZone)
-  const updateKeyZone = useStore((state) => state.updateKeyZone)
+  const zoneIdByKey = useStore.use.zoneIdByKey()
+  const zones = useStore.use.zones()
+  const keydown = useStore.use.keydown()
+  const keyup = useStore.use.keyup()
+  const isKeyMapping = useStore.use.isKeyMapping()
+  const selectedZone = useStore.use.selectedZone()
+  const updateKeyZone = useStore.use.updateKeyZone()
   const keyMapMode = isKeyMapping && selectedZone !== null
 
   const onKeyDown = ({ key, repeat }: KeyboardEvent) => {
     performance.mark('keydown')
-    if (!repeat && zoneByKey.hasOwnProperty(key)) {
+    if (!repeat && zoneIdByKey.hasOwnProperty(key)) {
       if (keyMapMode) {
         updateKeyZone(key, selectedZone)
       } else {
-        setActiveKeys(addKey({ key, activeKeys, settings, zoneByKey }))
+        setActiveKeys(addKey({ key, activeKeys, zones, zoneIdByKey }))
       }
       keydown(key)
     }
@@ -72,9 +67,9 @@ const useKeyboardListener = () => {
 
   const onKeyUp = ({ key }: KeyboardEvent) => {
     performance.mark('keyup')
-    if (zoneByKey.hasOwnProperty(key)) {
+    if (zoneIdByKey.hasOwnProperty(key)) {
       if (!keyMapMode) {
-        setActiveKeys(removeKey({ key, activeKeys, settings, zoneByKey }))
+        setActiveKeys(removeKey({ key, activeKeys, zones, zoneIdByKey }))
       }
       keyup(key)
     }

@@ -1,5 +1,4 @@
 import {
-  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -8,35 +7,25 @@ import {
   Sheet,
 } from '@mui/joy'
 import { useStore } from '../store'
-import { FormatColorFill } from '@mui/icons-material'
 
 export const KeyMappingPanel = ({
   selectedZone,
   setSelectedZone,
 }: {
-  selectedZone: number | null
-  setSelectedZone: (zone: number | null) => void
+  selectedZone: string | null
+  setSelectedZone: (zone: string | null) => void
 }) => {
-  const zones = useStore((state) => state.settings)
-  const fillKeyZone = useStore((state) => state.fillKeyZone)
+  const zones = useStore((state) => state.zones)
 
   return (
     <Sheet sx={{ width: '350px', p: '1rem' }}>
       <List size="sm">
         <ListSubheader sticky>Note Zones</ListSubheader>
-        {zones.map((_, i) => (
-          <ListItem
-            endAction={
-              selectedZone === i && (
-                <IconButton onClick={() => fillKeyZone(i)} size="sm">
-                  <FormatColorFill />
-                </IconButton>
-              )
-            }
-          >
+        {Object.keys(zones).map((id, i) => (
+          <ListItem>
             <ListItemButton
-              selected={selectedZone === i}
-              onClick={() => setSelectedZone(i)}
+              selected={selectedZone === id}
+              onClick={() => setSelectedZone(id)}
             >
               <ListItemContent>Zone {['ABCDEFG'[i]]}</ListItemContent>
             </ListItemButton>

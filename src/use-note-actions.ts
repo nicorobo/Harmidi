@@ -1,20 +1,20 @@
 import { useMIDIOutput } from '@react-midi/hooks'
 import { KeyActions } from './use-actions-by-key'
 import { getNotes } from './note-getters'
-import { ZoneSettings } from './zone-settings'
+import { NoteZone } from './zone-settings'
 
 export const useNoteActions = () => {
   const { noteOn, noteOff } = useMIDIOutput()
 
-  const factory = (letters: string[], zoneSettings: ZoneSettings) => {
+  const factory = (letters: string[], zone: NoteZone) => {
     const actions: KeyActions = {}
     if (!noteOn || !noteOff) {
       return actions
     }
-    const noteFactory = getNotes(zoneSettings)
+    const noteFactory = getNotes(zone)
     const noteSettings = {
-      velocity: zoneSettings.velocity,
-      channel: zoneSettings.channel,
+      velocity: zone.velocity,
+      channel: zone.channel,
     }
     for (let i = 0; i < letters.length; i++) {
       const notes = noteFactory(i)

@@ -1,42 +1,52 @@
 import React, { useRef, useState } from 'react'
 import { useActionsByKey } from './use-actions-by-key'
-import { Settings, useStore, ZoneByKey } from './store'
-import { noop } from 'lodash'
+import { useStore, ZoneIdByKey, Zones } from './store'
+import { transform, noop } from 'lodash'
+import { isNoteZone } from './zone-settings'
 
 type GetPlayingKeysArgs = {
   activeKeys: string[]
-  settings: Settings
-  zoneByKey: ZoneByKey
+  zones: Zones
+  zoneIdByKey: ZoneIdByKey
 }
 
-// Returns a 2d array that acts as a map between a zone and the zones that mute it.
-// If zones are ever identified as something other than an index, we can make this an actual map.
+// Returns a map between a zone and the zones that mute it.
 // If this is slow, we can compute it from state when settings change and cache.
-const getMutedBy = (settings: Settings) =>
-  settings.reduce((mutedBy, s, zone) => {
-    for (let mutedZone of s.muteZones) {
-      mutedBy[mutedZone].push(zone)
-    }
-    return mutedBy
-  }, settings.map(() => []) as number[][])
+const getMutedBy = (zones: Zones) =>
+  transform(
+    zones,
+    (mutedBy, zone) => {
+      if (isNoteZone(zone)) {
+        for (let mutedZoneId of zone.muteZones) {
+          if (mutedBy[mutedZoneId]) {
+            mutedBy[mutedZoneId].push(zone.id)
+          } else {
+            mutedBy[mutedZoneId] = [zone.id]
+          }
+        }
+      }
+      return mutedBy
+    },
+    {} as { [id: string]: string[] }
+  )
 
 const getPlayingKeys = ({
   activeKeys,
-  settings,
-  zoneByKey,
+  zones,
+  zoneIdByKey,
 }: GetPlayingKeysArgs) => {
-  const zones = activeKeys.map((key) => zoneByKey[key])
-  const mutedBy = getMutedBy(settings)
+  const zoneIds = activeKeys.map((key) => zoneIdByKey[key])
+  const mutedBy = getMutedBy(zones)
   const playing: string[] = []
   for (let i = 0; i < activeKeys.length; i++) {
     // Is there a key already playing causing a non-mutual mute?
     const alreadyMuted = playing.some((k) =>
-      mutedBy[zones[i]].includes(zoneByKey[k])
+      (mutedBy[zoneIds[i]] || []).includes(zoneIdByKey[k])
     )
     // Is there a key that will be played that will cause a mute?
-    const willBeMuted = zones
+    const willBeMuted = zoneIds
       .slice(i + 1)
-      .some((z) => mutedBy[zones[i]].includes(z))
+      .some((z) => mutedBy[zoneIds[i]].includes(z))
 
     if (!alreadyMuted && !willBeMuted) {
       playing.push(activeKeys[i])
@@ -67,12 +77,12 @@ export const EngineProvider = ({ children }: Props) => {
   const [offActionsByKey, setOffActionsByKey] = useState<{
     [key: string]: () => void
   }>({})
-  const settings = useStore((store) => store.settings)
-  const zoneByKey = useStore((state) => state.zoneByKey)
+  const zones = useStore.use.zones()
+  const zoneIdByKey = useStore.use.zoneIdByKey()
   const [activeKeys, setActiveKeysState] = useState<string[]>([])
 
   const setActiveKeys = (keys: string[]) => {
-    const playing = getPlayingKeys({ activeKeys: keys, settings, zoneByKey })
+    const playing = getPlayingKeys({ activeKeys: keys, zones, zoneIdByKey })
     const { added, removed } = compareArrays(previous.current, playing)
     removed.forEach((k) => offActionsByKey[k]?.())
     added.forEach((k) => {

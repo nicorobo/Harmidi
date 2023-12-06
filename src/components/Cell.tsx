@@ -13,7 +13,7 @@ export const Cell = ({
 }) => {
   const setKeyZone = useStore((state) => state.updateKeyZone)
   const selectedZone = useStore((state) => state.selectedZone)
-  const zone = useStore((state) => state.zoneByKey[cell])
+  const zone = useStore((state) => state.zoneIdByKey[cell])
   const handleClick = () => {
     if (zone !== selectedZone && selectedZone !== null) {
       setKeyZone(cell, selectedZone)

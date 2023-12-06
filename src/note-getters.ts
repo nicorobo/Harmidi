@@ -1,6 +1,6 @@
 import { Midi, Scale, Note, Interval } from 'tonal'
 import { notEmpty } from './util'
-import { NoteZoneSettings } from './zone-settings'
+import { NoteZone } from './zone-settings'
 
 // TODO We can also return the actual chord/note objects to power our UI
 // export const getChords = ({ family, octave, translate }: ChordZoneSettings) => {
@@ -57,7 +57,7 @@ export const getNotes = ({
   quantize,
   octave,
   translate,
-}: NoteZoneSettings) => {
+}: NoteZone) => {
   const scaleName = `${root}${octave + 3} ${
     quantize.root ? scaleType : 'chromatic'
   }`

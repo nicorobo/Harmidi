@@ -21,13 +21,12 @@ import {
 import isNumber from 'lodash/isNumber'
 import { useRef, useState } from 'react'
 import { useStore } from '../../store'
-import { toNumber } from 'lodash'
 import { availableScales } from '../../constants'
 import { Chord, ChordType, Interval } from 'tonal'
 import { ScaleRoot, ScaleType } from '../../types/scale'
 import { Voice } from './VoicesInput'
 import { notEmpty } from '../../util'
-import { OrientationSettings } from '../../zone-settings'
+import { OrientationSettings, isNoteZone } from '../../zone-settings'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
 export const ChannelInput = ({
@@ -131,10 +130,11 @@ export const MuteZoneInput = ({
   muteZones,
   onChange,
 }: {
-  muteZones: number[]
-  onChange: (muteZones: number[]) => void
+  muteZones: string[]
+  onChange: (muteZones: string[]) => void
 }) => {
-  const zones = useStore((state) => state.settings)
+  const zones = useStore.use.zones()
+  const noteZones = Object.values(zones).filter(isNoteZone)
 
   return (
     <Stack>
@@ -142,12 +142,10 @@ export const MuteZoneInput = ({
       <ToggleButtonGroup
         size="sm"
         value={muteZones.map((zone) => `${zone}`)}
-        onChange={(_, muteZones) =>
-          onChange(muteZones.map((zone) => toNumber(zone)))
-        }
+        onChange={(_, muteZones) => onChange(muteZones)}
       >
-        {zones.map((_, i) => (
-          <Button key={i} value={`${i}`}>
+        {noteZones.map((zone, i) => (
+          <Button key={zone.id} value={zone.id}>
             {'ABCDEFGHIJ'[i]}
           </Button>
         ))}

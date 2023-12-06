@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useActionsByKey } from './use-actions-by-key'
 import { useStore, ZoneIdByKey, Zones } from './store'
-import { transform, noop } from 'lodash'
+import { transform, noop, mapValues } from 'lodash'
 import { isNoteZone } from './zone-settings'
 
 type GetPlayingKeysArgs = {
@@ -18,16 +18,12 @@ const getMutedBy = (zones: Zones) =>
     (mutedBy, zone) => {
       if (isNoteZone(zone)) {
         for (let mutedZoneId of zone.muteZones) {
-          if (mutedBy[mutedZoneId]) {
-            mutedBy[mutedZoneId].push(zone.id)
-          } else {
-            mutedBy[mutedZoneId] = [zone.id]
-          }
+          mutedBy[mutedZoneId].push(zone.id)
         }
       }
       return mutedBy
     },
-    {} as { [id: string]: string[] }
+    mapValues<Zones, string[]>(zones, () => [])
   )
 
 const getPlayingKeys = ({

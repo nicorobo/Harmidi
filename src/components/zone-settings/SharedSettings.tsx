@@ -125,6 +125,68 @@ export const VelocityInput = ({
     </Stack>
   )
 }
+const timeMarks = [
+  { value: 0, label: '0s' },
+  { value: 1000, label: '1s' },
+  { value: 2000, label: '2s' },
+  { value: 3000, label: '3s' },
+]
+export const TimeInput = ({
+  value,
+  title,
+  onChange,
+}: {
+  value: number
+  title: string
+  onChange: (value: number) => void
+}) => {
+  const defaultValue = useRef(value)
+  return (
+    <Stack>
+      <InputLabel title={title} />
+      <Slider
+        size="sm"
+        min={0}
+        max={3000}
+        step={10}
+        marks={timeMarks}
+        valueLabelDisplay="auto"
+        defaultValue={defaultValue.current}
+        onChangeCommitted={(_, value) => onChange(value as number)}
+      />
+    </Stack>
+  )
+}
+const midiValueMarks = [
+  { value: 0, label: '0' },
+  { value: 127, label: '127' },
+]
+export const MidiValueInput = ({
+  value,
+  title,
+  onChange,
+}: {
+  value: number
+  title: string
+  onChange: (value: number) => void
+}) => {
+  const defaultValue = useRef(value)
+  return (
+    <Stack>
+      <InputLabel title={title} />
+      <Slider
+        size="sm"
+        min={0}
+        max={127}
+        step={1}
+        marks={midiValueMarks}
+        valueLabelDisplay="auto"
+        defaultValue={defaultValue.current}
+        onChangeCommitted={(_, value) => onChange(value as number)}
+      />
+    </Stack>
+  )
+}
 
 export const MuteZoneInput = ({
   muteZones,

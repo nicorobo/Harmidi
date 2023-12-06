@@ -24,11 +24,9 @@ export const useActionsByKey = (): KeyActions => {
   const { keyGrid } = useStore.use.keyboardConfig()
   const keyCoordinates = getKeyCoordinates(keyGrid)
   const keysByZoneId = invertBy(zoneIdByKey)
-  console.log(zoneIdByKey, keysByZoneId)
   const getActionsByZone = useNoteActions()
   // TODO get this to work with non note zones
   const actions: KeyActions = {}
-  console.log(keyCoordinates)
   for (const zoneId in keysByZoneId) {
     const zone = zones[zoneId]
     if (!isNoteZone(zone)) {
@@ -39,7 +37,6 @@ export const useActionsByKey = (): KeyActions => {
       topToBottom ? keyCoordinates[key].y : -keyCoordinates[key].y
     const sortHorizontal = (key: string) =>
       leftToRight ? keyCoordinates[key].x : -keyCoordinates[key].x
-    console.log(zoneId, keysByZoneId[zoneId])
     const keys = sortBy(
       keysByZoneId[zoneId],
       (key) => (reverse ? sortHorizontal(key) : sortVertical(key)),

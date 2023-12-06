@@ -11,14 +11,8 @@ export const Cell = ({
   title: string
   isActive: boolean
 }) => {
-  const setKeyZone = useStore((state) => state.updateKeyZone)
-  const selectedZone = useStore((state) => state.selectedZone)
+  const selectedZone = useStore.use.selectedZone()
   const zone = useStore((state) => state.zoneIdByKey[cell])
-  const handleClick = () => {
-    if (zone !== selectedZone && selectedZone !== null) {
-      setKeyZone(cell, selectedZone)
-    }
-  }
   return (
     <Box
       height={'3rem'}
@@ -35,7 +29,6 @@ export const Cell = ({
       overflow={'clip'}
       color={'#333'}
       fontSize={'0.6rem'}
-      onClick={handleClick}
     >
       {title}
     </Box>

@@ -71,6 +71,7 @@ export type ControlZone = {
   downTime: number
   startValue: number
   endValue: number
+  midiCC: number
 }
 
 const defaultControlZone: Omit<ControlZone, 'id'> = {
@@ -82,6 +83,7 @@ const defaultControlZone: Omit<ControlZone, 'id'> = {
   downTime: 500,
   startValue: 0,
   endValue: 3,
+  midiCC: 0,
 }
 
 export const getDefaultControlZone = (

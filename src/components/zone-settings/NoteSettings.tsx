@@ -33,8 +33,8 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
     <Stack spacing={4}>
       <Stack spacing={2}>
         <OrientationInput
-          value={zone.orientation}
-          onChange={(orientation) => onUpdate({ orientation })}
+          value={zone.order}
+          onChange={(orientation) => onUpdate({ order: orientation })}
         />
         <Stack direction="row" justifyContent={'space-between'}>
           <ChannelInput

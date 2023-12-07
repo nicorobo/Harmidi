@@ -26,7 +26,7 @@ import { Chord, ChordType, Interval } from 'tonal'
 import { ScaleRoot, ScaleType } from '../../types/scale'
 import { Voice } from './VoicesInput'
 import { notEmpty } from '../../util'
-import { OrientationSettings, isNoteZone } from '../../zone-settings'
+import { ZoneOrderSettings, isNoteZone } from '../../zone-settings'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
 export const ChannelInput = ({
@@ -46,6 +46,30 @@ export const ChannelInput = ({
       >
         {channels.map((channel) => (
           <Option value={channel}>{channel + 1}</Option>
+        ))}
+      </Select>
+    </Stack>
+  )
+}
+
+const midiCC = new Array(80).fill(0).map((_, i) => i)
+export const MidiCCInput = ({
+  value,
+  onChange,
+}: {
+  value: number
+  onChange: (value: number) => void
+}) => {
+  return (
+    <Stack>
+      <InputLabel title="Midi CC" />
+      <Select
+        size="sm"
+        value={value}
+        onChange={(_, value) => isNumber(value) && onChange(value)}
+      >
+        {midiCC.map((cc) => (
+          <Option value={cc}>{cc}</Option>
         ))}
       </Select>
     </Stack>
@@ -370,8 +394,8 @@ export const OrientationInput = ({
   value,
   onChange,
 }: {
-  value: OrientationSettings
-  onChange: (orientation: OrientationSettings) => void
+  value: ZoneOrderSettings
+  onChange: (orientation: ZoneOrderSettings) => void
 }) => {
   const toggleLeftToRight = () =>
     onChange({ ...value, leftToRight: !value.leftToRight })

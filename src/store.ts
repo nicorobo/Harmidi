@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist, createJSONStorage } from 'zustand/middleware'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 import {
   Zone,
@@ -60,37 +61,45 @@ const initialZoneIdByKey = keyboardConfigs.USEnglish.keyGrid.reduce(
   {} as ZoneIdByKey
 )
 
-const useStoreBase = create<State>()((set) => ({
-  pressedKeys: [],
-  zones: keyBy(initialZones, ({ id }) => id),
-  selectedZone: initialZones[0].id,
-  zoneIdByKey: initialZoneIdByKey,
-  keyboardConfig: keyboardConfigs.USEnglish,
-  isKeyMapping: false,
-  updateKeyZone: (key, zoneId) =>
-    set((state) => ({
-      zoneIdByKey: { ...state.zoneIdByKey, [key]: zoneId },
-    })),
-  // fillKeyZone: (zone) =>
-  //   set({
-  //     zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid, zone),
-  //   }),
-  setSelectedZone: (selectedZone) => set({ selectedZone }),
-  keydown: (key) =>
-    set((state) => ({ pressedKeys: [...state.pressedKeys, key] })),
+const useStoreBase = create<State>()(
+  persist(
+    (set) => ({
+      pressedKeys: [],
+      zones: keyBy(initialZones, ({ id }) => id),
+      selectedZone: initialZones[0].id,
+      zoneIdByKey: initialZoneIdByKey,
+      keyboardConfig: keyboardConfigs.USEnglish,
+      isKeyMapping: false,
+      updateKeyZone: (key, zoneId) =>
+        set((state) => ({
+          zoneIdByKey: { ...state.zoneIdByKey, [key]: zoneId },
+        })),
+      // fillKeyZone: (zone) =>
+      //   set({
+      //     zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid, zone),
+      //   }),
+      setSelectedZone: (selectedZone) => set({ selectedZone }),
+      keydown: (key) =>
+        set((state) => ({ pressedKeys: [...state.pressedKeys, key] })),
 
-  keyup: (key) =>
-    set((state) => ({
-      pressedKeys: state.pressedKeys.filter((k) => k !== key),
-    })),
-  // Consider allowing partial updates here.
-  updateZone: (id, zone) => {
-    set(({ zones }) => ({
-      zones: { ...zones, [id]: zone },
-    }))
-  },
-  setIsKeyMapping: (isKeyMapping) => set({ isKeyMapping }),
-}))
+      keyup: (key) =>
+        set((state) => ({
+          pressedKeys: state.pressedKeys.filter((k) => k !== key),
+        })),
+      // Consider allowing partial updates here.
+      updateZone: (id, zone) => {
+        set(({ zones }) => ({
+          zones: { ...zones, [id]: zone },
+        }))
+      },
+      setIsKeyMapping: (isKeyMapping) => set({ isKeyMapping }),
+    }),
+    {
+      name: 'food-storage', // name of the item in the storage (must be unique)
+      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+    }
+  )
+)
 
 const useStore = createSelectors(useStoreBase)
 export { useStore }

@@ -4,6 +4,7 @@ import { useStore } from '../../store'
 import {
   ChannelInput,
   HoldToggleInput,
+  MidiCCInput,
   MidiValueInput,
   TimeInput,
 } from './SharedSettings'
@@ -19,6 +20,10 @@ export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
         <ChannelInput
           channel={zone.channel}
           onChange={(channel) => onUpdate({ channel })}
+        />
+        <MidiCCInput
+          value={zone.midiCC}
+          onChange={(midiCC) => onUpdate({ midiCC })}
         />
         <HoldToggleInput
           value={zone.hold}

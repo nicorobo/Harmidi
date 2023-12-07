@@ -2,7 +2,7 @@ import { nanoid } from 'nanoid'
 import { ScaleRoot, ScaleType } from './types/scale'
 
 type QuantizeSettings = { root: boolean; voices: boolean }
-export type OrientationSettings = {
+export type ZoneOrderSettings = {
   leftToRight: boolean
   topToBottom: boolean
   reverse: boolean
@@ -28,7 +28,7 @@ export type NoteZone = {
   scaleType: ScaleType
   customScale: number[]
   quantize: QuantizeSettings
-  orientation: OrientationSettings
+  order: ZoneOrderSettings
 }
 
 const defaultNoteZone: Omit<NoteZone, 'id'> = {
@@ -44,7 +44,7 @@ const defaultNoteZone: Omit<NoteZone, 'id'> = {
   quantize: { root: false, voices: false },
   scaleType: 'minor' as ScaleType,
   customScale: [],
-  orientation: { leftToRight: true, topToBottom: true, reverse: false },
+  order: { leftToRight: true, topToBottom: true, reverse: false },
 }
 
 export const getDefaultNoteZone = (
@@ -67,6 +67,7 @@ export type ControlZone = {
   channel: number
   hold: boolean
   noteZones: number[]
+  order: ZoneOrderSettings
   upTime: number
   downTime: number
   startValue: number
@@ -84,6 +85,7 @@ const defaultControlZone: Omit<ControlZone, 'id'> = {
   startValue: 0,
   endValue: 3,
   midiCC: 0,
+  order: { leftToRight: true, topToBottom: true, reverse: false },
 }
 
 export const getDefaultControlZone = (
@@ -99,6 +101,7 @@ export type MutateZone = {
   zoneType: 'mutate'
   hold: boolean
   noteZones: number[]
+  order: ZoneOrderSettings
   voices: { offset: number; velocity: number; on: boolean }[]
   beforeQuantization: boolean
 }
@@ -108,6 +111,7 @@ const defaultMutateZone: Omit<MutateZone, 'id'> = {
   hold: false,
   noteZones: [],
   voices: [{ offset: 0, velocity: 100, on: true }],
+  order: { leftToRight: true, topToBottom: true, reverse: false },
   beforeQuantization: false,
 }
 

@@ -52,7 +52,7 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
         </Stack>
         <Stack direction="row" spacing={4}>
           <VelocityInput
-            velocity={zone.velocity}
+            value={zone.velocity}
             onChange={(velocity) => onUpdate({ velocity })}
           />
           <MuteZoneInput

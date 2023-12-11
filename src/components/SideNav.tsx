@@ -24,7 +24,7 @@ export const SideNav = () => {
       <List size="sm">
         <ListSubheader sticky>Notes</ListSubheader>
         {noteZones.map(({ id }, i) => (
-          <ListItem>
+          <ListItem key={id}>
             <ListItemButton
               selected={selectedZone === id}
               onClick={() => zoneSelected(id)}
@@ -36,7 +36,7 @@ export const SideNav = () => {
 
         <ListSubheader sticky>Control</ListSubheader>
         {controlZones.map(({ id }, i) => (
-          <ListItem>
+          <ListItem key={id}>
             <ListItemButton
               selected={selectedZone === id}
               onClick={() => zoneSelected(id)}
@@ -48,7 +48,7 @@ export const SideNav = () => {
 
         <ListSubheader sticky>Mutate</ListSubheader>
         {mutateZones.map(({ id }, i) => (
-          <ListItem>
+          <ListItem key={id}>
             <ListItemButton
               selected={selectedZone === id}
               onClick={() => zoneSelected(id)}

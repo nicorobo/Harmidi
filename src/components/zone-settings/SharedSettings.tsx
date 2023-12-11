@@ -27,6 +27,7 @@ import { ScaleRoot, ScaleType } from '../../types/scale'
 import { Voice } from './VoicesInput'
 import { notEmpty } from '../../util'
 import { ZoneOrderSettings, isNoteZone } from '../../zone-settings'
+import { Knob } from '../Knob'
 
 const channels = new Array(16).fill(0).map((_, i) => i)
 export const ChannelInput = ({
@@ -45,7 +46,9 @@ export const ChannelInput = ({
         onChange={(_, value) => isNumber(value) && onChange(value)}
       >
         {channels.map((channel) => (
-          <Option value={channel}>{channel + 1}</Option>
+          <Option key={channel} value={channel}>
+            {channel + 1}
+          </Option>
         ))}
       </Select>
     </Stack>
@@ -126,17 +129,41 @@ export const OcatveInput = ({
   )
 }
 
+// export const VelocityInput = ({
+//   velocity,
+//   onChange,
+// }: {
+//   velocity: number
+//   onChange: (velocity: number) => void
+// }) => {
+//   const defaultVelocity = useRef(velocity)
+//   return (
+//     <Stack>
+//       <InputLabel title="Velocity" />
+//       <Slider
+//         size="sm"
+//         min={0}
+//         max={127}
+//         step={1}
+//         valueLabelDisplay="auto"
+//         defaultValue={defaultVelocity.current}
+//         onChangeCommitted={(_, value) => onChange(value as number)}
+//       />
+//     </Stack>
+//   )
+// }
 export const VelocityInput = ({
-  velocity,
+  value,
   onChange,
 }: {
-  velocity: number
-  onChange: (velocity: number) => void
+  value: number
+  onChange: (value: number) => void
 }) => {
-  const defaultVelocity = useRef(velocity)
+  // const defaultVelocity = useRef(value)
   return (
     <Stack>
-      <InputLabel title="Velocity" />
+      {/* <InputLabel title="Velocity" />
+      
       <Slider
         size="sm"
         min={0}
@@ -145,10 +172,19 @@ export const VelocityInput = ({
         valueLabelDisplay="auto"
         defaultValue={defaultVelocity.current}
         onChangeCommitted={(_, value) => onChange(value as number)}
+      /> */}
+      <Knob
+        value={value}
+        onChange={onChange}
+        title="Velocity"
+        min={0}
+        max={127}
+        fullAngle={270}
       />
     </Stack>
   )
 }
+
 const timeMarks = [
   { value: 0, label: '0s' },
   { value: 1000, label: '1s' },
@@ -291,7 +327,9 @@ export const RootNoteInput = ({
         sx={{ textTransform: 'capitalize' }}
       >
         {rootNotes.map((note) => (
-          <Option value={note}>{note}</Option>
+          <Option key={note} value={note}>
+            {note}
+          </Option>
         ))}
       </Select>
     </Stack>
@@ -335,7 +373,9 @@ export const ScaleInput = ({
         onChange={(_, val) => onChange(val as ScaleType)}
       >
         {availableScales.map((scale) => (
-          <Option value={scale}>{scale}</Option>
+          <Option key={scale} value={scale}>
+            {scale}
+          </Option>
         ))}
       </Select>
     </Stack>

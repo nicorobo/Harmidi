@@ -103,6 +103,7 @@ export const VoicesInput = ({
           const per = valueToPercentage(isDragging ? dragValue : voice.offset)
           return (
             <Tooltip
+              key={`voice-${i}`}
               title={dragging === i ? dragValue : voice.offset}
               placement="top"
               arrow

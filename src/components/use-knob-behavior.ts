@@ -36,9 +36,7 @@ export const useKnobBehavior = ({
     window.removeEventListener('mouseup', handleMouseUp)
   }
   const knobRef = useCallback((el: any) => {
-    console.log('setting up knob ref')
     if (!el) return false
-    console.log('setting up knob ref')
     el.addEventListener('mousedown', handleMouseDown)
     el.addEventListener('dblclick', handleDoubleClick)
   }, [])

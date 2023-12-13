@@ -1,17 +1,18 @@
-import { Stack } from '@mui/joy'
+import { Stack, Switch } from '@mui/joy'
 import { ControlZone } from '../../zone-settings'
 import { useStore } from '../../store'
 import {
+  ActiveZoneInput,
   ChannelInput,
   HoldToggleInput,
   MidiCCInput,
-  MidiValueInput,
-  TimeInput,
 } from './SharedSettings'
+import { Knob } from '../Knob'
 
 export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
   const updateZoneSettings = useStore((state) => state.updateZone)
   const onUpdate = (update: Partial<ControlZone>) => {
+    console.log('update', update)
     updateZoneSettings(zone.id, { ...zone, ...update })
   }
   return (
@@ -30,26 +31,55 @@ export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
           onChange={(hold) => onUpdate({ hold })}
         />
       </Stack>
-      <TimeInput
-        title="Attack"
-        value={zone.upTime}
-        onChange={(ms) => onUpdate({ upTime: ms })}
+      <ActiveZoneInput
+        zones={zone.noteZones}
+        onChange={(noteZones) => onUpdate({ noteZones })}
       />
-      <TimeInput
-        title="Decay"
-        value={zone.downTime}
-        onChange={(ms) => onUpdate({ downTime: ms })}
-      />
-      <MidiValueInput
-        title="Start Value"
-        value={zone.startValue} // initialValue and targetValue
-        onChange={(value) => onUpdate({ startValue: value })}
-      />
-      <MidiValueInput
-        title="End Value"
-        value={zone.endValue}
-        onChange={(value) => onUpdate({ endValue: value })}
-      />
+      <Stack direction="row" spacing={4}>
+        <Switch
+          size="sm"
+          startDecorator="Trigger on Note"
+          checked={zone.triggerOnNote}
+          onChange={(e) => onUpdate({ triggerOnNote: e.target.checked })}
+        />
+        <Switch
+          size="sm"
+          startDecorator="Restart on New Note"
+          checked={zone.restartOnNewNote}
+          onChange={(e) => onUpdate({ restartOnNewNote: e.target.checked })}
+        />
+      </Stack>
+      <Stack direction="row" spacing={4}>
+        <Knob
+          title="Attack"
+          value={zone.attack}
+          min={0}
+          max={3000}
+          onChange={(attack) => onUpdate({ attack })}
+        />
+
+        <Knob
+          title="Release"
+          value={zone.release}
+          min={0}
+          max={3000}
+          onChange={(release) => onUpdate({ release })}
+        />
+        <Knob
+          title="Initial Value"
+          value={zone.initialValue}
+          min={0}
+          max={127}
+          onChange={(initialValue) => onUpdate({ initialValue })}
+        />
+        <Knob
+          title="Target Value"
+          value={zone.targetValue}
+          min={0}
+          max={127}
+          onChange={(targetValue) => onUpdate({ targetValue })}
+        />
+      </Stack>
     </Stack>
   )
 }

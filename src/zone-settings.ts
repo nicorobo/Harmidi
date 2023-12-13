@@ -65,14 +65,17 @@ export type ControlZone = {
   id: string
   zoneType: 'control'
   channel: number
+  // useNoteChannel: boolean
   hold: boolean
-  noteZones: number[]
+  noteZones: string[]
   order: ZoneOrderSettings
-  upTime: number
-  downTime: number
-  startValue: number
-  endValue: number
+  attack: number
+  release: number
+  initialValue: number
+  targetValue: number
   midiCC: number
+  triggerOnNote: boolean
+  restartOnNewNote: boolean
 }
 
 const defaultControlZone: Omit<ControlZone, 'id'> = {
@@ -80,12 +83,14 @@ const defaultControlZone: Omit<ControlZone, 'id'> = {
   channel: 1,
   hold: false,
   noteZones: [],
-  upTime: 500,
-  downTime: 500,
-  startValue: 0,
-  endValue: 3,
+  attack: 500,
+  release: 500,
+  initialValue: 0,
+  targetValue: 127,
   midiCC: 0,
   order: { leftToRight: true, topToBottom: true, reverse: false },
+  triggerOnNote: false,
+  restartOnNewNote: true,
 }
 
 export const getDefaultControlZone = (
@@ -100,7 +105,7 @@ export type MutateZone = {
   id: string
   zoneType: 'mutate'
   hold: boolean
-  noteZones: number[]
+  noteZones: string[]
   order: ZoneOrderSettings
   voices: { offset: number; velocity: number; on: boolean }[]
   beforeQuantization: boolean
@@ -123,7 +128,22 @@ export const getDefaultMutateZone = (
   ...overrides,
 })
 
-export type Zone = NoteZone | ControlZone | MutateZone
+export type DeadZone = {
+  id: string
+  zoneType: 'dead'
+}
+
+export const DEAD_ZONE_ID = 'dead-zone'
+
+export const getDefaultDeadZone = (
+  overrides?: Partial<DeadZone>
+): DeadZone => ({
+  id: DEAD_ZONE_ID,
+  zoneType: 'dead',
+  ...overrides,
+})
+
+export type Zone = NoteZone | ControlZone | MutateZone | DeadZone
 
 export const isControlZone = (zone: Zone): zone is ControlZone =>
   zone.zoneType === 'control'
@@ -131,3 +151,5 @@ export const isMutateZone = (zone: Zone): zone is MutateZone =>
   zone.zoneType === 'mutate'
 export const isNoteZone = (zone: Zone): zone is NoteZone =>
   zone.zoneType === 'note'
+export const isDeadZone = (zone: Zone): zone is DeadZone =>
+  zone.zoneType === 'dead'

@@ -255,24 +255,51 @@ export const MuteZoneInput = ({
   muteZones: string[]
   onChange: (muteZones: string[]) => void
 }) => {
+  return (
+    <Stack>
+      <InputLabel title="Mute" />
+      <NoteZoneInput value={muteZones} onChange={onChange} />
+    </Stack>
+  )
+}
+
+export const ActiveZoneInput = ({
+  zones,
+  onChange,
+}: {
+  zones: string[]
+  onChange: (zones: string[]) => void
+}) => {
+  return (
+    <Stack>
+      <InputLabel title="Zones" />
+      <NoteZoneInput value={zones} onChange={onChange} />
+    </Stack>
+  )
+}
+
+export const NoteZoneInput = ({
+  value,
+  onChange,
+}: {
+  value: string[]
+  onChange: (zones: string[]) => void
+}) => {
   const zones = useStore.use.zones()
   const noteZones = Object.values(zones).filter(isNoteZone)
 
   return (
-    <Stack>
-      <InputLabel title="Mute" />
-      <ToggleButtonGroup
-        size="sm"
-        value={muteZones.map((zone) => `${zone}`)}
-        onChange={(_, muteZones) => onChange(muteZones)}
-      >
-        {noteZones.map((zone, i) => (
-          <Button key={zone.id} value={zone.id}>
-            {'ABCDEFGHIJ'[i]}
-          </Button>
-        ))}
-      </ToggleButtonGroup>
-    </Stack>
+    <ToggleButtonGroup
+      size="sm"
+      value={value.map((zone) => zone)}
+      onChange={(_, newValue) => onChange(newValue)}
+    >
+      {noteZones.map((zone, i) => (
+        <Button key={zone.id} value={zone.id}>
+          {'ABCDEFGHIJ'[i]}
+        </Button>
+      ))}
+    </ToggleButtonGroup>
   )
 }
 

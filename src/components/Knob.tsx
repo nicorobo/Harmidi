@@ -86,7 +86,6 @@ const Value: React.FC<ValueProps> = ({ children }) => {
     <Box
       sx={{
         marginTop: '-0.5rem',
-        fontFamily: 'Avenir',
         fontSize: '0.75rem',
         color: '#333',
       }}
@@ -104,7 +103,6 @@ const Title: React.FC<TitleProps> = ({ children }) => {
   return (
     <Box
       sx={{
-        fontFamily: 'Avenir',
         fontSize: '0.75rem',
         color: '#333',
       }}
@@ -123,6 +121,7 @@ type Props = {
   onChange: (value: number) => void
 }
 
+// TODO: look into the styles getting infinitely added to head element (something about emotion and the styles changing)
 export const Knob: React.FC<Props> = ({
   value: controlledValue,
   onChange,
@@ -174,7 +173,7 @@ type calculateGradientArgs = {
 const calculateGradient = ({
   fullAngle,
   currentDeg,
-  activeColor = 'orange',
+  activeColor = '#ae67ff',
   inactiveColor = '#eee',
   backgroundColor = '#fff',
 }: calculateGradientArgs) => {

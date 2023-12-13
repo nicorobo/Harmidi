@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react'
 import { useActionsByKey } from './use-actions-by-key'
 import { useStore, ZoneIdByKey, Zones } from './store'
-import { transform, noop, mapValues } from 'lodash'
+import { transform, noop, mapValues, countBy } from 'lodash'
 import { isNoteZone } from './zone-settings'
 
 type GetPlayingKeysArgs = {
@@ -69,20 +69,25 @@ type Props = {
 
 export const EngineProvider = ({ children }: Props) => {
   const previous = useRef<string[]>([])
-  const actionsByKey = useActionsByKey()
   const [offActionsByKey, setOffActionsByKey] = useState<{
-    [key: string]: () => void
+    [key: string]: (triggerOperators?: boolean) => void
   }>({})
   const zones = useStore.use.zones()
   const zoneIdByKey = useStore.use.zoneIdByKey()
   const [activeKeys, setActiveKeysState] = useState<string[]>([])
+  const activeZonesIds = activeKeys.map((key) => zoneIdByKey[key])
+  const actionsByKey = useActionsByKey(activeZonesIds)
+  const activeKeyCountByZone = countBy(activeZonesIds)
 
   const setActiveKeys = (keys: string[]) => {
     const playing = getPlayingKeys({ activeKeys: keys, zones, zoneIdByKey })
     const { added, removed } = compareArrays(previous.current, playing)
-    removed.forEach((k) => offActionsByKey[k]?.())
+    removed.forEach((k) =>
+      offActionsByKey[k]?.(activeKeyCountByZone[zoneIdByKey[k]] === 1)
+    )
     added.forEach((k) => {
-      actionsByKey[k]?.on()
+      const triggerOperators = !activeKeyCountByZone[zoneIdByKey[k]]
+      actionsByKey[k]?.on(triggerOperators)
       setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
     })
     previous.current = playing

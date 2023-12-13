@@ -1,28 +1,47 @@
 import { useStore } from '../store'
-import { Box, List, ListItem, ListItemButton, ListSubheader } from '@mui/joy'
+import {
+  Box,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListSubheader,
+} from '@mui/joy'
 import { ZoneSettingsPanel } from './zone-settings/ZoneSettings'
-import { KeyMappingPanel } from './KeyMappingPanel'
-import { isNoteZone, isControlZone, isMutateZone } from '../zone-settings'
+import {
+  isNoteZone,
+  isControlZone,
+  isMutateZone,
+  getDefaultNoteZone,
+  getDefaultControlZone,
+  getDefaultMutateZone,
+} from '../zone-settings'
+import { KeyMappingSwitch } from './KeyMappingSwitch'
+import { Add } from '@mui/icons-material'
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 export const SideNav = () => {
   const selectedZone = useStore.use.selectedZone()
   const setSelectedZone = useStore.use.setSelectedZone()
+  const createZone = useStore.use.createZone()
   const zones = useStore.use.zones()
-  const isKeyMapping = useStore.use.isKeyMapping()
-  const setIsKeyMapping = useStore.use.setIsKeyMapping()
 
   const zoneSelected = (id: string) => {
-    setIsKeyMapping(false)
     setSelectedZone(selectedZone === id ? null : id)
   }
+
   const noteZones = Object.values(zones).filter(isNoteZone)
   const controlZones = Object.values(zones).filter(isControlZone)
   const mutateZones = Object.values(zones).filter(isMutateZone)
   return (
-    <Box display="flex">
+    <Box sx={{ display: 'flex', height: '100vh' }}>
       <List size="sm">
-        <ListSubheader sticky>Notes</ListSubheader>
+        <ListSubheader sticky>
+          Notes{' '}
+          <IconButton onClick={() => createZone(getDefaultNoteZone())}>
+            <Add />
+          </IconButton>
+        </ListSubheader>
         {noteZones.map(({ id }, i) => (
           <ListItem key={id}>
             <ListItemButton
@@ -34,7 +53,12 @@ export const SideNav = () => {
           </ListItem>
         ))}
 
-        <ListSubheader sticky>Control</ListSubheader>
+        <ListSubheader sticky>
+          Control
+          <IconButton onClick={() => createZone(getDefaultControlZone())}>
+            <Add />
+          </IconButton>
+        </ListSubheader>
         {controlZones.map(({ id }, i) => (
           <ListItem key={id}>
             <ListItemButton
@@ -46,7 +70,12 @@ export const SideNav = () => {
           </ListItem>
         ))}
 
-        <ListSubheader sticky>Mutate</ListSubheader>
+        <ListSubheader sticky>
+          Mutate
+          <IconButton onClick={() => createZone(getDefaultMutateZone())}>
+            <Add />
+          </IconButton>
+        </ListSubheader>
         {mutateZones.map(({ id }, i) => (
           <ListItem key={id}>
             <ListItemButton
@@ -58,18 +87,10 @@ export const SideNav = () => {
           </ListItem>
         ))}
         <ListItem>
-          <ListItemButton onClick={() => setIsKeyMapping(true)}>
-            KM
-          </ListItemButton>
+          <KeyMappingSwitch />
         </ListItem>
       </List>
-      {isKeyMapping && (
-        <KeyMappingPanel
-          selectedZone={selectedZone}
-          setSelectedZone={setSelectedZone}
-        />
-      )}
-      {selectedZone !== null && !isKeyMapping && (
+      {selectedZone !== null && (
         <ZoneSettingsPanel zone={zones[selectedZone]} />
       )}
     </Box>

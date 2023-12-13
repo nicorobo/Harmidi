@@ -1,6 +1,7 @@
 import { useContext, useEffect } from 'react'
 import { useStore, ZoneIdByKey, Zones } from './store'
 import { EngineContext } from './Engine'
+import { isDeadZone } from './zone-settings'
 
 type GetActiveKeysArgs = {
   key: string
@@ -12,7 +13,9 @@ type GetActiveKeysArgs = {
 // I don't think we need the whole state but who knows.
 const addKey = ({ key, activeKeys, zones, zoneIdByKey }: GetActiveKeysArgs) => {
   const zoneId = zoneIdByKey[key]
-  const { hold, muteZones } = { muteZones: [] as string[], ...zones[zoneId] } // A quick fix for handling all zones
+  const zone = zones[zoneId]
+  if (isDeadZone(zone)) return activeKeys
+  const { hold, muteZones } = { muteZones: [] as string[], ...zone } // A quick fix for handling all zones
   const selfMuting = muteZones.includes(zoneId)
   const isActive = activeKeys.includes(key)
   if (hold && isActive) {
@@ -33,8 +36,9 @@ const removeKey = ({
   zones,
   zoneIdByKey,
 }: GetActiveKeysArgs) => {
-  const zoneId = zoneIdByKey[key]
-  const { hold } = zones[zoneId]
+  const zone = zones[zoneIdByKey[key]]
+  if (isDeadZone(zone)) return activeKeys
+  const { hold } = zone
   if (hold) {
     // We only handle hold zones during keydown
     return activeKeys
@@ -54,7 +58,7 @@ const useKeyboardListener = () => {
   const keyMapMode = isKeyMapping && selectedZone !== null
 
   const onKeyDown = ({ key, repeat }: KeyboardEvent) => {
-    performance.mark('keydown')
+    // performance.mark('keydown')
     if (!repeat && zoneIdByKey.hasOwnProperty(key)) {
       if (keyMapMode) {
         updateKeyZone(key, selectedZone)
@@ -66,7 +70,7 @@ const useKeyboardListener = () => {
   }
 
   const onKeyUp = ({ key }: KeyboardEvent) => {
-    performance.mark('keyup')
+    // performance.mark('keyup')
     if (zoneIdByKey.hasOwnProperty(key)) {
       if (!keyMapMode) {
         setActiveKeys(removeKey({ key, activeKeys, zones, zoneIdByKey }))

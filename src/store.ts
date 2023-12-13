@@ -2,13 +2,15 @@ import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 import {
+  DEAD_ZONE_ID,
   Zone,
   getDefaultControlZone,
+  getDefaultDeadZone,
   getDefaultMutateZone,
   getDefaultNoteZone,
 } from './zone-settings'
 import { createSelectors } from './create-selectors'
-import { keyBy } from 'lodash'
+import { invertBy, keyBy } from 'lodash'
 
 export type Zones = { [id: string]: Zone }
 export type ZoneIdByKey = { [key: string]: string }
@@ -32,6 +34,8 @@ interface State {
   keyup: (key: string) => void
   zones: Zones
   updateZone: (id: string, zone: Zone) => void
+  createZone: (zone: Zone) => void
+  deleteZone: (id: string) => void
   zoneIdByKey: ZoneIdByKey
   updateKeyZone: (key: string, zoneId: string) => void
   selectedZone: string | null
@@ -48,6 +52,7 @@ const initialZones = [
   getDefaultNoteZone(),
   getDefaultControlZone(),
   getDefaultMutateZone(),
+  getDefaultDeadZone(),
 ]
 
 // Initially, each row is its own zone
@@ -92,10 +97,34 @@ const useStoreBase = create<State>()(
           zones: { ...zones, [id]: zone },
         }))
       },
+      createZone: (zone) => {
+        set(({ zones }) => ({
+          selectedZone: zone.id,
+          zones: { ...zones, [zone.id]: zone },
+        }))
+      },
+      deleteZone: (id) => {
+        set(({ zones, zoneIdByKey }) => {
+          const newZones = { ...zones }
+          delete newZones[id]
+
+          const keysByZoneId = invertBy(zoneIdByKey)
+          const newKeyZones = (keysByZoneId[id] ?? []).reduce((map, key) => {
+            map[key] = DEAD_ZONE_ID
+            return map
+          }, {} as ZoneIdByKey)
+
+          return {
+            selectedZone: null,
+            zones: newZones,
+            zoneIdByKey: { ...zoneIdByKey, ...newKeyZones },
+          }
+        })
+      },
       setIsKeyMapping: (isKeyMapping) => set({ isKeyMapping }),
     }),
     {
-      name: 'food-storage', // name of the item in the storage (must be unique)
+      name: 'food-storage', // name of the item in the storage (must be unique) // TODO give name
       storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
     }
   )

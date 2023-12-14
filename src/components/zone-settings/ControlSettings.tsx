@@ -44,9 +44,9 @@ export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
         />
         <Switch
           size="sm"
-          startDecorator="Restart on New Note"
-          checked={zone.restartOnNewNote}
-          onChange={(e) => onUpdate({ restartOnNewNote: e.target.checked })}
+          startDecorator="Legato"
+          checked={zone.legato}
+          onChange={(e) => onUpdate({ legato: e.target.checked })}
         />
       </Stack>
       <Stack direction="row" spacing={4}>

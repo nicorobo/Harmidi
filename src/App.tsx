@@ -22,7 +22,6 @@ function App() {
             <Grid />
           </Box>
         </Stack>
-        {/* <SettingsBar /> */}
       </EngineProvider>
     </MIDIProvider>
   )

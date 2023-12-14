@@ -8,6 +8,12 @@ export type ZoneOrderSettings = {
   reverse: boolean
 }
 
+const defaultOrderSettings: ZoneOrderSettings = {
+  leftToRight: true,
+  topToBottom: true,
+  reverse: false,
+}
+
 /* 
 
   Note Zone Settings
@@ -44,7 +50,7 @@ const defaultNoteZone: Omit<NoteZone, 'id'> = {
   quantize: { root: false, voices: false },
   scaleType: 'minor' as ScaleType,
   customScale: [],
-  order: { leftToRight: true, topToBottom: true, reverse: false },
+  order: defaultOrderSettings,
 }
 
 export const getDefaultNoteZone = (
@@ -75,7 +81,7 @@ export type ControlZone = {
   targetValue: number
   midiCC: number
   triggerOnNote: boolean
-  restartOnNewNote: boolean
+  legato: boolean
 }
 
 const defaultControlZone: Omit<ControlZone, 'id'> = {
@@ -88,9 +94,9 @@ const defaultControlZone: Omit<ControlZone, 'id'> = {
   initialValue: 0,
   targetValue: 127,
   midiCC: 0,
-  order: { leftToRight: true, topToBottom: true, reverse: false },
+  order: defaultOrderSettings,
   triggerOnNote: false,
-  restartOnNewNote: true,
+  legato: false,
 }
 
 export const getDefaultControlZone = (
@@ -116,7 +122,7 @@ const defaultMutateZone: Omit<MutateZone, 'id'> = {
   hold: false,
   noteZones: [],
   voices: [{ offset: 0, velocity: 100, on: true }],
-  order: { leftToRight: true, topToBottom: true, reverse: false },
+  order: defaultOrderSettings,
   beforeQuantization: false,
 }
 

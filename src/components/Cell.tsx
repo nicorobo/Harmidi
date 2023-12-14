@@ -15,6 +15,7 @@ export const Cell = ({
   const zone = useStore((state) => state.zoneIdByKey[cell])
   return (
     <Box
+      display="flex"
       height={'3rem'}
       width={'3rem'}
       mx={'0.25rem'}
@@ -24,13 +25,18 @@ export const Cell = ({
       boxSizing={'border-box'}
       sx={{ opacity: selectedZone !== null && selectedZone !== zone ? 0.5 : 1 }}
       bgcolor={isActive ? activeColor : 'none'}
-      display={'flex'}
-      flexDirection={'column-reverse'}
-      overflow={'clip'}
-      color={'#333'}
-      fontSize={'0.6rem'}
     >
-      {title}
+      <Box
+        display={'flex'}
+        justifyContent={'space-between'}
+        flexDirection={'column'}
+        overflow={'clip'}
+        color={'#333'}
+        fontSize={'0.6rem'}
+      >
+        <Box color={'#999'}>{cell}</Box>
+        <Box>{title}</Box>
+      </Box>
     </Box>
   )
 }

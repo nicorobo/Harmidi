@@ -55,10 +55,14 @@ const useKeyboardListener = () => {
   const isKeyMapping = useStore.use.isKeyMapping()
   const selectedZone = useStore.use.selectedZone()
   const updateKeyZone = useStore.use.updateKeyZone()
+  const upKeyPressed = useStore.use.upKeyPressed()
+  const downKeyPressed = useStore.use.downKeyPressed()
   const keyMapMode = isKeyMapping && selectedZone !== null
 
-  const onKeyDown = ({ key, repeat }: KeyboardEvent) => {
+  const onKeyDown = (e: KeyboardEvent) => {
     // performance.mark('keydown')
+    const { key, repeat } = e
+    console.log(e)
     if (!repeat && zoneIdByKey.hasOwnProperty(key)) {
       if (keyMapMode) {
         updateKeyZone(key, selectedZone)
@@ -66,6 +70,15 @@ const useKeyboardListener = () => {
         setActiveKeys(addKey({ key, activeKeys, zones, zoneIdByKey }))
       }
       keydown(key)
+    } else {
+      switch (key) {
+        case 'ArrowUp':
+          upKeyPressed()
+          break
+        case 'ArrowDown':
+          downKeyPressed()
+          break
+      }
     }
   }
 

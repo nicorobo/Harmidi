@@ -29,7 +29,7 @@ import { notEmpty } from '../../util'
 import { ZoneOrderSettings, isNoteZone } from '../../zone-settings'
 import { Knob } from '../Knob'
 
-const channels = new Array(16).fill(0).map((_, i) => i)
+const channels = new Array(16).fill(0).map((_, i) => i + 1)
 export const ChannelInput = ({
   channel,
   onChange,
@@ -47,7 +47,7 @@ export const ChannelInput = ({
       >
         {channels.map((channel) => (
           <Option key={channel} value={channel}>
-            {channel + 1}
+            {channel}
           </Option>
         ))}
       </Select>

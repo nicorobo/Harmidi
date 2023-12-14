@@ -8,24 +8,15 @@ import {
   getDefaultDeadZone,
   getDefaultMutateZone,
   getDefaultNoteZone,
+  isControlZone,
+  isMutateZone,
+  isNoteZone,
 } from './zone-settings'
 import { createSelectors } from './create-selectors'
 import { invertBy, keyBy } from 'lodash'
 
 export type Zones = { [id: string]: Zone }
 export type ZoneIdByKey = { [key: string]: string }
-
-// Zones are not associated to rows, but by default the zones are rows.
-// We can also pass in a zone, which will "fill" the grid.
-// const getRowByKey = (keyGrid: string[][], zoneId: string): ZoneByKey => {
-//   const dict: ZoneByKey = {}
-//   for (let i = 0; i < keyGrid.length; i++) {
-//     for (let j = 0; j < keyGrid[i].length; j++) {
-//       dict[keyGrid[i][j]] = zone
-//     }
-//   }
-//   return dict
-// }
 
 interface State {
   pressedKeys: string[]
@@ -42,6 +33,8 @@ interface State {
   setSelectedZone: (zone: string | null) => void
   isKeyMapping: boolean
   setIsKeyMapping: (isKeyMapping: boolean) => void
+  upKeyPressed: () => void
+  downKeyPressed: () => void
   // fillKeyZone: (id: string) => void
 }
 
@@ -51,7 +44,7 @@ const initialZones = [
   getDefaultNoteZone(),
   getDefaultNoteZone(),
   getDefaultControlZone(),
-  getDefaultMutateZone(),
+  // getDefaultMutateZone(),
   getDefaultDeadZone(),
 ]
 
@@ -69,7 +62,7 @@ const initialZoneIdByKey = keyboardConfigs.USEnglish.keyGrid.reduce(
 const useStoreBase = create<State>()(
   persist(
     (set) => ({
-      pressedKeys: [],
+      pressedKeys: [] as string[],
       zones: keyBy(initialZones, ({ id }) => id),
       selectedZone: initialZones[0].id,
       zoneIdByKey: initialZoneIdByKey,
@@ -91,6 +84,33 @@ const useStoreBase = create<State>()(
         set((state) => ({
           pressedKeys: state.pressedKeys.filter((k) => k !== key),
         })),
+      upKeyPressed: () =>
+        set(({ zones, selectedZone }) => {
+          if (selectedZone === null) return {}
+          const zoneArr = Object.values(zones)
+          const orderedIds = [
+            ...zoneArr.filter(isNoteZone),
+            ...zoneArr.filter(isControlZone),
+            ...zoneArr.filter(isMutateZone),
+          ].map(({ id }) => id)
+          const selectedIndex = orderedIds.indexOf(selectedZone)
+          return { selectedZone: orderedIds[Math.max(selectedIndex - 1, 0)] }
+        }),
+      downKeyPressed: () =>
+        set(({ zones, selectedZone }) => {
+          if (selectedZone === null) return {}
+          const zoneArr = Object.values(zones)
+          const orderedIds = [
+            ...zoneArr.filter(isNoteZone),
+            ...zoneArr.filter(isControlZone),
+            ...zoneArr.filter(isMutateZone),
+          ].map(({ id }) => id)
+          const selectedIndex = orderedIds.indexOf(selectedZone)
+          return {
+            selectedZone:
+              orderedIds[Math.min(selectedIndex + 1, orderedIds.length - 1)],
+          }
+        }),
       // Consider allowing partial updates here.
       updateZone: (id, zone) => {
         set(({ zones }) => ({
@@ -125,7 +145,11 @@ const useStoreBase = create<State>()(
     }),
     {
       name: 'food-storage', // name of the item in the storage (must be unique) // TODO give name
-      storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      partialize: (state) => ({
+        zones: state.zones,
+        zoneIdByKey: state.zoneIdByKey,
+        selectedZone: state.selectedZone,
+      }),
     }
   )
 )

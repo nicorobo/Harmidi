@@ -11,10 +11,8 @@ import { ZoneSettingsPanel } from './zone-settings/ZoneSettings'
 import {
   isNoteZone,
   isControlZone,
-  isMutateZone,
   getDefaultNoteZone,
   getDefaultControlZone,
-  getDefaultMutateZone,
 } from '../zone-settings'
 import { KeyMappingSwitch } from './KeyMappingSwitch'
 import { Add } from '@mui/icons-material'
@@ -25,6 +23,7 @@ export const SideNav = () => {
   const setSelectedZone = useStore.use.setSelectedZone()
   const createZone = useStore.use.createZone()
   const zones = useStore.use.zones()
+  console.log(selectedZone, zones)
 
   const zoneSelected = (id: string) => {
     setSelectedZone(selectedZone === id ? null : id)
@@ -32,7 +31,6 @@ export const SideNav = () => {
 
   const noteZones = Object.values(zones).filter(isNoteZone)
   const controlZones = Object.values(zones).filter(isControlZone)
-  const mutateZones = Object.values(zones).filter(isMutateZone)
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
       <List size="sm">
@@ -70,7 +68,7 @@ export const SideNav = () => {
           </ListItem>
         ))}
 
-        <ListSubheader sticky>
+        {/* <ListSubheader sticky>
           Mutate
           <IconButton onClick={() => createZone(getDefaultMutateZone())}>
             <Add />
@@ -85,7 +83,7 @@ export const SideNav = () => {
               {alphabet[i]}
             </ListItemButton>
           </ListItem>
-        ))}
+        ))} */}
         <ListItem>
           <KeyMappingSwitch />
         </ListItem>

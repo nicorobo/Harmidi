@@ -32,14 +32,24 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
   return (
     <Stack spacing={4}>
       <Stack spacing={2}>
-        <OrientationInput
-          value={zone.order}
-          onChange={(orientation) => onUpdate({ order: orientation })}
-        />
-        <Stack direction="row" justifyContent={'space-between'}>
+        <Stack direction="row" spacing={4}>
+          <OrientationInput
+            value={zone.order}
+            onChange={(orientation) => onUpdate({ order: orientation })}
+          />
           <ChannelInput
             channel={zone.channel}
             onChange={(channel) => onUpdate({ channel })}
+          />
+          <HoldToggleInput
+            value={zone.hold}
+            onChange={(hold) => onUpdate({ hold })}
+          />
+        </Stack>
+        <Stack direction="row" spacing={4}>
+          <VelocityInput
+            value={zone.velocity}
+            onChange={(velocity) => onUpdate({ velocity })}
           />
           <OcatveInput
             octaveOffset={zone.octave}
@@ -50,18 +60,10 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
             onChange={(translate) => onUpdate({ translate })}
           />
         </Stack>
-        <Stack direction="row" spacing={4}>
-          <VelocityInput
-            value={zone.velocity}
-            onChange={(velocity) => onUpdate({ velocity })}
-          />
+        <Stack direction="row">
           <MuteZoneInput
             muteZones={zone.muteZones}
             onChange={(muteZones) => onUpdate({ muteZones })}
-          />
-          <HoldToggleInput
-            value={zone.hold}
-            onChange={(hold) => onUpdate({ hold })}
           />
         </Stack>
       </Stack>

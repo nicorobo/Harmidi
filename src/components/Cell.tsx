@@ -12,7 +12,8 @@ export const Cell = ({
   isActive: boolean
 }) => {
   const selectedZone = useStore.use.selectedZone()
-  const zone = useStore((state) => state.zoneIdByKey[cell])
+  const zoneId = useStore((state) => state.zoneIdByKey[cell])
+  const { color } = useStore((state) => state.zones[zoneId])
   return (
     <Box
       display="flex"
@@ -21,10 +22,12 @@ export const Cell = ({
       mx={'0.25rem'}
       p={'0rem 0.15rem'}
       borderRadius={'15% 15% 15% 0'}
-      border={`1px solid ${isActive ? activeColor : '#ddd'}`}
+      // border={`1px solid ${isActive ? activeColor : '#ddd'}`}
       boxSizing={'border-box'}
-      sx={{ opacity: selectedZone !== null && selectedZone !== zone ? 0.5 : 1 }}
-      bgcolor={isActive ? activeColor : 'none'}
+      // sx={{
+      //   opacity: isActive ? 1 : 0.5,
+      // }}
+      bgcolor={color + (isActive ? 'ff' : 44)}
     >
       <Box
         display={'flex'}

@@ -20,6 +20,9 @@ dependencies:
   '@react-midi/hooks':
     specifier: file:.yalc/@react-midi/hooks
     version: file:.yalc/@react-midi/hooks(react@18.2.0)
+  '@uiw/react-color-compact':
+    specifier: ^2.0.3
+    version: 2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0)
   gsap:
     specifier: ^3.12.3
     version: 3.12.3
@@ -1226,6 +1229,69 @@ packages:
       '@typescript-eslint/types': 6.8.0
       eslint-visitor-keys: 3.4.3
     dev: true
+
+  /@uiw/color-convert@2.0.3(@babel/runtime@7.23.2):
+    resolution: {integrity: sha512-lP/dnZzaiUDMrn3F+WYAG/TLhIanoy5A0HAPEO6Z/s3Jv5AI0nOM2bVOm0HI+vNiHZkVTkE1oGP0k+endEA+9A==}
+    peerDependencies:
+      '@babel/runtime': '>=7.19.0'
+    dependencies:
+      '@babel/runtime': 7.23.2
+    dev: false
+
+  /@uiw/react-color-compact@2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-xjPn46zuFZZ0RqEB8ZelSdtU0ySpp4Ekgw+Wu/W7ZZrUGBXypgFSbQqudggOq7ovhU+4qxGOGqrN4SGHqH36mg==}
+    peerDependencies:
+      '@babel/runtime': '>=7.19.0'
+      react: '>=16.9.0'
+      react-dom: '>=16.9.0'
+    dependencies:
+      '@babel/runtime': 7.23.2
+      '@uiw/color-convert': 2.0.3(@babel/runtime@7.23.2)
+      '@uiw/react-color-editable-input': 2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      '@uiw/react-color-editable-input-rgba': 2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      '@uiw/react-color-swatch': 2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@uiw/react-color-editable-input-rgba@2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-ROz25EVr5F9XgNLG9p0RKMTgzg5ORh2RxMKC8Ch3vXrdTt4FL350Kq0N5KMHs7gyQAzcr4GQmuaCLlbEHHYAwA==}
+    peerDependencies:
+      '@babel/runtime': '>=7.19.0'
+      react: '>=16.9.0'
+      react-dom: '>=16.9.0'
+    dependencies:
+      '@babel/runtime': 7.23.2
+      '@uiw/color-convert': 2.0.3(@babel/runtime@7.23.2)
+      '@uiw/react-color-editable-input': 2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@uiw/react-color-editable-input@2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-Zy+BuvtQ5c2XcSPN+zgVQ0gnz4fl+1YB1kpKnTYNyZptL2HXWPygwz2OdfNB/bVNRR34s5/4x3jD/zNQTBe60w==}
+    peerDependencies:
+      '@babel/runtime': '>=7.19.0'
+      react: '>=16.9.0'
+      react-dom: '>=16.9.0'
+    dependencies:
+      '@babel/runtime': 7.23.2
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /@uiw/react-color-swatch@2.0.3(@babel/runtime@7.23.2)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-xKUASrSB4wPQ+kmMV1Yr1gQ9BZvMzkdotr9o+CYFGvZNSLclEur0cIhu5RkBhZ6PGP6Vd54mod43amY/a905lw==}
+    peerDependencies:
+      '@babel/runtime': '>=7.19.0'
+      react: '>=16.9.0'
+      react-dom: '>=16.9.0'
+    dependencies:
+      '@babel/runtime': 7.23.2
+      '@uiw/color-convert': 2.0.3(@babel/runtime@7.23.2)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
 
   /@vitejs/plugin-react-swc@3.4.0(vite@4.4.11):
     resolution: {integrity: sha512-m7UaA4Uvz82N/0EOVpZL4XsFIakRqrFKeSNxa1FBLSXGvWrWRBwmZb4qxk+ZIVAZcW3c3dn5YosomDgx62XWcQ==}

@@ -22,6 +22,7 @@ const defaultOrderSettings: ZoneOrderSettings = {
 
 export type NoteZone = {
   id: string
+  color: string
   zoneType: 'note'
   channel: number
   octave: number
@@ -38,6 +39,7 @@ export type NoteZone = {
 }
 
 const defaultNoteZone: Omit<NoteZone, 'id'> = {
+  color: '#333',
   zoneType: 'note',
   channel: 1,
   octave: 0,
@@ -69,6 +71,7 @@ export const getDefaultNoteZone = (
 
 export type ControlZone = {
   id: string
+  color: string
   zoneType: 'control'
   channel: number
   // useNoteChannel: boolean
@@ -85,6 +88,7 @@ export type ControlZone = {
 }
 
 const defaultControlZone: Omit<ControlZone, 'id'> = {
+  color: '#333',
   zoneType: 'control',
   channel: 1,
   hold: false,
@@ -109,6 +113,7 @@ export const getDefaultControlZone = (
 
 export type MutateZone = {
   id: string
+  color: string
   zoneType: 'mutate'
   hold: boolean
   noteZones: string[]
@@ -118,6 +123,7 @@ export type MutateZone = {
 }
 
 const defaultMutateZone: Omit<MutateZone, 'id'> = {
+  color: '#333',
   zoneType: 'mutate',
   hold: false,
   noteZones: [],
@@ -137,15 +143,17 @@ export const getDefaultMutateZone = (
 export type DeadZone = {
   id: string
   zoneType: 'dead'
+  color: string
 }
 
-export const DEAD_ZONE_ID = 'dead-zone'
+export const DEAD_ZONE_ID = 'dead-zone' // TODO replace dead zones with nothingness, it's too ridiculous
 
 export const getDefaultDeadZone = (
   overrides?: Partial<DeadZone>
 ): DeadZone => ({
   id: DEAD_ZONE_ID,
   zoneType: 'dead',
+  color: '#fff',
   ...overrides,
 })
 

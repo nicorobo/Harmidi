@@ -2,7 +2,7 @@ import { Typography } from '@mui/joy'
 
 const labelStyle = {
   textTransform: 'uppercase',
-  color: '#ae67ff',
+  color: '#333',
   fontWeight: 600,
   fontSize: '0.75rem',
 }

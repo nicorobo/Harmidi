@@ -1,12 +1,11 @@
 import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { persist } from 'zustand/middleware'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 import {
   DEAD_ZONE_ID,
   Zone,
   getDefaultControlZone,
   getDefaultDeadZone,
-  getDefaultMutateZone,
   getDefaultNoteZone,
   isControlZone,
   isMutateZone,

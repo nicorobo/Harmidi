@@ -9,7 +9,10 @@ export const ZoneSettingsPanel = ({ zone }: { zone: Zone }) => {
   return (
     <Sheet sx={{ width: '350px', overflowY: 'auto' }}>
       <ZoneSettingsHeader zone={zone} />
-      <MiniMapGrid zoneIds={[zone.id]} />
+      <Box my={2}>
+        <MiniMapGrid zoneIds={[zone.id]} />
+      </Box>
+
       <Box sx={{ p: '1rem' }}>
         {isNoteZone(zone) && <NoteSettings zone={zone} />}
         {isControlZone(zone) && <ControlSettings zone={zone} />}

@@ -23,7 +23,6 @@ export const SideNav = () => {
   const setSelectedZone = useStore.use.setSelectedZone()
   const createZone = useStore.use.createZone()
   const zones = useStore.use.zones()
-  console.log(selectedZone, zones)
 
   const zoneSelected = (id: string) => {
     setSelectedZone(selectedZone === id ? null : id)

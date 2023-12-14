@@ -11,6 +11,7 @@ interface Props {
 
 export const MiniMapGrid: React.FC<Props> = ({ zoneIds }) => {
   const { keyGrid } = useStore.use.keyboardConfig()
+  const zones = useStore.use.zones()
   const zoneByKey = useStore.use.zoneIdByKey()
   return (
     <Box display="flex" justifyContent="center">
@@ -24,11 +25,17 @@ export const MiniMapGrid: React.FC<Props> = ({ zoneIds }) => {
                 mx={0.1}
                 borderRadius={'15%'}
                 border={`1px solid ${
-                  zoneIds.includes(zoneByKey[key]) ? '#d9d8ff' : '#ddd'
+                  zoneIds.includes(zoneByKey[key])
+                    ? zones[zoneByKey[key]].color
+                    : '#ddd'
                 }`}
                 boxSizing={'border-box'}
                 //   sx={{ opacity: zoneIds.includes(zoneByKey[key]) ? 1 : 0.2 }}
-                bgcolor={zoneIds.includes(zoneByKey[key]) ? '#d9d8ff' : 'none'}
+                bgcolor={
+                  zoneIds.includes(zoneByKey[key])
+                    ? zones[zoneByKey[key]].color
+                    : 'none'
+                }
               />
             ))}
           </Stack>

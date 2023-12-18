@@ -117,7 +117,12 @@ export const useActions = () => {
       if (!noteOn || !noteOff) {
         return actions
       }
-      const controlActions = zoneOperators.controlZones.map(getCCActions)
+      const legatoActions = zoneOperators.controlZones
+        .filter((zone) => zone.legato)
+        .map(getCCActions)
+      const nonLegatoActions = zoneOperators.controlZones
+        .filter((zone) => !zone.legato)
+        .map(getCCActions)
       const noteFactory = getNotes(zone)
       const noteSettings = {
         velocity: zone.velocity,
@@ -129,18 +134,22 @@ export const useActions = () => {
           on: (triggerOperators?: boolean) => {
             // console.log(performance.measure('on', 'keydown'))
             if (triggerOperators) {
-              console.log('[on] triggering operators')
-              for (const controlAction of controlActions ?? []) {
+              for (const controlAction of legatoActions ?? []) {
                 controlAction?.on()
               }
+            }
+            for (const controlAction of nonLegatoActions ?? []) {
+              controlAction?.on()
             }
             noteOn(notes, noteSettings)
           },
           off: (triggerOperators?: boolean) => {
             // console.log(performance.measure('off', 'keyup'))
             if (triggerOperators) {
-              console.log('[off] triggering operators')
-              for (const controlAction of controlActions ?? []) {
+              for (const controlAction of legatoActions ?? []) {
+                controlAction?.off()
+              }
+              for (const controlAction of nonLegatoActions ?? []) {
                 controlAction?.off()
               }
             }

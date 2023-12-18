@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   ButtonGroup,
   Checkbox,
@@ -9,6 +10,7 @@ import {
   Stack,
   Switch,
   ToggleButtonGroup,
+  Typography,
 } from '@mui/joy'
 import { InputLabel } from './InputLabel'
 import {
@@ -19,15 +21,16 @@ import {
   SwapHoriz,
 } from '@mui/icons-material'
 import isNumber from 'lodash/isNumber'
-import { useRef, useState } from 'react'
+import { useState } from 'react'
 import { useStore } from '../../store'
-import { availableScales } from '../../constants'
 import { Chord, ChordType, Interval } from 'tonal'
-import { ScaleRoot, ScaleType } from '../../types/scale'
+import { ScaleRoot } from '../../types/scale'
 import { Voice } from './VoicesInput'
 import { notEmpty } from '../../util'
 import { ZoneOrderSettings, isNoteZone } from '../../zone-settings'
 import { Knob } from '../Knob'
+import { MiniMapGrid } from '../MiniMapGrid'
+import { availableChords } from '../../constants'
 
 const channels = new Array(16).fill(0).map((_, i) => i + 1)
 export const ChannelInput = ({
@@ -119,8 +122,8 @@ export const OcatveInput = ({
     <Stack>
       <InputLabel title="Octave" />
       <StepperInput
-        value={octaveOffset}
-        onChange={onChange}
+        value={octaveOffset - 4}
+        onChange={(val) => onChange(val + 4)}
         resetValue={0}
         min={-3}
         max={3}
@@ -185,68 +188,68 @@ export const VelocityInput = ({
   )
 }
 
-const timeMarks = [
-  { value: 0, label: '0s' },
-  { value: 1000, label: '1s' },
-  { value: 2000, label: '2s' },
-  { value: 3000, label: '3s' },
-]
-export const TimeInput = ({
-  value,
-  title,
-  onChange,
-}: {
-  value: number
-  title: string
-  onChange: (value: number) => void
-}) => {
-  const defaultValue = useRef(value)
-  return (
-    <Stack>
-      <InputLabel title={title} />
-      <Slider
-        size="sm"
-        min={0}
-        max={3000}
-        step={10}
-        marks={timeMarks}
-        valueLabelDisplay="auto"
-        defaultValue={defaultValue.current}
-        onChangeCommitted={(_, value) => onChange(value as number)}
-      />
-    </Stack>
-  )
-}
-const midiValueMarks = [
-  { value: 0, label: '0' },
-  { value: 127, label: '127' },
-]
-export const MidiValueInput = ({
-  value,
-  title,
-  onChange,
-}: {
-  value: number
-  title: string
-  onChange: (value: number) => void
-}) => {
-  const defaultValue = useRef(value)
-  return (
-    <Stack>
-      <InputLabel title={title} />
-      <Slider
-        size="sm"
-        min={0}
-        max={127}
-        step={1}
-        marks={midiValueMarks}
-        valueLabelDisplay="auto"
-        defaultValue={defaultValue.current}
-        onChangeCommitted={(_, value) => onChange(value as number)}
-      />
-    </Stack>
-  )
-}
+// const timeMarks = [
+//   { value: 0, label: '0s' },
+//   { value: 1000, label: '1s' },
+//   { value: 2000, label: '2s' },
+//   { value: 3000, label: '3s' },
+// ]
+// export const TimeInput = ({
+//   value,
+//   title,
+//   onChange,
+// }: {
+//   value: number
+//   title: string
+//   onChange: (value: number) => void
+// }) => {
+//   const defaultValue = useRef(value)
+//   return (
+//     <Stack>
+//       <InputLabel title={title} />
+//       <Slider
+//         size="sm"
+//         min={0}
+//         max={3000}
+//         step={10}
+//         marks={timeMarks}
+//         valueLabelDisplay="auto"
+//         defaultValue={defaultValue.current}
+//         onChangeCommitted={(_, value) => onChange(value as number)}
+//       />
+//     </Stack>
+//   )
+// }
+// const midiValueMarks = [
+//   { value: 0, label: '0' },
+//   { value: 127, label: '127' },
+// ]
+// export const MidiValueInput = ({
+//   value,
+//   title,
+//   onChange,
+// }: {
+//   value: number
+//   title: string
+//   onChange: (value: number) => void
+// }) => {
+//   const defaultValue = useRef(value)
+//   return (
+//     <Stack>
+//       <InputLabel title={title} />
+//       <Slider
+//         size="sm"
+//         min={0}
+//         max={127}
+//         step={1}
+//         marks={midiValueMarks}
+//         valueLabelDisplay="auto"
+//         defaultValue={defaultValue.current}
+//         onChangeCommitted={(_, value) => onChange(value as number)}
+//       />
+//     </Stack>
+//   )
+// }
 
 export const MuteZoneInput = ({
   muteZones,
@@ -257,8 +260,8 @@ export const MuteZoneInput = ({
 }) => {
   return (
     <Stack>
-      <InputLabel title="Mute" />
-      <NoteZoneInput value={muteZones} onChange={onChange} />
+      <InputLabel title="Mute Zones" />
+      <NoteZoneGridInput value={muteZones} onChange={onChange} />
     </Stack>
   )
 }
@@ -272,8 +275,8 @@ export const ActiveZoneInput = ({
 }) => {
   return (
     <Stack>
-      <InputLabel title="Zones" />
-      <NoteZoneInput value={zones} onChange={onChange} />
+      <InputLabel title="Note Zones" />
+      <NoteZoneGridInput value={zones} onChange={onChange} />
     </Stack>
   )
 }
@@ -300,6 +303,45 @@ export const NoteZoneInput = ({
         </Button>
       ))}
     </ToggleButtonGroup>
+  )
+}
+
+export const NoteZoneGridInput = ({
+  value,
+  onChange,
+}: {
+  value: string[]
+  onChange: (zones: string[]) => void
+}) => {
+  const zones = useStore.use.zones()
+  // const noteZones = Object.values(zones).filter(isNoteZone)
+
+  const [hoverZoneId, setHoverZoneId] = useState<string | null>(null)
+
+  const onPointerEnter = (zoneId: string) => {
+    setHoverZoneId(zoneId)
+  }
+  const onPointerLeave = () => {
+    setHoverZoneId(null)
+  }
+
+  return (
+    <Stack display={'flex'} alignItems={'center'}>
+      <MiniMapGrid
+        zoneIds={value}
+        onChange={onChange}
+        onZoneMouseEnter={onPointerEnter}
+        onZoneMouseLeave={onPointerLeave}
+        hoverZoneId={hoverZoneId}
+        size={10}
+      />
+      {/* <Box display={'flex'}>
+        <Typography fontSize={'0.7rem'}>
+          <Typography fontWeight={'bold'}>Zone: </Typography>
+          {hoverZoneId ? zones[hoverZoneId].id : ''}
+        </Typography>
+      </Box> */}
+    </Stack>
   )
 }
 
@@ -380,31 +422,6 @@ export const KeyTypeInput = ({
         <Button value="major">Major</Button>
         <Button value="minor">Minor</Button>
       </ToggleButtonGroup>
-    </Stack>
-  )
-}
-
-export const ScaleInput = ({
-  value,
-  onChange,
-}: {
-  value: ScaleType
-  onChange: (type: ScaleType) => void
-}) => {
-  return (
-    <Stack flexGrow={1}>
-      <InputLabel title="Scale" />
-      <Select
-        size="sm"
-        value={value}
-        onChange={(_, val) => onChange(val as ScaleType)}
-      >
-        {availableScales.map((scale) => (
-          <Option key={scale} value={scale}>
-            {scale}
-          </Option>
-        ))}
-      </Select>
     </Stack>
   )
 }
@@ -493,11 +510,6 @@ export const OrientationInput = ({
   )
 }
 
-const chordTypes = ChordType.all().map(({ name, aliases }) => ({
-  name,
-  value: aliases[0],
-}))
-
 // const Reset
 
 export const ChordInput = ({
@@ -507,7 +519,6 @@ export const ChordInput = ({
 }) => {
   const [chord, setChord] = useState<string | null>(null)
   const updateVoices = (cho = chord) => {
-    console.log('updating voices with chord: ', cho)
     const offsets = cho
       ? Chord.getChord(cho)
           .intervals.map((interval) => Interval.semitones(interval))
@@ -539,9 +550,9 @@ export const ChordInput = ({
           }}
           onChange={(_, value) => onChordSelected(value)}
         >
-          {chordTypes.map(({ name, value }) => (
-            <Option key={value} value={value}>
-              {value} {name && `(${name})`}
+          {availableChords.map((name) => (
+            <Option key={name} value={name}>
+              {name}
             </Option>
           ))}
         </Select>

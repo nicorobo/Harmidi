@@ -12,7 +12,6 @@ import { Knob } from '../Knob'
 export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
   const updateZoneSettings = useStore((state) => state.updateZone)
   const onUpdate = (update: Partial<ControlZone>) => {
-    console.log('update', update)
     updateZoneSettings(zone.id, { ...zone, ...update })
   }
   return (

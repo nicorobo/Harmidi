@@ -38,11 +38,11 @@ interface State {
 }
 
 const initialZones = [
-  getDefaultNoteZone(),
-  getDefaultNoteZone(),
-  getDefaultNoteZone(),
-  getDefaultNoteZone(),
-  getDefaultControlZone(),
+  getDefaultNoteZone({ color: '#AEA1FF' }),
+  getDefaultNoteZone({ color: '#009CE0' }),
+  getDefaultNoteZone({ color: '#0C797D' }),
+  getDefaultNoteZone({ color: '#AB149E' }),
+  getDefaultControlZone({ color: '#FCC400' }),
   // getDefaultMutateZone(),
   getDefaultDeadZone(),
 ]

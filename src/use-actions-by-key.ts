@@ -74,7 +74,6 @@ export const useActionsByKey = (activeZonesIds: string[]): KeyActions => {
   const keysByZoneId = invertBy(zoneIdByKey)
   const getActionsByZone = useActions()
   const zoneOperators = getZoneOperators(zones, activeZonesIds)
-
   const actions: KeyActions = {}
 
   for (const zoneId in keysByZoneId) {

@@ -8,13 +8,12 @@ import {
   OcatveInput,
   OrientationInput,
   QuantizeInput,
-  RootNoteInput,
-  ScaleInput,
   TranslateInput,
   VelocityInput,
 } from './SharedSettings'
 import { useStore } from '../../store'
 import { VoicesInput } from './VoicesInput'
+import { ScaleInput } from './ScaleInput'
 
 const labels = [
   { value: -24, label: '-24st' },
@@ -33,13 +32,13 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
     <Stack spacing={4}>
       <Stack spacing={2}>
         <Stack direction="row" spacing={4}>
-          <OrientationInput
-            value={zone.order}
-            onChange={(orientation) => onUpdate({ order: orientation })}
-          />
           <ChannelInput
             channel={zone.channel}
             onChange={(channel) => onUpdate({ channel })}
+          />
+          <OrientationInput
+            value={zone.order}
+            onChange={(orientation) => onUpdate({ order: orientation })}
           />
           <HoldToggleInput
             value={zone.hold}
@@ -60,12 +59,10 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
             onChange={(translate) => onUpdate({ translate })}
           />
         </Stack>
-        <Stack direction="row">
-          <MuteZoneInput
-            muteZones={zone.muteZones}
-            onChange={(muteZones) => onUpdate({ muteZones })}
-          />
-        </Stack>
+        <MuteZoneInput
+          muteZones={zone.muteZones}
+          onChange={(muteZones) => onUpdate({ muteZones })}
+        />
       </Stack>
       <ChordInput onChange={(voices) => onUpdate({ voices })} />
       <VoicesInput
@@ -81,13 +78,10 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
         onChange={(quantize) => onUpdate({ quantize })}
       />
       <Stack direction="row" spacing={2} justifyContent={'space-between'}>
-        <RootNoteInput
-          value={zone.root}
-          onChange={(root) => onUpdate({ root })}
-        />
         <ScaleInput
-          value={zone.scaleType}
-          onChange={(scaleType) => onUpdate({ scaleType })}
+          root={zone.root}
+          scale={zone.scale}
+          onChange={(root, scale) => onUpdate({ root, scale })}
         />
       </Stack>
     </Stack>

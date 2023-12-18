@@ -62,7 +62,6 @@ const useKeyboardListener = () => {
   const onKeyDown = (e: KeyboardEvent) => {
     // performance.mark('keydown')
     const { key, repeat } = e
-    console.log(e)
     if (!repeat && zoneIdByKey.hasOwnProperty(key)) {
       if (keyMapMode) {
         updateKeyZone(key, selectedZone)

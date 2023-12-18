@@ -77,16 +77,19 @@ export const EngineProvider = ({ children }: Props) => {
   const [activeKeys, setActiveKeysState] = useState<string[]>([])
   const activeZonesIds = activeKeys.map((key) => zoneIdByKey[key])
   const actionsByKey = useActionsByKey(activeZonesIds)
-  const activeKeyCountByZone = countBy(activeZonesIds)
+  const previousCountByZone = countBy(
+    previous.current.map((key) => zoneIdByKey[key])
+  )
 
   const setActiveKeys = (keys: string[]) => {
     const playing = getPlayingKeys({ activeKeys: keys, zones, zoneIdByKey })
+    const playingZoneCount = countBy(playing.map((key) => zoneIdByKey[key]))
     const { added, removed } = compareArrays(previous.current, playing)
     removed.forEach((k) =>
-      offActionsByKey[k]?.(activeKeyCountByZone[zoneIdByKey[k]] === 1)
+      offActionsByKey[k]?.(!playingZoneCount[zoneIdByKey[k]])
     )
     added.forEach((k) => {
-      const triggerOperators = !activeKeyCountByZone[zoneIdByKey[k]]
+      const triggerOperators = !previousCountByZone[zoneIdByKey[k]]
       actionsByKey[k]?.on(triggerOperators)
       setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
     })

@@ -1,7 +1,6 @@
 import { Box } from '@mui/joy'
 import { useStore } from '../store'
 
-const activeColor = '#d9d8ff'
 export const Cell = ({
   cell,
   title,

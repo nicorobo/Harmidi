@@ -31,9 +31,8 @@ export type NoteZone = {
   translate: number
   muteZones: string[]
   voices: { offset: number; velocity: number; on: boolean }[]
-  root: ScaleRoot
-  scaleType: ScaleType
-  customScale: number[]
+  root: number
+  scale: number[]
   quantize: QuantizeSettings
   order: ZoneOrderSettings
 }
@@ -42,16 +41,15 @@ const defaultNoteZone: Omit<NoteZone, 'id'> = {
   color: '#333',
   zoneType: 'note',
   channel: 1,
-  octave: 0,
+  octave: 4,
   velocity: 100,
   hold: false,
   translate: 0,
   muteZones: [],
   voices: [{ offset: 0, velocity: 100, on: true }],
-  root: 'C' as ScaleRoot,
+  root: 0,
+  scale: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   quantize: { root: false, voices: false },
-  scaleType: 'minor' as ScaleType,
-  customScale: [],
   order: defaultOrderSettings,
 }
 

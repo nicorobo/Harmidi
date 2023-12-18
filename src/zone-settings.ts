@@ -1,7 +1,8 @@
 import { nanoid } from 'nanoid'
-import { ScaleRoot, ScaleType } from './types/scale'
 
-type QuantizeSettings = { root: boolean; voices: boolean }
+export const DEFAULT_VELOCITY = 100
+
+export type QuantizeSettings = { root: boolean; voices: boolean }
 export type ZoneOrderSettings = {
   leftToRight: boolean
   topToBottom: boolean
@@ -19,7 +20,7 @@ const defaultOrderSettings: ZoneOrderSettings = {
   Note Zone Settings
 
 */
-
+export type Voice = { offset: number; velocity: number }
 export type NoteZone = {
   id: string
   color: string
@@ -30,7 +31,7 @@ export type NoteZone = {
   hold: boolean
   translate: number
   muteZones: string[]
-  voices: { offset: number; velocity: number; on: boolean }[]
+  voices: Voice[]
   root: number
   scale: number[]
   quantize: QuantizeSettings
@@ -42,11 +43,11 @@ const defaultNoteZone: Omit<NoteZone, 'id'> = {
   zoneType: 'note',
   channel: 1,
   octave: 4,
-  velocity: 100,
+  velocity: DEFAULT_VELOCITY,
   hold: false,
   translate: 0,
   muteZones: [],
-  voices: [{ offset: 0, velocity: 100, on: true }],
+  voices: [{ offset: 0, velocity: DEFAULT_VELOCITY }],
   root: 0,
   scale: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
   quantize: { root: false, voices: false },
@@ -125,7 +126,7 @@ const defaultMutateZone: Omit<MutateZone, 'id'> = {
   zoneType: 'mutate',
   hold: false,
   noteZones: [],
-  voices: [{ offset: 0, velocity: 100, on: true }],
+  voices: [{ offset: 0, velocity: DEFAULT_VELOCITY, on: true }],
   order: defaultOrderSettings,
   beforeQuantization: false,
 }

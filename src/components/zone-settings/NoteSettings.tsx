@@ -1,27 +1,18 @@
 import { Stack } from '@mui/joy'
 import { NoteZone } from '../../zone-settings'
+import { useStore } from '../../store'
 import {
-  ChannelInput,
-  ChordInput,
   HoldToggleInput,
+  MidiChannelInput,
   MuteZoneInput,
-  OcatveInput,
-  OrientationInput,
+  OctaveInput,
+  OrderInput,
   QuantizeInput,
+  ScaleInput,
   TranslateInput,
   VelocityInput,
-} from './SharedSettings'
-import { useStore } from '../../store'
-import { VoicesInput } from './VoicesInput'
-import { ScaleInput } from './ScaleInput'
-
-const labels = [
-  { value: -24, label: '-24st' },
-  { value: -12, label: '-12st' },
-  { value: 0, label: '0st' },
-  { value: 12, label: '12st' },
-  { value: 24, label: '24st' },
-]
+  VoicesInput,
+} from './inputs'
 
 export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
   const updateZoneSettings = useStore((state) => state.updateZone)
@@ -32,11 +23,11 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
     <Stack spacing={4}>
       <Stack spacing={2}>
         <Stack direction="row" spacing={4}>
-          <ChannelInput
+          <MidiChannelInput
             channel={zone.channel}
             onChange={(channel) => onUpdate({ channel })}
           />
-          <OrientationInput
+          <OrderInput
             value={zone.order}
             onChange={(orientation) => onUpdate({ order: orientation })}
           />
@@ -50,7 +41,7 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
             value={zone.velocity}
             onChange={(velocity) => onUpdate({ velocity })}
           />
-          <OcatveInput
+          <OctaveInput
             octaveOffset={zone.octave}
             onChange={(octave) => onUpdate({ octave })}
           />
@@ -64,13 +55,8 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
           onChange={(muteZones) => onUpdate({ muteZones })}
         />
       </Stack>
-      <ChordInput onChange={(voices) => onUpdate({ voices })} />
       <VoicesInput
         voices={zone.voices}
-        min={-24}
-        max={24}
-        maxVoices={6}
-        labels={labels}
         onChange={(voices) => onUpdate({ voices })}
       />
       <QuantizeInput

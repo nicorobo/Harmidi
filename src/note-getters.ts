@@ -23,9 +23,7 @@ export const getNotes = ({
       pcset[i % pcset.length] +
       ((Math.floor(i / pcset.length) + octave) * 12 + translate)
     // Currently not using velocity
-    const voices = intervals
-      .filter(({ on }) => on)
-      .map(({ offset }) => centerNote + offset)
+    const voices = intervals.map(({ offset }) => centerNote + offset)
     // TODO Here we'll quantize them again
     const midiNotes = voices
       .map((note) => {

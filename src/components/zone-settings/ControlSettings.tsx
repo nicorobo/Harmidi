@@ -1,13 +1,14 @@
 import { Stack, Switch } from '@mui/joy'
 import { ControlZone } from '../../zone-settings'
 import { useStore } from '../../store'
+import { Knob } from '../Knob'
+import { InputLabel } from './inputs/InputLabel'
 import {
-  ActiveZoneInput,
-  ChannelInput,
   HoldToggleInput,
   MidiCCInput,
-} from './SharedSettings'
-import { Knob } from '../Knob'
+  MidiChannelInput,
+  NoteZoneGridInput,
+} from './inputs'
 
 export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
   const updateZoneSettings = useStore((state) => state.updateZone)
@@ -17,7 +18,7 @@ export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
   return (
     <Stack spacing={4}>
       <Stack direction="row" spacing={4}>
-        <ChannelInput
+        <MidiChannelInput
           channel={zone.channel}
           onChange={(channel) => onUpdate({ channel })}
         />
@@ -30,10 +31,13 @@ export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
           onChange={(hold) => onUpdate({ hold })}
         />
       </Stack>
-      <ActiveZoneInput
-        zones={zone.noteZones}
-        onChange={(noteZones) => onUpdate({ noteZones })}
-      />
+      <Stack>
+        <InputLabel title="Note Zones" />
+        <NoteZoneGridInput
+          value={zone.noteZones}
+          onChange={(noteZones) => onUpdate({ noteZones })}
+        />
+      </Stack>
       <Stack direction="row" spacing={4}>
         <Switch
           size="sm"

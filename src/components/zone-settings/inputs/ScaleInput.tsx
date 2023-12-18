@@ -6,11 +6,11 @@ Below the keyboard is
     * two radio buttons for choosing the behavior of the keyboard input: either selecting root note, or selecting scale notes.
 */
 
-import { Box, Dropdown, Menu, MenuButton, MenuItem, Switch } from '@mui/joy'
-import { ScaleType } from '../../types/scale'
-import { availableScales } from '../../constants'
+import { Box, Switch } from '@mui/joy'
+import { availableScales } from '../../../constants'
 import { Scale } from 'tonal'
 import { useState } from 'react'
+import { QuickSelectInput } from './QuickSelectInput'
 
 /*
 getChroma takes the root and scale, and returns the scale's chroma representation.
@@ -46,7 +46,7 @@ export const ScaleInput: React.FC<ScaleInputProps> = ({
       onChange(root, scale.with(note, scale[note] === 0 ? 1 : 0))
     }
   }
-  const onScaleSelected = (scaleType: ScaleType) => {
+  const onScaleSelected = (scaleType: string) => {
     const scale = Scale.get(scaleType)
       .chroma.split('')
       .map((n) => +n)
@@ -56,7 +56,11 @@ export const ScaleInput: React.FC<ScaleInputProps> = ({
     <Box>
       <PianoInput root={root} notes={scale} onClick={onNoteClicked} />
       <Box>
-        <ScaleQuickSelect onSelect={onScaleSelected} />
+        <QuickSelectInput
+          options={availableScales}
+          onSelect={onScaleSelected}
+          buttonContent={'Scale'}
+        />
         <Switch
           startDecorator="Scale"
           endDecorator="Root"
@@ -65,25 +69,6 @@ export const ScaleInput: React.FC<ScaleInputProps> = ({
         />
       </Box>
     </Box>
-  )
-}
-
-export const ScaleQuickSelect = ({
-  onSelect,
-}: {
-  onSelect: (type: ScaleType) => void
-}) => {
-  return (
-    <Dropdown>
-      <MenuButton size="sm">Scale</MenuButton>
-      <Menu size="sm" sx={{ maxHeight: 200, overflow: 'auto' }}>
-        {availableScales.map((scale) => (
-          <MenuItem key={scale} onClick={() => onSelect(scale as ScaleType)}>
-            {scale}
-          </MenuItem>
-        ))}
-      </Menu>
-    </Dropdown>
   )
 }
 

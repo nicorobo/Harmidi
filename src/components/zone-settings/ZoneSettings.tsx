@@ -5,11 +5,13 @@ import { NoteSettings } from './NoteSettings'
 import { ControlSettings } from './ControlSettings'
 import { MiniMapGrid } from '../MiniMapGrid'
 
-export const ZoneSettingsPanel = ({ zone }: { zone: Zone }) => {
+type Props = { zone: Zone }
+
+export const ZoneSettingsPanel: React.FC<Props> = ({ zone }) => {
   return (
     <Sheet sx={{ width: '350px', overflowY: 'auto' }}>
       <ZoneSettingsHeader zone={zone} />
-      <Box my={2}>
+      <Box my={2} display={'flex'} justifyContent={'center'}>
         <MiniMapGrid zoneIds={[zone.id]} />
       </Box>
 

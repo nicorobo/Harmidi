@@ -2,18 +2,16 @@ import { Stack } from '@mui/joy'
 import { InputLabel } from './InputLabel'
 import { StepperInput } from './StepperInput'
 
-export const TranslateInput = ({
-  value,
-  onChange,
-}: {
-  value: number
+type Props = {
+  translate: number
   onChange: (offset: number) => void
-}) => {
+}
+export const TranslateInput: React.FC<Props> = ({ translate, onChange }) => {
   return (
     <Stack>
       <InputLabel title="Translate" />
       <StepperInput
-        value={value}
+        value={translate}
         onChange={onChange}
         resetValue={0}
         min={-11}

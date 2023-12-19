@@ -1,20 +1,19 @@
 import { Knob } from '../../Knob'
 
-export const VelocityInput = ({
-  value,
-  onChange,
-}: {
-  value: number
+type Props = {
+  velocity: number
   onChange: (value: number) => void
-}) => {
+}
+
+export const VelocityInput: React.FC<Props> = ({ velocity, onChange }) => {
   return (
     <Knob
-      value={value}
-      onChange={onChange}
-      title="Velocity"
       min={0}
       max={127}
       fullAngle={270}
+      title="Velocity"
+      value={velocity}
+      onChange={onChange}
     />
   )
 }

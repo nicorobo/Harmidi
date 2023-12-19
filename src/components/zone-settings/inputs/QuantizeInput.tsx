@@ -1,14 +1,13 @@
 import { Checkbox, Stack } from '@mui/joy'
 import { InputLabel } from './InputLabel'
+import { QuantizeSettings } from '../../../zone-settings'
 
-type QuantizeSettings = { root: boolean; voices: boolean }
-export const QuantizeInput = ({
-  quantize,
-  onChange,
-}: {
+type Props = {
   quantize: QuantizeSettings
   onChange: (value: QuantizeSettings) => void
-}) => {
+}
+
+export const QuantizeInput: React.FC<Props> = ({ quantize, onChange }) => {
   return (
     <Stack>
       <InputLabel title="Quantize" />

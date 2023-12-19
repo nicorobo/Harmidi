@@ -1,5 +1,4 @@
 import { ButtonGroup, IconButton, Stack } from '@mui/joy'
-import { ZoneOrderSettings } from '../../../zone-settings'
 import {
   ChevronLeft,
   ChevronRight,
@@ -7,29 +6,29 @@ import {
   ExpandMore,
   SwapHoriz,
 } from '@mui/icons-material'
+import { ZoneOrderSettings } from '../../../zone-settings'
 import { InputLabel } from './InputLabel'
 
-export const OrderInput = ({
-  value,
-  onChange,
-}: {
-  value: ZoneOrderSettings
+type Props = {
+  order: ZoneOrderSettings
   onChange: (order: ZoneOrderSettings) => void
-}) => {
+}
+
+export const OrderInput: React.FC<Props> = ({ order, onChange }) => {
   const toggleLeftToRight = () =>
-    onChange({ ...value, leftToRight: !value.leftToRight })
+    onChange({ ...order, leftToRight: !order.leftToRight })
   const toggleTopToBottom = () =>
-    onChange({ ...value, topToBottom: !value.topToBottom })
-  const toggleReverse = () => onChange({ ...value, reverse: !value.reverse })
+    onChange({ ...order, topToBottom: !order.topToBottom })
+  const toggleReverse = () => onChange({ ...order, reverse: !order.reverse })
   const orientationButtons = [
     <IconButton onClick={toggleLeftToRight}>
-      {value.leftToRight ? <ChevronRight /> : <ChevronLeft />}
+      {order.leftToRight ? <ChevronRight /> : <ChevronLeft />}
     </IconButton>,
     <IconButton onClick={toggleTopToBottom}>
-      {value.topToBottom ? <ExpandMore /> : <ExpandLess />}
+      {order.topToBottom ? <ExpandMore /> : <ExpandLess />}
     </IconButton>,
   ]
-  if (value.reverse) {
+  if (order.reverse) {
     orientationButtons.reverse()
   }
   return (

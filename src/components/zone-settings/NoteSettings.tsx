@@ -14,7 +14,9 @@ import {
   VoicesInput,
 } from './inputs'
 
-export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
+type Props = { zone: NoteZone }
+
+export const NoteSettings: React.FC<Props> = ({ zone }) => {
   const updateZoneSettings = useStore((state) => state.updateZone)
   const onUpdate = (update: Partial<NoteZone>) => {
     updateZoneSettings(zone.id, { ...zone, ...update })
@@ -28,25 +30,25 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
             onChange={(channel) => onUpdate({ channel })}
           />
           <OrderInput
-            value={zone.order}
+            order={zone.order}
             onChange={(orientation) => onUpdate({ order: orientation })}
           />
           <HoldToggleInput
-            value={zone.hold}
+            hold={zone.hold}
             onChange={(hold) => onUpdate({ hold })}
           />
         </Stack>
         <Stack direction="row" spacing={4}>
           <VelocityInput
-            value={zone.velocity}
+            velocity={zone.velocity}
             onChange={(velocity) => onUpdate({ velocity })}
           />
           <OctaveInput
-            octaveOffset={zone.octave}
+            octave={zone.octave}
             onChange={(octave) => onUpdate({ octave })}
           />
           <TranslateInput
-            value={zone.translate}
+            translate={zone.translate}
             onChange={(translate) => onUpdate({ translate })}
           />
         </Stack>
@@ -58,6 +60,7 @@ export const NoteSettings = ({ zone }: { zone: NoteZone }) => {
       <VoicesInput
         voices={zone.voices}
         onChange={(voices) => onUpdate({ voices })}
+        trackColor={zone.color}
       />
       <QuantizeInput
         quantize={zone.quantize}

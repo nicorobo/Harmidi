@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import { useStore } from '../../../store'
 import { Stack } from '@mui/joy'
+import { useStore } from '../../../store'
 import { MiniMapGrid } from '../../MiniMapGrid'
 
-export const NoteZoneGridInput = ({
-  value,
-  onChange,
-}: {
-  value: string[]
+type Props = {
+  zoneIds: string[]
   onChange: (zones: string[]) => void
-}) => {
+}
+
+// TODO only allow selection of note zones
+export const NoteZoneGridInput: React.FC<Props> = ({ zoneIds, onChange }) => {
   const zones = useStore.use.zones()
   // const noteZones = Object.values(zones).filter(isNoteZone)
 
@@ -18,6 +18,7 @@ export const NoteZoneGridInput = ({
   const onPointerEnter = (zoneId: string) => {
     setHoverZoneId(zoneId)
   }
+
   const onPointerLeave = () => {
     setHoverZoneId(null)
   }
@@ -25,7 +26,7 @@ export const NoteZoneGridInput = ({
   return (
     <Stack display={'flex'} alignItems={'center'}>
       <MiniMapGrid
-        zoneIds={value}
+        zoneIds={zoneIds}
         onChange={onChange}
         onZoneMouseEnter={onPointerEnter}
         onZoneMouseLeave={onPointerLeave}

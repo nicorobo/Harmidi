@@ -9,8 +9,11 @@ import {
   MidiChannelInput,
   NoteZoneGridInput,
 } from './inputs'
+import React from 'react'
 
-export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
+type Props = { zone: ControlZone }
+
+export const ControlSettings: React.FC<Props> = ({ zone }) => {
   const updateZoneSettings = useStore((state) => state.updateZone)
   const onUpdate = (update: Partial<ControlZone>) => {
     updateZoneSettings(zone.id, { ...zone, ...update })
@@ -23,18 +26,18 @@ export const ControlSettings = ({ zone }: { zone: ControlZone }) => {
           onChange={(channel) => onUpdate({ channel })}
         />
         <MidiCCInput
-          value={zone.midiCC}
+          midiCC={zone.midiCC}
           onChange={(midiCC) => onUpdate({ midiCC })}
         />
         <HoldToggleInput
-          value={zone.hold}
+          hold={zone.hold}
           onChange={(hold) => onUpdate({ hold })}
         />
       </Stack>
       <Stack>
         <InputLabel title="Note Zones" />
         <NoteZoneGridInput
-          value={zone.noteZones}
+          zoneIds={zone.noteZones}
           onChange={(noteZones) => onUpdate({ noteZones })}
         />
       </Stack>

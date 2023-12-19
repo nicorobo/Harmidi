@@ -1,14 +1,16 @@
 import React from 'react'
 import { Dropdown, Menu, MenuButton, MenuItem } from '@mui/joy'
 
-export const QuickSelectInput = ({
-  options,
-  onSelect,
-  buttonContent,
-}: {
+type Props = {
   options: string[]
   onSelect: (option: string) => void
   buttonContent: React.ReactNode
+}
+
+export const QuickSelectInput: React.FC<Props> = ({
+  options,
+  onSelect,
+  buttonContent,
 }) => {
   return (
     <Dropdown>

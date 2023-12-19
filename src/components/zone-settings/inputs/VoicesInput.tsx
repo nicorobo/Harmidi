@@ -24,10 +24,15 @@ const MIN_VOICES = 1
 
 type Props = {
   voices: Voice[]
+  trackColor: string
   onChange: (voices: Voice[]) => void
 }
 
-export const VoicesInput: React.FC<Props> = ({ voices, onChange }) => {
+export const VoicesInput: React.FC<Props> = ({
+  voices,
+  trackColor,
+  onChange,
+}) => {
   const onVoiceAdded = (offset: number) => {
     if (voices.length < MAX_VOICES) {
       onChange([...voices, { offset, velocity: DEFAULT_VELOCITY }])
@@ -65,6 +70,7 @@ export const VoicesInput: React.FC<Props> = ({ voices, onChange }) => {
         onPointRemoved={onVoiceRemoved}
         onPointUpdated={onVoiceUpdated}
         labels={LABELS}
+        trackColor={trackColor}
       />
       <QuickSelectInput
         options={availableChords}

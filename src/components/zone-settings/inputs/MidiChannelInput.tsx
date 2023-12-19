@@ -4,13 +4,12 @@ import { NumberSelectInput } from './NumberSelectInput'
 
 const channels = new Array(16).fill(0).map((_, i) => i + 1)
 
-export const MidiChannelInput = ({
-  channel,
-  onChange,
-}: {
+type Props = {
   channel: number
   onChange: (channel: number) => void
-}) => {
+}
+
+export const MidiChannelInput: React.FC<Props> = ({ channel, onChange }) => {
   return (
     <Stack>
       <InputLabel title="Channel" />

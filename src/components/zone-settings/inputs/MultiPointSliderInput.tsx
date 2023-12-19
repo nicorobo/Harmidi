@@ -14,6 +14,7 @@ type Props = {
   onPointRemoved: (id: number) => void
   onPointUpdated: (id: number, newValue: number) => void
   labels?: { value: number; label: string }[]
+  trackColor: string
   // getValue
   // getColor
   // getDefaultPoint
@@ -28,6 +29,7 @@ export const MultiPointSliderInput: React.FC<Props> = ({
   onPointRemoved,
   onPointUpdated,
   labels,
+  trackColor,
 }) => {
   const [initialX, setInitialX] = useState(0)
   const [dragValue, setDragValue] = useState(0)
@@ -95,7 +97,7 @@ export const MultiPointSliderInput: React.FC<Props> = ({
       <Box sx={sliderStyle}>
         <Box
           ref={trackRef}
-          sx={trackStyle}
+          sx={trackStyle(trackColor)}
           style={{ cursor: canAddPoint ? 'pointer' : 'inherit' }}
           onPointerMove={onMouseMoveTrack}
           onPointerLeave={onMouseOutTrack}
@@ -103,7 +105,7 @@ export const MultiPointSliderInput: React.FC<Props> = ({
         >
           {ghostPoint !== null && (
             <Box
-              sx={ghostPointStyle}
+              sx={ghostPointStyle(trackColor)}
               left={`${valueToPercentage(ghostPoint) * 100}%`}
             />
           )}
@@ -118,7 +120,7 @@ export const MultiPointSliderInput: React.FC<Props> = ({
                 arrow
               >
                 <Box
-                  sx={pointStyle}
+                  sx={pointStyle(trackColor)}
                   key={'point' + i}
                   onPointerDown={(e) => onPointMouseDown(e, i)}
                   onPointerUp={isDragging ? (e) => onPointMouseUp(e, i) : noop}
@@ -159,63 +161,69 @@ const sliderStyle = {
   position: 'relative',
   display: 'flex',
 }
-const trackStyle = {
-  height: '6px',
+const TRACK_HEIGHT = 6
+const POINT_SIZE = 15
+const POINT_COLOR = '#fff'
+
+const trackStyle = (trackColor: string) => ({
+  height: TRACK_HEIGHT,
   width: '100%',
-  background: 'rgb(207, 207, 207)',
+  background: trackColor,
   borderRadius: '65px',
   display: 'inline-block',
   ':before': {
     content: '""',
     position: 'absolute',
-    background: 'rgb(207, 207, 207)',
-    height: '6px',
-    width: '6px',
+    background: trackColor,
+    height: TRACK_HEIGHT,
+    width: TRACK_HEIGHT,
     borderRadius: '50% 0 0 50%',
-    left: '-3px',
+    left: -TRACK_HEIGHT / 2,
   },
   ':after': {
     content: '""',
     position: 'absolute',
-    background: 'rgb(207, 207, 207)',
-    height: '6px',
-    width: '6px',
+    background: trackColor,
+    height: TRACK_HEIGHT,
+    width: TRACK_HEIGHT,
     borderRadius: '0 50% 50% 0',
-    right: '-3px',
+    right: -TRACK_HEIGHT / 2,
   },
-}
+})
 
-const pointStyle = {
-  height: '13px',
-  width: '13px',
+const pointStyle = (trackColor: string) => ({
+  height: POINT_SIZE,
+  width: POINT_SIZE,
   top: '50%',
   position: 'absolute',
-  backgroundColor: '#ae67ff',
-  display: 'flex',
+  backgroundColor: POINT_COLOR,
+
   borderRadius: '50%',
+  border: `2px solid ${trackColor}`,
   transform: 'translate(-50%, -50%)',
   cursor: 'pointer',
   zIndex: '10',
-}
+})
 
-const ghostPointStyle = {
-  ...pointStyle,
+const ghostPointStyle = (trackColor: string) => ({
+  ...pointStyle(trackColor),
   opacity: '0.5',
   pointerEvents: 'none',
-}
+})
+
 const markStyle = {
   height: '2px',
   width: '2px',
-  top: '50%',
   position: 'absolute',
+  top: '50%',
   backgroundColor: 'rgb(255, 255, 255)',
-  display: 'flex',
   borderRadius: '50%',
   transform: 'translate(-50%, -50%)',
   pointerEvents: 'none',
 }
+
 const labelStyle = {
   position: 'absolute',
-  color: '#ae67ff',
+  color: '#666',
   fontSize: '0.7rem',
 }

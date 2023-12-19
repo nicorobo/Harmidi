@@ -1,18 +1,17 @@
 import { Stack, Switch } from '@mui/joy'
 import { InputLabel } from './InputLabel'
 
-export const HoldToggleInput = ({
-  value,
-  onChange,
-}: {
-  value: boolean
+type Props = {
+  hold: boolean
   onChange: (hold: boolean) => void
-}) => {
+}
+
+export const HoldToggleInput: React.FC<Props> = ({ hold, onChange }) => {
   return (
     <Stack>
       <InputLabel title="Hold" />
       <Switch
-        checked={value}
+        checked={hold}
         onChange={(e) => {
           onChange(e.target.checked)
         }}

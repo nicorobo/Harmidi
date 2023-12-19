@@ -2,18 +2,20 @@ import { Button, ButtonGroup, IconButton } from '@mui/joy'
 import { ChevronLeft, ChevronRight } from '@mui/icons-material'
 import { isNumber } from 'lodash'
 
-export const StepperInput = ({
-  value,
-  min,
-  max,
-  resetValue,
-  onChange,
-}: {
+type Props = {
   value: number
   min?: number
   max?: number
   resetValue?: number
   onChange: (newValue: number) => void
+}
+
+export const StepperInput: React.FC<Props> = ({
+  value,
+  min,
+  max,
+  resetValue,
+  onChange,
 }) => {
   const stepDown = () => onChange(value - 1)
   const stepUp = () => onChange(value + 1)

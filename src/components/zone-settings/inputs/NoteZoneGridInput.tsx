@@ -10,7 +10,7 @@ type Props = {
 
 // TODO only allow selection of note zones
 export const NoteZoneGridInput: React.FC<Props> = ({ zoneIds, onChange }) => {
-  const zones = useStore.use.zones()
+  // const zones = useStore.use.zoneById()
   // const noteZones = Object.values(zones).filter(isNoteZone)
 
   const [hoverZoneId, setHoverZoneId] = useState<string | null>(null)

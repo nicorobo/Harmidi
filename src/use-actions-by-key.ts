@@ -1,4 +1,4 @@
-import { Zones, useStore } from './store'
+import { ZoneById, useStore } from './store'
 import { useActions } from './use-note-actions'
 import invertBy from 'lodash/invertBy'
 import sortBy from 'lodash/sortBy'
@@ -7,10 +7,9 @@ import {
   MutateZone,
   Zone,
   isControlZone,
-  isDeadZone,
   isMutateZone,
 } from './zone-settings'
-import { mapValues } from 'lodash'
+import { keys, mapValues } from 'lodash'
 
 type KeyCoordinates = { [key: string]: { x: number; y: number } }
 const getKeyCoordinates = (grid: string[][]) => {
@@ -40,7 +39,7 @@ export type OperatorsByZone = {
   [id: string]: ZoneOperators
 }
 const getZoneOperators = (
-  zones: Zones,
+  zones: ZoneById,
   activeZonesIds: string[]
 ): OperatorsByZone => {
   const zoneOperators: OperatorsByZone = mapValues(zones, () => ({
@@ -67,7 +66,7 @@ const getZoneOperators = (
 }
 
 export const useActionsByKey = (activeZonesIds: string[]): KeyActions => {
-  const zones = useStore.use.zones()
+  const zones = useStore.use.zoneById()
   const zoneIdByKey = useStore.use.zoneIdByKey()
   const { keyGrid } = useStore.use.keyboardConfig()
   const keyCoordinates = getKeyCoordinates(keyGrid) // TODO memoize this
@@ -78,7 +77,7 @@ export const useActionsByKey = (activeZonesIds: string[]): KeyActions => {
 
   for (const zoneId in keysByZoneId) {
     const zone = zones[zoneId]
-    if (isDeadZone(zone)) continue
+    if (!zone) continue
     const keys = sortZoneKeys(zone, keysByZoneId[zoneId], keyCoordinates)
     Object.assign(actions, getActionsByZone(keys, zone, zoneOperators[zoneId]))
   }
@@ -86,7 +85,6 @@ export const useActionsByKey = (activeZonesIds: string[]): KeyActions => {
 }
 
 const sortZoneKeys = (zone: Zone, keys: string[], coords: KeyCoordinates) => {
-  if (isDeadZone(zone)) return keys
   const { leftToRight, topToBottom, reverse } = zone.order
   const sortVertical = (key: string) =>
     topToBottom ? coords[key].y : -coords[key].y

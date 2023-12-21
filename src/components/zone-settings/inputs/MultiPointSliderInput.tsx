@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { Box, Tooltip } from '@mui/joy'
 import { noop } from 'lodash'
 
@@ -139,7 +139,7 @@ export const MultiPointSliderInput: React.FC<Props> = ({
           const translateX =
             value === min ? '0' : value === max ? '-100%' : '-50%'
           return (
-            <>
+            <React.Fragment key={value}>
               <Box sx={markStyle} left={`${leftPercentage}%`} />
               <Box
                 sx={labelStyle}
@@ -148,7 +148,7 @@ export const MultiPointSliderInput: React.FC<Props> = ({
               >
                 {label}
               </Box>
-            </>
+            </React.Fragment>
           )
         })}
       </Box>

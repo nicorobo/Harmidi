@@ -1,18 +1,19 @@
 import React, { useRef, useState } from 'react'
 import { useActionsByKey } from './use-actions-by-key'
-import { useStore, ZoneIdByKey, Zones } from './store'
+import { useStore, ZoneIdByKey, ZoneById } from './store'
 import { transform, noop, mapValues, countBy } from 'lodash'
 import { isNoteZone } from './zone-settings'
+import { notEmpty } from './util'
 
 type GetPlayingKeysArgs = {
   activeKeys: string[]
-  zones: Zones
+  zones: ZoneById
   zoneIdByKey: ZoneIdByKey
 }
 
 // Returns a map between a zone and the zones that mute it.
 // If this is slow, we can compute it from state when settings change and cache.
-const getMutedBy = (zones: Zones) =>
+const getMutedBy = (zones: ZoneById) =>
   transform(
     zones,
     (mutedBy, zone) => {
@@ -23,7 +24,7 @@ const getMutedBy = (zones: Zones) =>
       }
       return mutedBy
     },
-    mapValues<Zones, string[]>(zones, () => [])
+    mapValues<ZoneById, string[]>(zones, () => [])
   )
 
 const getPlayingKeys = ({
@@ -31,14 +32,15 @@ const getPlayingKeys = ({
   zones,
   zoneIdByKey,
 }: GetPlayingKeysArgs) => {
-  const zoneIds = activeKeys.map((key) => zoneIdByKey[key])
+  const zoneIds = activeKeys.map((key) => zoneIdByKey[key]).filter(notEmpty)
   const mutedBy = getMutedBy(zones)
   const playing: string[] = []
   for (let i = 0; i < activeKeys.length; i++) {
     // Is there a key already playing causing a non-mutual mute?
-    const alreadyMuted = playing.some((k) =>
-      (mutedBy[zoneIds[i]] || []).includes(zoneIdByKey[k])
-    )
+    const alreadyMuted = playing.some((k) => {
+      const zoneId = zoneIdByKey[k]
+      return zoneId ? (mutedBy[zoneIds[i]] || []).includes(zoneId) : false
+    })
     // Is there a key that will be played that will cause a mute?
     const willBeMuted = zoneIds
       .slice(i + 1)
@@ -72,10 +74,12 @@ export const EngineProvider = ({ children }: Props) => {
   const [offActionsByKey, setOffActionsByKey] = useState<{
     [key: string]: (triggerOperators?: boolean) => void
   }>({})
-  const zones = useStore.use.zones()
+  const zones = useStore.use.zoneById()
   const zoneIdByKey = useStore.use.zoneIdByKey()
   const [activeKeys, setActiveKeysState] = useState<string[]>([])
-  const activeZonesIds = activeKeys.map((key) => zoneIdByKey[key])
+  const activeZonesIds = activeKeys
+    .map((key) => zoneIdByKey[key])
+    .filter(notEmpty)
   const actionsByKey = useActionsByKey(activeZonesIds)
   const previousCountByZone = countBy(
     previous.current.map((key) => zoneIdByKey[key])
@@ -86,10 +90,10 @@ export const EngineProvider = ({ children }: Props) => {
     const playingZoneCount = countBy(playing.map((key) => zoneIdByKey[key]))
     const { added, removed } = compareArrays(previous.current, playing)
     removed.forEach((k) =>
-      offActionsByKey[k]?.(!playingZoneCount[zoneIdByKey[k]])
+      offActionsByKey[k]?.(!playingZoneCount[zoneIdByKey[k] ?? ''])
     )
     added.forEach((k) => {
-      const triggerOperators = !previousCountByZone[zoneIdByKey[k]]
+      const triggerOperators = !previousCountByZone[zoneIdByKey[k] ?? '']
       actionsByKey[k]?.on(triggerOperators)
       setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
     })

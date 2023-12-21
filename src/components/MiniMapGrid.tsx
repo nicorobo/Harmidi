@@ -4,7 +4,6 @@
 
 import { Box, Stack } from '@mui/joy'
 import { useStore } from '../store'
-import { noop } from 'lodash'
 
 interface Props {
   zoneIds: string[]
@@ -24,7 +23,7 @@ export const MiniMapGrid: React.FC<Props> = ({
   size = 10,
 }) => {
   const { keyGrid } = useStore.use.keyboardConfig()
-  const zones = useStore.use.zones()
+  const zones = useStore.use.zoneById()
   const zoneByKey = useStore.use.zoneIdByKey()
   const onClick = (zoneId: string) => {
     if (!onChange) return
@@ -33,7 +32,8 @@ export const MiniMapGrid: React.FC<Props> = ({
       onChange([...zoneIds.slice(0, index), ...zoneIds.slice(index + 1)])
     else onChange([...zoneIds, zoneId])
   }
-  const getCellColor = (zoneId: string) => {
+  const getCellColor = (zoneId: string | null) => {
+    if (!zoneId) return null
     if (zoneIds.includes(zoneId)) return zones[zoneId].color
     if (hoverZoneId === zoneId) return zones[zoneId].color + '80'
     return null
@@ -42,22 +42,24 @@ export const MiniMapGrid: React.FC<Props> = ({
     <Box display={'flex'}>
       <Stack>
         {keyGrid.map((row, i) => (
-          <Stack direction="row" ml={`${0.3 * i}rem`}>
+          <Stack key={i} direction="row" ml={`${0.3 * i}rem`}>
             {/* outer box is to allow for continuous mouseover events */}
             {row.map((key) => (
               <Box
+                key={key}
                 sx={{ cursor: onChange ? 'pointer' : 'default' }}
-                onClick={() => onClick(zoneByKey[key])}
-                onPointerEnter={
-                  onZoneMouseEnter
-                    ? () => onZoneMouseEnter(zoneByKey[key])
-                    : noop
-                }
-                onPointerLeave={
-                  onZoneMouseLeave
-                    ? () => onZoneMouseLeave(zoneByKey[key])
-                    : noop
-                }
+                onClick={() => {
+                  const zoneId = zoneByKey[key]
+                  zoneId && onClick(zoneId)
+                }}
+                onPointerEnter={() => {
+                  const zoneId = zoneByKey[key]
+                  zoneId && onZoneMouseEnter && onZoneMouseEnter(zoneId)
+                }}
+                onPointerLeave={() => {
+                  const zoneId = zoneByKey[key]
+                  zoneId && onZoneMouseLeave && onZoneMouseLeave(zoneId)
+                }}
               >
                 <Box
                   height={`${size}px`}

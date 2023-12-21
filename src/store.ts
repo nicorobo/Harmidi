@@ -2,27 +2,24 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 import {
-  DEAD_ZONE_ID,
   Zone,
   getDefaultControlZone,
-  getDefaultDeadZone,
   getDefaultNoteZone,
-  isControlZone,
-  isMutateZone,
-  isNoteZone,
 } from './zone-settings'
 import { createSelectors } from './create-selectors'
 import { invertBy, keyBy } from 'lodash'
 
-export type Zones = { [id: string]: Zone }
-export type ZoneIdByKey = { [key: string]: string }
+export type ZoneIds = string[]
+export type ZoneById = { [id: string]: Zone }
+export type ZoneIdByKey = { [key: string]: string | null }
 
 interface State {
   pressedKeys: string[]
   keyboardConfig: KeyboardConfig
   keydown: (key: string) => void
   keyup: (key: string) => void
-  zones: Zones
+  zoneIds: ZoneIds
+  zoneById: ZoneById
   updateZone: (id: string, zone: Zone) => void
   createZone: (zone: Zone) => void
   deleteZone: (id: string) => void
@@ -38,13 +35,11 @@ interface State {
 }
 
 const initialZones = [
-  getDefaultNoteZone({ color: '#AEA1FF' }),
-  getDefaultNoteZone({ color: '#009CE0' }),
-  getDefaultNoteZone({ color: '#0C797D' }),
-  getDefaultNoteZone({ color: '#AB149E' }),
-  getDefaultControlZone({ color: '#FCC400' }),
-  // getDefaultMutateZone(),
-  getDefaultDeadZone(),
+  getDefaultNoteZone({ color: '#AEA1FF', name: 'Zone 1' }),
+  getDefaultNoteZone({ color: '#009CE0', name: 'Zone 2' }),
+  getDefaultNoteZone({ color: '#0C797D', name: 'Zone 3' }),
+  getDefaultNoteZone({ color: '#AB149E', name: 'Zone 4' }),
+  getDefaultControlZone({ color: '#FCC400', name: 'Zone 5' }),
 ]
 
 // Initially, each row is its own zone
@@ -62,7 +57,8 @@ const useStoreBase = create<State>()(
   persist(
     (set) => ({
       pressedKeys: [] as string[],
-      zones: keyBy(initialZones, ({ id }) => id),
+      zoneIds: initialZones.map(({ id }) => id),
+      zoneById: keyBy(initialZones, ({ id }) => id),
       selectedZone: initialZones[0].id,
       zoneIdByKey: initialZoneIdByKey,
       keyboardConfig: keyboardConfigs.USEnglish,
@@ -84,58 +80,48 @@ const useStoreBase = create<State>()(
           pressedKeys: state.pressedKeys.filter((k) => k !== key),
         })),
       upKeyPressed: () =>
-        set(({ zones, selectedZone }) => {
+        set(({ zoneIds, selectedZone }) => {
           if (selectedZone === null) return {}
-          const zoneArr = Object.values(zones)
-          const orderedIds = [
-            ...zoneArr.filter(isNoteZone),
-            ...zoneArr.filter(isControlZone),
-            ...zoneArr.filter(isMutateZone),
-          ].map(({ id }) => id)
-          const selectedIndex = orderedIds.indexOf(selectedZone)
-          return { selectedZone: orderedIds[Math.max(selectedIndex - 1, 0)] }
+          const selectedIndex = zoneIds.indexOf(selectedZone)
+          return { selectedZone: zoneIds[Math.max(selectedIndex - 1, 0)] }
         }),
       downKeyPressed: () =>
-        set(({ zones, selectedZone }) => {
+        set(({ zoneIds, selectedZone }) => {
           if (selectedZone === null) return {}
-          const zoneArr = Object.values(zones)
-          const orderedIds = [
-            ...zoneArr.filter(isNoteZone),
-            ...zoneArr.filter(isControlZone),
-            ...zoneArr.filter(isMutateZone),
-          ].map(({ id }) => id)
-          const selectedIndex = orderedIds.indexOf(selectedZone)
+          const selectedIndex = zoneIds.indexOf(selectedZone)
           return {
             selectedZone:
-              orderedIds[Math.min(selectedIndex + 1, orderedIds.length - 1)],
+              zoneIds[Math.min(selectedIndex + 1, zoneIds.length - 1)],
           }
         }),
       // Consider allowing partial updates here.
       updateZone: (id, zone) => {
-        set(({ zones }) => ({
-          zones: { ...zones, [id]: zone },
+        set(({ zoneById }) => ({
+          zoneById: { ...zoneById, [id]: zone },
         }))
       },
       createZone: (zone) => {
-        set(({ zones }) => ({
+        set(({ zoneIds, zoneById }) => ({
           selectedZone: zone.id,
-          zones: { ...zones, [zone.id]: zone },
+          zoneIds: [...zoneIds, zone.id],
+          zoneById: { ...zoneById, [zone.id]: zone },
         }))
       },
       deleteZone: (id) => {
-        set(({ zones, zoneIdByKey }) => {
-          const newZones = { ...zones }
+        set(({ zoneById, zoneIds, zoneIdByKey }) => {
+          const newZones = { ...zoneById }
           delete newZones[id]
 
           const keysByZoneId = invertBy(zoneIdByKey)
           const newKeyZones = (keysByZoneId[id] ?? []).reduce((map, key) => {
-            map[key] = DEAD_ZONE_ID
+            map[key] = null
             return map
           }, {} as ZoneIdByKey)
 
           return {
             selectedZone: null,
             zones: newZones,
+            zoneIds: zoneIds.filter((zoneId) => zoneId !== id),
             zoneIdByKey: { ...zoneIdByKey, ...newKeyZones },
           }
         })
@@ -145,7 +131,8 @@ const useStoreBase = create<State>()(
     {
       name: 'food-storage', // name of the item in the storage (must be unique) // TODO give name
       partialize: (state) => ({
-        zones: state.zones,
+        zoneIds: state.zoneIds,
+        zoneById: state.zoneById,
         zoneIdByKey: state.zoneIdByKey,
         selectedZone: state.selectedZone,
       }),

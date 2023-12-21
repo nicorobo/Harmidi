@@ -15,15 +15,18 @@ const defaultOrderSettings: ZoneOrderSettings = {
   reverse: false,
 }
 
+type Common = {
+  id: string
+  color: string
+  name: string
+}
 /* 
 
   Note Zone Settings
 
 */
 export type Voice = { offset: number; velocity: number }
-export type NoteZone = {
-  id: string
-  color: string
+export type NoteZone = Common & {
   zoneType: 'note'
   channel: number
   octave: number
@@ -38,6 +41,7 @@ export type NoteZone = {
 }
 
 const defaultNoteZone: Omit<NoteZone, 'id'> = {
+  name: 'Note Zone',
   color: '#333',
   zoneType: 'note',
   channel: 1,
@@ -62,13 +66,11 @@ export const getDefaultNoteZone = (
 
 /* 
 
-  Operator Zone Settings
+  Control Zone Settings
 
 */
 
-export type ControlZone = {
-  id: string
-  color: string
+export type ControlZone = Common & {
   zoneType: 'control'
   channel: number
   // useNoteChannel: boolean
@@ -85,6 +87,7 @@ export type ControlZone = {
 }
 
 const defaultControlZone: Omit<ControlZone, 'id'> = {
+  name: 'Control Zone',
   color: '#333',
   zoneType: 'control',
   channel: 1,
@@ -108,9 +111,14 @@ export const getDefaultControlZone = (
   ...overrides,
 })
 
-export type MutateZone = {
-  id: string
-  color: string
+/* 
+
+  Mutate Zone Settings
+  Mutate zones are currently not used, but they will be used to modify the behavior of other zones.
+
+*/
+
+export type MutateZone = Common & {
   zoneType: 'mutate'
   hold: boolean
   noteZones: string[]
@@ -120,6 +128,7 @@ export type MutateZone = {
 }
 
 const defaultMutateZone: Omit<MutateZone, 'id'> = {
+  name: 'Mutate Zone',
   color: '#333',
   zoneType: 'mutate',
   hold: false,
@@ -137,24 +146,7 @@ export const getDefaultMutateZone = (
   ...overrides,
 })
 
-export type DeadZone = {
-  id: string
-  zoneType: 'dead'
-  color: string
-}
-
-export const DEAD_ZONE_ID = 'dead-zone' // TODO replace dead zones with nothingness, it's too ridiculous
-
-export const getDefaultDeadZone = (
-  overrides?: Partial<DeadZone>
-): DeadZone => ({
-  id: DEAD_ZONE_ID,
-  zoneType: 'dead',
-  color: '#fff',
-  ...overrides,
-})
-
-export type Zone = NoteZone | ControlZone | MutateZone | DeadZone
+export type Zone = NoteZone | ControlZone | MutateZone
 
 export const isControlZone = (zone: Zone): zone is ControlZone =>
   zone.zoneType === 'control'
@@ -162,5 +154,3 @@ export const isMutateZone = (zone: Zone): zone is MutateZone =>
   zone.zoneType === 'mutate'
 export const isNoteZone = (zone: Zone): zone is NoteZone =>
   zone.zoneType === 'note'
-export const isDeadZone = (zone: Zone): zone is DeadZone =>
-  zone.zoneType === 'dead'

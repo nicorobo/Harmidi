@@ -33,7 +33,7 @@ export const ZoneSettingsHeader: React.FC<Props> = ({ zone }) => {
       }}
     >
       <ColorPicker color={zone.color} onChange={onColorChange} />
-      <Typography>Zone {zone.id.substring(0, 5)}</Typography>
+      <Typography>{zone.name} </Typography>
       <ContextMenu id={zone.id} />
     </Box>
   )

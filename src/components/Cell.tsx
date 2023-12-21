@@ -12,7 +12,8 @@ export const Cell = ({
 }) => {
   const selectedZone = useStore.use.selectedZone()
   const zoneId = useStore((state) => state.zoneIdByKey[cell])
-  const { color } = useStore((state) => state.zones[zoneId])
+  const zoneById = useStore.use.zoneById()
+  const { color } = zoneId ? zoneById[zoneId] : { color: '#fff' }
   return (
     <Box
       display="flex"
@@ -21,7 +22,7 @@ export const Cell = ({
       mx={'0.25rem'}
       p={'0rem 0.15rem'}
       borderRadius={'15% 15% 15% 0'}
-      // border={`2px solid ${color}`}
+      border={color === '#fff' ? `1px solid #eee` : ''}
       boxSizing={'border-box'}
       // sx={{
       //   opacity: isActive ? 1 : 0.5,

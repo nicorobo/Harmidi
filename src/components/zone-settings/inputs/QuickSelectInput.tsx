@@ -5,16 +5,20 @@ type Props = {
   options: string[]
   onSelect: (option: string) => void
   buttonContent: React.ReactNode
+  endDecorator?: React.ReactNode
 }
 
 export const QuickSelectInput: React.FC<Props> = ({
   options,
   onSelect,
   buttonContent,
+  endDecorator,
 }) => {
   return (
     <Dropdown>
-      <MenuButton size="sm">{buttonContent}</MenuButton>
+      <MenuButton endDecorator={endDecorator} size="sm">
+        {buttonContent}
+      </MenuButton>
       <Menu size="sm" sx={{ maxHeight: 200, overflow: 'auto' }}>
         {options.map((option) => (
           <MenuItem key={option} onClick={() => onSelect(option)}>

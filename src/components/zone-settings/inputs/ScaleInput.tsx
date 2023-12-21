@@ -6,13 +6,14 @@ Below the PianoInput is
     * a switch for choosing the behavior of the keyboard input: either selecting root note, or selecting scale notes.
 */
 
-import { Box, Button, Stack, Switch, ToggleButtonGroup } from '@mui/joy'
+import { Box, Stack, Switch } from '@mui/joy'
 import { availableScales } from '../../../constants'
 import { Scale } from 'tonal'
 import { useState } from 'react'
 import { QuickSelectInput } from './QuickSelectInput'
 import { PianoInput } from './PianoInput'
 import { InputLabel } from './InputLabel'
+import { ArrowDropDown } from '@mui/icons-material'
 
 interface Props {
   root: number
@@ -60,6 +61,7 @@ export const ScaleInput: React.FC<Props> = ({
             options={availableScales}
             onSelect={onScaleSelected}
             buttonContent={'Scales'}
+            endDecorator={<ArrowDropDown fontSize="small" />}
           />
           <Switch
             endDecorator="Choose Root"

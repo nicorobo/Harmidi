@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Stack } from '@mui/joy'
+import { Button, Stack } from '@mui/joy'
 import { MultiPointSliderInput } from './MultiPointSliderInput'
 import { DEFAULT_VELOCITY, Voice } from '../../../zone-settings'
 import { QuickSelectInput } from './QuickSelectInput'
@@ -6,6 +6,7 @@ import { availableChords } from '../../../constants'
 import { Chord, Interval } from 'tonal'
 import { notEmpty } from '../../../util'
 import { InputLabel } from './InputLabel'
+import { ArrowDropDown } from '@mui/icons-material'
 
 // TODO This whole file needs some TLC
 // TODO make this all more general/reusable later
@@ -84,6 +85,7 @@ export const VoicesInput: React.FC<Props> = ({
           options={availableChords}
           onSelect={onChordSelected}
           buttonContent={'Chords'}
+          endDecorator={<ArrowDropDown fontSize="small" />}
         />
         <Button onClick={setToDefault} size="sm">
           Single

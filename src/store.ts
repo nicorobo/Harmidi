@@ -117,9 +117,13 @@ const useStoreBase = create<State>()(
             map[key] = null
             return map
           }, {} as ZoneIdByKey)
-
+          const deletedIndex = zoneIds.indexOf(id)
+          const newSelectedZone =
+            deletedIndex === zoneIds.length - 1
+              ? zoneIds[deletedIndex - 1]
+              : zoneIds[deletedIndex + 1]
           return {
-            selectedZone: null,
+            selectedZone: newSelectedZone ?? null,
             zones: newZones,
             zoneIds: zoneIds.filter((zoneId) => zoneId !== id),
             zoneIdByKey: { ...zoneIdByKey, ...newKeyZones },

@@ -173,7 +173,7 @@ type calculateGradientArgs = {
 const calculateGradient = ({
   fullAngle,
   currentDeg,
-  activeColor = '#ae67ff',
+  activeColor = '#0a6bcb',
   inactiveColor = '#eee',
   backgroundColor = '#fff',
 }: calculateGradientArgs) => {

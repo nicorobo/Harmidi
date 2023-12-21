@@ -21,7 +21,7 @@ export const Cell = ({
       mx={'0.25rem'}
       p={'0rem 0.15rem'}
       borderRadius={'15% 15% 15% 0'}
-      // border={`1px solid ${isActive ? activeColor : '#ddd'}`}
+      // border={`2px solid ${color}`}
       boxSizing={'border-box'}
       // sx={{
       //   opacity: isActive ? 1 : 0.5,

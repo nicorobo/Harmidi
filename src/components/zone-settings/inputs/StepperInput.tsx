@@ -23,11 +23,11 @@ export const StepperInput: React.FC<Props> = ({
   return (
     <ButtonGroup size="sm">
       <IconButton disabled={isNumber(min) && value <= min} onClick={stepDown}>
-        <ChevronLeft />
+        <ChevronLeft fontSize="small" />
       </IconButton>
       <Button onClick={reset}>{value}</Button>
       <IconButton disabled={isNumber(max) && value >= max} onClick={stepUp}>
-        <ChevronRight />
+        <ChevronRight fontSize="small" />
       </IconButton>
     </ButtonGroup>
   )

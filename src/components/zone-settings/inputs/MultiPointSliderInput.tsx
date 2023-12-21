@@ -93,7 +93,7 @@ export const MultiPointSliderInput: React.FC<Props> = ({
     }
   }
   return (
-    <Box pt={1} height={50}>
+    <Box pt={1} height={40}>
       <Box sx={sliderStyle}>
         <Box
           ref={trackRef}

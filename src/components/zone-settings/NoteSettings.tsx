@@ -7,7 +7,6 @@ import {
   MuteZoneInput,
   OctaveInput,
   OrderInput,
-  QuantizeInput,
   ScaleInput,
   TranslateInput,
   VelocityInput,
@@ -60,16 +59,13 @@ export const NoteSettings: React.FC<Props> = ({ zone }) => {
       <VoicesInput
         voices={zone.voices}
         onChange={(voices) => onUpdate({ voices })}
-        trackColor={zone.color}
-      />
-      <QuantizeInput
-        quantize={zone.quantize}
-        onChange={(quantize) => onUpdate({ quantize })}
+        trackColor={'#0a6bcb'}
       />
       <Stack direction="row" spacing={2} justifyContent={'space-between'}>
         <ScaleInput
           root={zone.root}
           scale={zone.scale}
+          color={'#0a6bcb'}
           onChange={(root, scale) => onUpdate({ root, scale })}
         />
       </Stack>

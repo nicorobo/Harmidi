@@ -22,10 +22,18 @@ export const OrderInput: React.FC<Props> = ({ order, onChange }) => {
   const toggleReverse = () => onChange({ ...order, reverse: !order.reverse })
   const orientationButtons = [
     <IconButton onClick={toggleLeftToRight}>
-      {order.leftToRight ? <ChevronRight /> : <ChevronLeft />}
+      {order.leftToRight ? (
+        <ChevronRight fontSize="small" />
+      ) : (
+        <ChevronLeft fontSize="small" />
+      )}
     </IconButton>,
     <IconButton onClick={toggleTopToBottom}>
-      {order.topToBottom ? <ExpandMore /> : <ExpandLess />}
+      {order.topToBottom ? (
+        <ExpandMore fontSize="small" />
+      ) : (
+        <ExpandLess fontSize="small" />
+      )}
     </IconButton>,
   ]
   if (order.reverse) {
@@ -34,10 +42,10 @@ export const OrderInput: React.FC<Props> = ({ order, onChange }) => {
   return (
     <Stack>
       <InputLabel title="Order" />
-      <ButtonGroup>
+      <ButtonGroup size="sm">
         {...orientationButtons}
         <IconButton onClick={toggleReverse}>
-          <SwapHoriz />
+          <SwapHoriz fontSize="small" />
         </IconButton>
       </ButtonGroup>
     </Stack>

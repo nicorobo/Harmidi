@@ -34,7 +34,6 @@ export type NoteZone = {
   voices: Voice[]
   root: number
   scale: number[]
-  quantize: QuantizeSettings
   order: ZoneOrderSettings
 }
 
@@ -49,8 +48,7 @@ const defaultNoteZone: Omit<NoteZone, 'id'> = {
   muteZones: [],
   voices: [{ offset: 0, velocity: DEFAULT_VELOCITY }],
   root: 0,
-  scale: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-  quantize: { root: false, voices: false },
+  scale: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // chromatic
   order: defaultOrderSettings,
 }
 

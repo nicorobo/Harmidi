@@ -6,20 +6,27 @@ Below the PianoInput is
     * a switch for choosing the behavior of the keyboard input: either selecting root note, or selecting scale notes.
 */
 
-import { Box, Switch } from '@mui/joy'
+import { Box, Button, Stack, Switch, ToggleButtonGroup } from '@mui/joy'
 import { availableScales } from '../../../constants'
 import { Scale } from 'tonal'
 import { useState } from 'react'
 import { QuickSelectInput } from './QuickSelectInput'
 import { PianoInput } from './PianoInput'
+import { InputLabel } from './InputLabel'
 
 interface Props {
   root: number
+  color: string
   scale: number[]
   onChange: (root: number, notes: number[]) => void
 }
 
-export const ScaleInput: React.FC<Props> = ({ root, scale, onChange }) => {
+export const ScaleInput: React.FC<Props> = ({
+  root,
+  color,
+  scale,
+  onChange,
+}) => {
   const [rootMode, setRootMode] = useState(false)
 
   const onNoteClicked = (note: number) => {
@@ -39,22 +46,30 @@ export const ScaleInput: React.FC<Props> = ({ root, scale, onChange }) => {
   }
 
   return (
-    <Box>
-      <PianoInput root={root} notes={scale} onClick={onNoteClicked} />
-      <Box>
-        <QuickSelectInput
-          options={availableScales}
-          onSelect={onScaleSelected}
-          buttonContent={'Scale'}
+    <Stack gap={0.5}>
+      <InputLabel title="Quantize" />
+      <Box display={'flex'}>
+        <PianoInput
+          root={root}
+          color={color}
+          notes={scale}
+          onClick={onNoteClicked}
         />
-        <Switch
-          startDecorator="Scale"
-          endDecorator="Root"
-          checked={rootMode}
-          onChange={(e) => setRootMode(e.target.checked)}
-        />
+        <Stack gap={'0.5rem'} ml={1}>
+          <QuickSelectInput
+            options={availableScales}
+            onSelect={onScaleSelected}
+            buttonContent={'Scales'}
+          />
+          <Switch
+            endDecorator="Choose Root"
+            size="sm"
+            checked={rootMode}
+            onChange={(e) => setRootMode(e.target.checked)}
+          />
+        </Stack>
       </Box>
-    </Box>
+    </Stack>
   )
 }
 

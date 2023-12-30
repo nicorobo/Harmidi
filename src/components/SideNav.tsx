@@ -17,9 +17,9 @@ import { Add, MusicNote, Speed } from '@mui/icons-material'
 
 export const ZoneIcon = ({ type }: { type: 'note' | 'control' | 'mutate' }) => {
   if (type === 'note') {
-    return <MusicNote fontSize="inherit" />
+    return <MusicNote htmlColor="#222" fontSize="inherit" />
   } else {
-    return <Speed fontSize="inherit" />
+    return <Speed htmlColor="#222" fontSize="inherit" />
   }
 }
 
@@ -27,7 +27,7 @@ const AddZoneButton = () => {
   const createZone = useStore.use.createZone()
   return (
     <Dropdown>
-      <MenuButton size="sm" variant="plain">
+      <MenuButton size="sm" variant="plain" sx={{ paddingInline: 'inherit' }}>
         <Add fontSize="small" />
       </MenuButton>
       <Menu size="sm" placement="right-end">

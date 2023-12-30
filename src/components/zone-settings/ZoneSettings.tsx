@@ -11,9 +11,9 @@ export const ZoneSettingsPanel: React.FC<Props> = ({ zone }) => {
   return (
     <Sheet sx={{ width: '350px', overflowY: 'auto' }}>
       <ZoneSettingsHeader zone={zone} />
-      <Box my={2} display={'flex'} justifyContent={'center'}>
-        <MiniMapGrid zoneIds={[zone.id]} />
-      </Box>
+      {/* <Box my={2} display={'flex'} justifyContent={'center'}>
+        <MiniMapGrid size={7} zoneIds={[zone.id]} />
+      </Box> */}
 
       <Box sx={{ p: '1rem' }}>
         {isNoteZone(zone) && <NoteSettings zone={zone} />}

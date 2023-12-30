@@ -53,6 +53,7 @@ export const NoteSettings: React.FC<Props> = ({ zone }) => {
         </Stack>
         <MuteZoneInput
           muteZones={zone.muteZones}
+          selfId={zone.id}
           onChange={(muteZones) => onUpdate({ muteZones })}
         />
       </Stack>

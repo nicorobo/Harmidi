@@ -49,6 +49,12 @@ const useKeyboardListener = () => {
 
   const onKeyDown = (e: KeyboardEvent) => {
     const { key, repeat } = e
+    const target = target as HTMLElement
+    if (target.tagName === 'INPUT' && target.type === 'text') {
+      console.log('input')
+      // If it is an input or textarea, do nothing
+      return
+    }
     if (!repeat && zoneIdByKey.hasOwnProperty(key)) {
       if (keyMapMode) {
         updateKeyZone(key, selectedZone)

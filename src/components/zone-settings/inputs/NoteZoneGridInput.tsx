@@ -5,11 +5,16 @@ import { MiniMapGrid } from '../../MiniMapGrid'
 
 type Props = {
   zoneIds: string[]
+  specialZoneId?: string
   onChange: (zones: string[]) => void
 }
 
 // TODO only allow selection of note zones
-export const NoteZoneGridInput: React.FC<Props> = ({ zoneIds, onChange }) => {
+export const NoteZoneGridInput: React.FC<Props> = ({
+  zoneIds,
+  specialZoneId,
+  onChange,
+}) => {
   // const zones = useStore.use.zoneById()
   // const noteZones = Object.values(zones).filter(isNoteZone)
 
@@ -27,6 +32,7 @@ export const NoteZoneGridInput: React.FC<Props> = ({ zoneIds, onChange }) => {
     <Stack display={'flex'} alignItems={'center'}>
       <MiniMapGrid
         zoneIds={zoneIds}
+        specialZoneId={specialZoneId}
         onChange={onChange}
         onZoneMouseEnter={onPointerEnter}
         onZoneMouseLeave={onPointerLeave}

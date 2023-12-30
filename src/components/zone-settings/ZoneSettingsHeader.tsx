@@ -1,9 +1,17 @@
-import { Box, Dropdown, Menu, MenuButton, MenuItem, Typography } from '@mui/joy'
+import {
+  Box,
+  Dropdown,
+  IconButton,
+  Input,
+  Menu,
+  MenuButton,
+  MenuItem,
+} from '@mui/joy'
 import { Zone } from '../../zone-settings'
-import { MoreVert } from '@mui/icons-material'
+import { Check, Delete, MoreVert } from '@mui/icons-material'
 import { useStore } from '../../store'
 import { ColorPicker } from './ColorPicker'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 /* 
 A header for the zone settings panel.
@@ -22,6 +30,9 @@ export const ZoneSettingsHeader: React.FC<Props> = ({ zone }) => {
   const onColorChange = (color: string) => {
     updateZone(zone.id, { ...zone, color })
   }
+  const onNameChange = (name: string) => {
+    updateZone(zone.id, { ...zone, name })
+  }
 
   return (
     <Box
@@ -33,8 +44,53 @@ export const ZoneSettingsHeader: React.FC<Props> = ({ zone }) => {
       }}
     >
       <ColorPicker color={zone.color} onChange={onColorChange} />
-      <Typography>{zone.name} </Typography>
+      <EditableText text={zone.name} onChange={onNameChange} />
       <ContextMenu id={zone.id} />
+    </Box>
+  )
+}
+
+const EditableText: React.FC<{
+  text: string
+  onChange: (text: string) => void
+}> = ({ text, onChange }) => {
+  const [isEditing, setIsEditing] = React.useState(false)
+  const [value, setValue] = React.useState(text)
+  const onComplete = () => {
+    setIsEditing(false)
+    onChange(value.trim())
+  }
+  // Resets the component's state if we change zones while editing.
+  // Caveat: this only works if the zones have different names.
+  useEffect(() => {
+    setIsEditing(false)
+    setValue(text)
+  }, [text])
+
+  return isEditing ? (
+    <Input
+      size="sm"
+      value={value}
+      autoFocus
+      onBlur={onComplete}
+      onKeyDown={(e) => {
+        e.key === 'Enter' && onComplete()
+      }}
+      onChange={(e) => {
+        setValue(e.target.value)
+      }}
+      endDecorator={
+        <IconButton onClick={onComplete}>
+          <Check />
+        </IconButton>
+      }
+    />
+  ) : (
+    <Box
+      sx={{ fontWeight: 'bold', cursor: 'pointer' }}
+      onClick={() => setIsEditing(true)}
+    >
+      {text}{' '}
     </Box>
   )
 }
@@ -50,13 +106,13 @@ const ContextMenu: React.FC<ContextMenuProps> = ({ id }) => {
   const deleteZone = useStore.use.deleteZone()
   return (
     <Dropdown>
-      <MenuButton size="sm" variant="plain">
+      <MenuButton size="sm" variant="plain" sx={{ paddingInline: '0.5rem' }}>
         <MoreVert />
       </MenuButton>
-      <Menu>
-        <MenuItem>Rename</MenuItem>
-        <MenuItem>Duplicate</MenuItem>
-        <MenuItem onClick={() => deleteZone(id)}>Delete</MenuItem>
+      <Menu placement="right-end">
+        <MenuItem onClick={() => deleteZone(id)}>
+          <Delete color="error" /> Delete
+        </MenuItem>
       </Menu>
     </Dropdown>
   )

@@ -7,6 +7,7 @@ import { useStore } from '../store'
 
 interface Props {
   zoneIds: string[]
+  specialZoneId?: string
   onChange?: (zoneIds: string[]) => void
   onZoneMouseEnter?: (zoneId: string) => void
   onZoneMouseLeave?: (zoneId: string) => void
@@ -16,6 +17,7 @@ interface Props {
 
 export const MiniMapGrid: React.FC<Props> = ({
   zoneIds,
+  specialZoneId,
   onChange,
   onZoneMouseEnter,
   onZoneMouseLeave,
@@ -36,6 +38,8 @@ export const MiniMapGrid: React.FC<Props> = ({
     if (!zoneId) return null
     if (zoneIds.includes(zoneId)) return zones[zoneId].color
     if (hoverZoneId === zoneId) return zones[zoneId].color + '80'
+    console.log(specialZoneId, zoneId)
+    if (specialZoneId === zoneId) return '#ddd'
     return null
   }
   return (

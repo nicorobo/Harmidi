@@ -77,10 +77,7 @@ export const EngineProvider = ({ children }: Props) => {
   const zones = useStore.use.zoneById()
   const zoneIdByKey = useStore.use.zoneIdByKey()
   const [activeKeys, setActiveKeysState] = useState<string[]>([])
-  const activeZonesIds = activeKeys
-    .map((key) => zoneIdByKey[key])
-    .filter(notEmpty)
-  const actionsByKey = useActionsByKey(activeZonesIds)
+  const actionsByKey = useActionsByKey()
   const previousCountByZone = countBy(
     previous.current.map((key) => zoneIdByKey[key])
   )

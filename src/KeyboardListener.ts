@@ -11,7 +11,7 @@ type GetActiveKeysArgs = {
 }
 
 const addKey = ({ key, activeKeys, zone, zoneIdByKey }: GetActiveKeysArgs) => {
-  const { hold, muteZones } = { muteZones: [] as string[], ...zone } // A quick fix for handling all zones
+  const { hold, muteZones } = zone
   const selfMuting = muteZones.includes(zone.id)
   const isActive = activeKeys.includes(key)
   if (hold && isActive) {
@@ -49,9 +49,11 @@ const useKeyboardListener = () => {
 
   const onKeyDown = (e: KeyboardEvent) => {
     const { key, repeat } = e
-    const target = target as HTMLElement
-    if (target.tagName === 'INPUT' && target.type === 'text') {
-      console.log('input')
+    const target = e.target as HTMLElement
+    if (
+      target.tagName === 'INPUT' &&
+      (target as HTMLInputElement).type === 'text'
+    ) {
       // If it is an input or textarea, do nothing
       return
     }

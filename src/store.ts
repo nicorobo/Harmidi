@@ -1,11 +1,7 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
-import {
-  Zone,
-  getDefaultControlZone,
-  getDefaultNoteZone,
-} from './zone-settings'
+import { Zone, getDefaultNoteZone } from './zone-settings'
 import { createSelectors } from './create-selectors'
 import { invertBy, keyBy } from 'lodash'
 
@@ -39,7 +35,6 @@ const initialZones = [
   getDefaultNoteZone({ color: '#009CE0', name: 'Zone 2' }),
   getDefaultNoteZone({ color: '#0C797D', name: 'Zone 3' }),
   getDefaultNoteZone({ color: '#AB149E', name: 'Zone 4' }),
-  getDefaultControlZone({ color: '#FCC400', name: 'Zone 5' }),
 ]
 
 // Initially, each row is its own zone

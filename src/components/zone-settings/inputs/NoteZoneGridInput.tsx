@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Stack } from '@mui/joy'
-import { useStore } from '../../../store'
 import { MiniMapGrid } from '../../MiniMapGrid'
 
 type Props = {
@@ -15,9 +14,6 @@ export const NoteZoneGridInput: React.FC<Props> = ({
   specialZoneId,
   onChange,
 }) => {
-  // const zones = useStore.use.zoneById()
-  // const noteZones = Object.values(zones).filter(isNoteZone)
-
   const [hoverZoneId, setHoverZoneId] = useState<string | null>(null)
 
   const onPointerEnter = (zoneId: string) => {

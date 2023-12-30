@@ -1,45 +1,28 @@
 import { useStore } from '../store'
 import {
   Box,
-  Dropdown,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
   ListSubheader,
-  Menu,
-  MenuButton,
-  MenuItem,
 } from '@mui/joy'
 import { ZoneSettingsPanel } from './zone-settings/ZoneSettings'
-import { getDefaultControlZone, getDefaultNoteZone } from '../zone-settings'
+import { getDefaultNoteZone } from '../zone-settings'
 import { KeyMappingSwitch } from './KeyMappingSwitch'
-import { Add, MusicNote, Speed } from '@mui/icons-material'
-
-export const ZoneIcon = ({ type }: { type: 'note' | 'control' | 'mutate' }) => {
-  if (type === 'note') {
-    return <MusicNote htmlColor="#222" fontSize="inherit" />
-  } else {
-    return <Speed htmlColor="#222" fontSize="inherit" />
-  }
-}
+import { Add } from '@mui/icons-material'
 
 const AddZoneButton = () => {
   const createZone = useStore.use.createZone()
   return (
-    <Dropdown>
-      <MenuButton size="sm" variant="plain" sx={{ paddingInline: 'inherit' }}>
-        <Add fontSize="small" />
-      </MenuButton>
-      <Menu size="sm" placement="right-end">
-        <MenuItem onClick={() => createZone(getDefaultNoteZone())}>
-          <ZoneIcon type="note" /> Note
-        </MenuItem>
-        <MenuItem onClick={() => createZone(getDefaultControlZone())}>
-          <ZoneIcon type="control" />
-          Control
-        </MenuItem>
-      </Menu>
-    </Dropdown>
+    <IconButton
+      size="sm"
+      variant="plain"
+      sx={{ paddingInline: 'inherit' }}
+      onClick={() => createZone(getDefaultNoteZone())}
+    >
+      <Add />
+    </IconButton>
   )
 }
 
@@ -59,7 +42,7 @@ export const SideNav = () => {
         <ListSubheader sx={{ gap: 1 }}>
           Zones <AddZoneButton />
         </ListSubheader>
-        {zones.map(({ id, name, zoneType, color }) => (
+        {zones.map(({ id, name, color }) => (
           <ListItem
             key={id}
             sx={{
@@ -72,9 +55,6 @@ export const SideNav = () => {
               selected={selectedZone === id}
               onClick={() => zoneSelected(id)}
             >
-              <Box fontSize={'1rem'}>
-                <ZoneIcon type={zoneType} />
-              </Box>
               {name}
             </ListItemButton>
           </ListItem>

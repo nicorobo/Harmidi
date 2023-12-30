@@ -1,15 +1,8 @@
-import { ZoneById, useStore } from './store'
+import { useStore } from './store'
 import { useActions } from './use-note-actions'
 import invertBy from 'lodash/invertBy'
 import sortBy from 'lodash/sortBy'
-import {
-  ControlZone,
-  MutateZone,
-  Zone,
-  isControlZone,
-  isMutateZone,
-} from './zone-settings'
-import { keys, mapValues } from 'lodash'
+import { Zone } from './zone-settings'
 
 type KeyCoordinates = { [key: string]: { x: number; y: number } }
 const getKeyCoordinates = (grid: string[][]) => {
@@ -31,55 +24,20 @@ export type KeyActions = {
   } // Would I maybe be able to shove some animation stuff here?
 }
 
-export type ZoneOperators = {
-  controlZones: ControlZone[]
-  mutateZones: MutateZone[]
-}
-export type OperatorsByZone = {
-  [id: string]: ZoneOperators
-}
-const getZoneOperators = (
-  zones: ZoneById,
-  activeZonesIds: string[]
-): OperatorsByZone => {
-  const zoneOperators: OperatorsByZone = mapValues(zones, () => ({
-    controlZones: [],
-    mutateZones: [],
-  }))
-  for (const zoneId in zones) {
-    const zone = zones[zoneId]
-    if (
-      isControlZone(zone) &&
-      activeZonesIds.includes(zoneId) &&
-      zone.triggerOnNote
-    ) {
-      zone.noteZones.forEach((noteZoneId) => {
-        zoneOperators[noteZoneId].controlZones.push(zone)
-      })
-    } else if (isMutateZone(zone) && activeZonesIds.includes(zoneId)) {
-      zone.noteZones.forEach((noteZoneId) => {
-        zoneOperators[noteZoneId].mutateZones.push(zone)
-      })
-    }
-  }
-  return zoneOperators
-}
-
-export const useActionsByKey = (activeZonesIds: string[]): KeyActions => {
+export const useActionsByKey = (): KeyActions => {
   const zones = useStore.use.zoneById()
   const zoneIdByKey = useStore.use.zoneIdByKey()
   const { keyGrid } = useStore.use.keyboardConfig()
   const keyCoordinates = getKeyCoordinates(keyGrid) // TODO memoize this
   const keysByZoneId = invertBy(zoneIdByKey)
   const getActionsByZone = useActions()
-  const zoneOperators = getZoneOperators(zones, activeZonesIds)
   const actions: KeyActions = {}
 
   for (const zoneId in keysByZoneId) {
     const zone = zones[zoneId]
     if (!zone) continue
     const keys = sortZoneKeys(zone, keysByZoneId[zoneId], keyCoordinates)
-    Object.assign(actions, getActionsByZone(keys, zone, zoneOperators[zoneId]))
+    Object.assign(actions, getActionsByZone(keys, zone))
   }
   return actions
 }

@@ -17,15 +17,9 @@ const USEnglishKeysFull = [
   ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'],
 ]
 
-const getKeyList = (keyGrid: string[][]): string[] =>
-  keyGrid.reduce((list, row) => {
-    list.push(...row)
-    return list
-  }, [])
-
 export const keyboardConfigs: { [key: string]: KeyboardConfig } = {
   USEnglish: {
     keyGrid: USEnglishKeysFull,
-    keyList: getKeyList(USEnglishKeysFull),
+    keyList: USEnglishKeysFull.flat(),
   },
 }

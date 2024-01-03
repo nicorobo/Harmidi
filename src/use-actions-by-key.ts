@@ -8,8 +8,8 @@ import { KeyCoordinates } from './keyboard-config'
 // TODO reconsider this; we don't have to have this have the idea of keys built in, it could just be numbers and then the consumer handles the key part.
 export type KeyActions = {
   [key: string]: {
-    on: (triggerOperators?: boolean) => void
-    off: (triggerOperators?: boolean) => void
+    on: () => void
+    off: () => void
     notes: number[]
   } // Would I maybe be able to shove some animation stuff here?
 }

@@ -3,17 +3,7 @@ import { useActions } from './use-note-actions'
 import invertBy from 'lodash/invertBy'
 import sortBy from 'lodash/sortBy'
 import { Zone } from './zone-settings'
-
-type KeyCoordinates = { [key: string]: { x: number; y: number } }
-const getKeyCoordinates = (grid: string[][]) => {
-  const coordinates: KeyCoordinates = {}
-  for (let i = 0; i < grid.length; i++) {
-    for (let j = 0; j < grid[i].length; j++) {
-      coordinates[grid[i][j]] = { x: j, y: i }
-    }
-  }
-  return coordinates
-}
+import { KeyCoordinates } from './keyboard-config'
 
 // TODO reconsider this; we don't have to have this have the idea of keys built in, it could just be numbers and then the consumer handles the key part.
 export type KeyActions = {
@@ -27,8 +17,7 @@ export type KeyActions = {
 export const useActionsByKey = (): KeyActions => {
   const zones = useStore.use.zoneById()
   const zoneIdByKey = useStore.use.zoneIdByKey()
-  const { keyGrid } = useStore.use.keyboardConfig()
-  const keyCoordinates = getKeyCoordinates(keyGrid) // TODO memoize this
+  const { keyCoordinates } = useStore.use.keyboardConfig()
   const keysByZoneId = invertBy(zoneIdByKey)
   const getActionsByZone = useActions()
   const actions: KeyActions = {}

@@ -1,6 +1,19 @@
+export type KeyCoordinates = { [key: string]: { x: number; y: number } }
+
 export type KeyboardConfig = {
   keyGrid: string[][]
   keyList: string[]
+  keyCoordinates: KeyCoordinates
+}
+
+const getKeyCoordinates = (grid: string[][]) => {
+  const coordinates: KeyCoordinates = {}
+  for (let i = 0; i < grid.length; i++) {
+    for (let j = 0; j < grid[i].length; j++) {
+      coordinates[grid[i][j]] = { x: j, y: i }
+    }
+  }
+  return coordinates
 }
 
 const USEnglishKeys = [
@@ -21,5 +34,6 @@ export const keyboardConfigs: { [key: string]: KeyboardConfig } = {
   USEnglish: {
     keyGrid: USEnglishKeysFull,
     keyList: USEnglishKeysFull.flat(),
+    keyCoordinates: getKeyCoordinates(USEnglishKeysFull),
   },
 }

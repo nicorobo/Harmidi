@@ -1,8 +1,7 @@
-import { useContext } from 'react'
-import { useStore } from '../store'
 import { Box } from '@mui/joy'
+import { useStore } from '../store'
 import { Cell } from './Cell'
-import { EngineContext } from '../Engine'
+import { useEngine } from '../use-engine'
 import { Midi, Chord } from 'tonal'
 
 const getNameFromMidiNotes = (notes: number[]) => {
@@ -14,7 +13,7 @@ const getNameFromMidiNotes = (notes: number[]) => {
 }
 
 export const Row = ({ row }: { row: number }) => {
-  const { activeKeys, getNotesByKey } = useContext(EngineContext)
+  const { activeKeys, getNotesByKey } = useEngine()
   const { keyGrid } = useStore((state) => state.keyboardConfig)
 
   return (

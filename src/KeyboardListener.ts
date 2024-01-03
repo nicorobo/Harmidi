@@ -1,43 +1,17 @@
-import { useContext, useEffect } from 'react'
-import { useStore, ZoneIdByKey } from './store'
-import { EngineContext } from './Engine'
-import { Zone } from './zone-settings'
+import { useEffect } from 'react'
+import { useStore } from './store'
+import { useEngine } from './use-engine'
 
-type GetActiveKeysArgs = {
-  key: string
-  activeKeys: string[]
-  zone: Zone
-  zoneIdByKey: ZoneIdByKey
-}
-
-const addKey = ({ key, activeKeys, zone, zoneIdByKey }: GetActiveKeysArgs) => {
-  const { hold, muteZones } = zone
-  const selfMuting = muteZones.includes(zone.id)
-  const isActive = activeKeys.includes(key)
-  if (hold && isActive) {
-    // Turn key off
-    return activeKeys.filter((k) => k !== key)
-  }
-  if (hold && selfMuting) {
-    // Clear keys in same zone and add key
-    return activeKeys.filter((k) => zoneIdByKey[k] !== zone.id).concat(key)
-  }
-  return activeKeys.concat(key)
-}
-
-const removeKey = ({ key, activeKeys, zone }: GetActiveKeysArgs) => {
-  const { hold } = zone
-  if (hold) {
-    // We only handle hold zones during keydown
-    return activeKeys
-  }
-  return activeKeys.filter((k) => k !== key)
+const targetIsTextInput = (e: KeyboardEvent) => {
+  const target = e.target as HTMLElement
+  return (
+    target.tagName === 'INPUT' && (target as HTMLInputElement).type === 'text'
+  )
 }
 
 const useKeyboardListener = () => {
-  const { activeKeys, setActiveKeys } = useContext(EngineContext)
+  const { keyDown, keyUp } = useEngine()
   const zoneIdByKey = useStore.use.zoneIdByKey()
-  const zones = useStore.use.zoneById()
   const keydown = useStore.use.keydown()
   const keyup = useStore.use.keyup()
   const isKeyMapping = useStore.use.isKeyMapping()
@@ -46,27 +20,15 @@ const useKeyboardListener = () => {
   const upKeyPressed = useStore.use.upKeyPressed()
   const downKeyPressed = useStore.use.downKeyPressed()
   const keyMapMode = isKeyMapping && selectedZone !== null
-
   const onKeyDown = (e: KeyboardEvent) => {
     const { key, repeat } = e
-    const target = e.target as HTMLElement
-    if (
-      target.tagName === 'INPUT' &&
-      (target as HTMLInputElement).type === 'text'
-    ) {
-      // If it is an input or textarea, do nothing
-      return
-    }
-    if (!repeat && zoneIdByKey.hasOwnProperty(key)) {
+    if (targetIsTextInput(e) || repeat) return
+
+    if (zoneIdByKey.hasOwnProperty(key)) {
       if (keyMapMode) {
         updateKeyZone(key, selectedZone)
       } else {
-        const zoneId = zoneIdByKey[key]
-        if (zoneId) {
-          setActiveKeys(
-            addKey({ key, activeKeys, zone: zones[zoneId], zoneIdByKey })
-          )
-        }
+        keyDown(key)
       }
       keydown(key)
     } else {
@@ -84,12 +46,7 @@ const useKeyboardListener = () => {
   const onKeyUp = ({ key }: KeyboardEvent) => {
     if (zoneIdByKey.hasOwnProperty(key)) {
       if (!keyMapMode) {
-        const zoneId = zoneIdByKey[key]
-        if (zoneId) {
-          setActiveKeys(
-            removeKey({ key, activeKeys, zone: zones[zoneId], zoneIdByKey })
-          )
-        }
+        keyUp(key)
       }
       keyup(key)
     }

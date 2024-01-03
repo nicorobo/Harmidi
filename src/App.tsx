@@ -2,7 +2,7 @@ import { MIDIProvider } from '@react-midi/hooks'
 import { KeyboardListener } from './KeyboardListener'
 import { Grid } from './components/Grid'
 import { Box, Stack, CssBaseline } from '@mui/joy'
-import { EngineProvider } from './Engine'
+import { EngineProvider } from './use-engine'
 import { SideNav } from './components/SideNav'
 
 function App() {

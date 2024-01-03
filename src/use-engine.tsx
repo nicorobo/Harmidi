@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useActionsByKey } from './use-actions-by-key'
 import { useStore, ZoneIdByKey, ZoneById } from './store'
 import { transform, noop, mapValues } from 'lodash'
 import { isNoteZone } from './zone-settings'
-import { notEmpty } from './util'
+import { compareArrays, notEmpty } from './util'
+import { useActiveKeys } from './use-active-keys'
 
 type GetPlayingKeysArgs = {
   activeKeys: string[]
@@ -57,12 +58,14 @@ export const EngineContext = React.createContext<{
   activeKeys: string[]
   setActiveKeys: (keys: string[]) => void
   getNotesByKey: (key: string) => number[]
-}>({ activeKeys: [], setActiveKeys: noop, getNotesByKey: () => [] })
-
-const compareArrays = (a1: string[] = [], a2: string[] = []) => ({
-  added: a2.filter((key) => !a1.includes(key)),
-  // neutral: a2.filter((key) => a1.includes(key)),
-  removed: a1.filter((key) => !a2.includes(key)),
+  keyDown: (key: string) => void
+  keyUp: (key: string) => void
+}>({
+  activeKeys: [],
+  setActiveKeys: noop,
+  getNotesByKey: () => [],
+  keyDown: noop,
+  keyUp: noop,
 })
 
 type Props = {
@@ -70,16 +73,19 @@ type Props = {
 }
 
 export const EngineProvider = ({ children }: Props) => {
-  const previous = useRef<string[]>([])
-  const [offActionsByKey, setOffActionsByKey] = useState<{
-    [key: string]: (triggerOperators?: boolean) => void
-  }>({})
   const zones = useStore.use.zoneById()
   const zoneIdByKey = useStore.use.zoneIdByKey()
-  const [activeKeys, setActiveKeysState] = useState<string[]>([])
+
+  const previous = useRef<string[]>([])
+  const [offActionsByKey, setOffActionsByKey] = useState<{
+    [key: string]: () => void
+  }>({})
+
   const actionsByKey = useActionsByKey()
 
-  const setActiveKeys = (keys: string[]) => {
+  const { keyDown, keyUp, activeKeys, setActiveKeys } = useActiveKeys()
+
+  const triggerKeysUsingActiveKeys = (keys: string[]) => {
     const playing = getPlayingKeys({ activeKeys: keys, zones, zoneIdByKey })
     const { added, removed } = compareArrays(previous.current, playing)
     removed.forEach((k) => offActionsByKey[k]?.())
@@ -88,8 +94,11 @@ export const EngineProvider = ({ children }: Props) => {
       setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
     })
     previous.current = playing
-    setActiveKeysState(keys)
   }
+
+  useEffect(() => {
+    triggerKeysUsingActiveKeys(activeKeys)
+  }, [activeKeys])
 
   const getNotesByKey = (key: string) => {
     if (actionsByKey[key]) {
@@ -100,9 +109,11 @@ export const EngineProvider = ({ children }: Props) => {
 
   return (
     <EngineContext.Provider
-      value={{ activeKeys, setActiveKeys, getNotesByKey }}
+      value={{ activeKeys, setActiveKeys, getNotesByKey, keyDown, keyUp }}
     >
       {children}
     </EngineContext.Provider>
   )
 }
+
+export const useEngine = () => React.useContext(EngineContext)

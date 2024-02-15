@@ -6,8 +6,8 @@ import { Zone } from './zone-settings'
 export const useActions = () => {
   const { noteOn, noteOff } = useMIDIOutput()
 
-  const actions: KeyActions = {}
-  const factory = (keys: string[], zone: Zone) => {
+  return (keys: string[], zone: Zone) => {
+    const actions: KeyActions = {}
     if (!noteOn || !noteOff) {
       return actions
     }
@@ -17,19 +17,17 @@ export const useActions = () => {
       channel: zone.channel,
     }
     for (let i = 0; i < keys.length; i++) {
-      const notes = noteFactory(i)
+      const noteInfo = noteFactory(i)
       actions[keys[i]] = {
         on: () => {
-          noteOn(notes, noteSettings)
+          noteOn(noteInfo.midiNotes, noteSettings)
         },
         off: () => {
-          noteOff(notes, noteSettings)
+          noteOff(noteInfo.midiNotes, noteSettings)
         },
-        notes,
+        noteInfo,
       }
     }
-
     return actions
   }
-  return factory
 }

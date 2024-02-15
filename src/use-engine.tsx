@@ -5,6 +5,7 @@ import { transform, noop, mapValues } from 'lodash'
 import { isNoteZone } from './zone-settings'
 import { compareArrays, notEmpty } from './util'
 import { useActiveKeys } from './use-active-keys'
+import { NoteInfo } from './note-getters'
 
 type GetPlayingKeysArgs = {
   activeKeys: string[]
@@ -28,7 +29,7 @@ const getMutedBy = (zones: ZoneById) =>
     mapValues<ZoneById, string[]>(zones, () => [])
   )
 
-const getPlayingKeys = ({
+const getTriggeredKeys = ({
   activeKeys,
   zones,
   zoneIdByKey,
@@ -54,16 +55,16 @@ const getPlayingKeys = ({
   return playing
 }
 
-export const EngineContext = React.createContext<{
+const EngineContext = React.createContext<{
   activeKeys: string[]
   setActiveKeys: (keys: string[]) => void
-  getNotesByKey: (key: string) => number[]
+  getNoteInfoByKey: (key: string) => NoteInfo
   keyDown: (key: string) => void
   keyUp: (key: string) => void
 }>({
   activeKeys: [],
   setActiveKeys: noop,
-  getNotesByKey: () => [],
+  getNoteInfoByKey: () => ({ rootNote: 0, midiNotes: [] }),
   keyDown: noop,
   keyUp: noop,
 })
@@ -76,7 +77,7 @@ export const EngineProvider = ({ children }: Props) => {
   const zones = useStore.use.zoneById()
   const zoneIdByKey = useStore.use.zoneIdByKey()
 
-  const previous = useRef<string[]>([])
+  const triggeredKeys = useRef<string[]>([])
   const [offActionsByKey, setOffActionsByKey] = useState<{
     [key: string]: () => void
   }>({})
@@ -86,30 +87,43 @@ export const EngineProvider = ({ children }: Props) => {
   const { keyDown, keyUp, activeKeys, setActiveKeys } = useActiveKeys()
 
   const triggerKeysUsingActiveKeys = (keys: string[]) => {
-    const playing = getPlayingKeys({ activeKeys: keys, zones, zoneIdByKey })
-    const { added, removed } = compareArrays(previous.current, playing)
+    const newTriggeredKeys = getTriggeredKeys({
+      activeKeys: keys,
+      zones,
+      zoneIdByKey,
+    })
+    const { added, removed } = compareArrays(
+      triggeredKeys.current,
+      newTriggeredKeys
+    )
     removed.forEach((k) => offActionsByKey[k]?.())
     added.forEach((k) => {
       actionsByKey[k]?.on()
       setOffActionsByKey((a) => ({ ...a, [k]: actionsByKey[k]?.off }))
     })
-    previous.current = playing
+    triggeredKeys.current = newTriggeredKeys
   }
 
   useEffect(() => {
     triggerKeysUsingActiveKeys(activeKeys)
   }, [activeKeys])
 
-  const getNotesByKey = (key: string) => {
+  const getNoteInfoByKey = (key: string) => {
     if (actionsByKey[key]) {
-      return actionsByKey[key]?.notes
+      return actionsByKey[key]?.noteInfo
     }
-    return []
+    return { rootNote: 0, midiNotes: [] }
   }
 
   return (
     <EngineContext.Provider
-      value={{ activeKeys, setActiveKeys, getNotesByKey, keyDown, keyUp }}
+      value={{
+        activeKeys,
+        setActiveKeys,
+        getNoteInfoByKey,
+        keyDown,
+        keyUp,
+      }}
     >
       {children}
     </EngineContext.Provider>

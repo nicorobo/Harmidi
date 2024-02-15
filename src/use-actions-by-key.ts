@@ -4,14 +4,15 @@ import invertBy from 'lodash/invertBy'
 import sortBy from 'lodash/sortBy'
 import { Zone } from './zone-settings'
 import { KeyCoordinates } from './keyboard-config'
+import { NoteInfo } from './note-getters'
 
 // TODO reconsider this; we don't have to have this have the idea of keys built in, it could just be numbers and then the consumer handles the key part.
 export type KeyActions = {
   [key: string]: {
     on: () => void
     off: () => void
-    notes: number[]
-  } // Would I maybe be able to shove some animation stuff here?
+    noteInfo: NoteInfo
+  } // Would I maybe be able to store some animation stuff here?
 }
 
 export const useActionsByKey = (): KeyActions => {

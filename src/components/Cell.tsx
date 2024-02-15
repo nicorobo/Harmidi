@@ -1,18 +1,21 @@
 import { Box } from '@mui/joy'
 import { useStore } from '../store'
+import { useEngine } from '../use-engine'
+import { Midi } from 'tonal'
+import { getChordNameFromMidiNotes } from '../chord-names-from-midi-notes'
 
-export const Cell = ({
-  cell,
-  title,
-  isActive,
-}: {
-  cell: string
-  title: string
-  isActive: boolean
-}) => {
-  const selectedZone = useStore.use.selectedZone()
-  const zoneId = useStore((state) => state.zoneIdByKey[cell])
+export const Cell = ({ cell }: { cell: string }) => {
   const zoneById = useStore.use.zoneById()
+  const zoneId = useStore((state) => state.zoneIdByKey[cell])
+
+  const { activeKeys, getNoteInfoByKey } = useEngine()
+  const noteInfo = getNoteInfoByKey(cell)
+  const root = Midi.midiToNoteName(noteInfo.rootNote)
+  const chord = getChordNameFromMidiNotes(noteInfo.midiNotes)
+  const title = root + (chord ? ` ${chord}` : '')
+
+  const isActive = activeKeys.includes(cell)
+  // const selectedZone = useStore.use.selectedZone()
   const { color } = zoneId ? zoneById[zoneId] : { color: '#fff' }
   return (
     <Box

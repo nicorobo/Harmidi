@@ -2,6 +2,7 @@ import { Midi } from 'tonal'
 import { notEmpty } from './util'
 import { NoteZone } from './zone-settings'
 
+export type NoteInfo = { rootNote: number; midiNotes: number[] }
 export const getNotes = ({
   voices: intervals,
   root,
@@ -16,7 +17,7 @@ export const getNotes = ({
   // 1. Find the root (take scale quantization into account)
   // 2. Map voices to notes
   // 3. Quantize individual voices if needed
-  return (i: number) => {
+  return (i: number): NoteInfo => {
     const centerNote =
       pcset[i % pcset.length] +
       ((Math.floor(i / pcset.length) + octave) * 12 + translate)
@@ -31,6 +32,6 @@ export const getNotes = ({
         }
       })
       .filter(notEmpty)
-    return midiNotes
+    return { rootNote: centerNote, midiNotes }
   }
 }

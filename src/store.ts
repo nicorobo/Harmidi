@@ -27,7 +27,12 @@ interface State {
   setIsKeyMapping: (isKeyMapping: boolean) => void
   upKeyPressed: () => void
   downKeyPressed: () => void
-  // fillKeyZone: (id: string) => void
+  appSettingsIsOpen: boolean
+  setAppSettingsIsOpen: (appSettingsIsOpen: boolean) => void
+  appDocsIsOpen: boolean
+  setAppDocsIsOpen: (appDocsIsOpen: boolean) => void
+  isUsingMidi: boolean // change to midiEnabled
+  setUseMidi: (isUsingMidi: boolean) => void
 }
 
 const initialZones = [
@@ -52,6 +57,8 @@ const useStoreBase = create<State>()(
   persist(
     (set) => ({
       pressedKeys: [] as string[],
+      appSettingsIsOpen: false,
+      appDocsIsOpen: false,
       zoneIds: initialZones.map(({ id }) => id),
       zoneById: keyBy(initialZones, ({ id }) => id),
       selectedZone: initialZones[0].id,
@@ -62,11 +69,8 @@ const useStoreBase = create<State>()(
         set((state) => ({
           zoneIdByKey: { ...state.zoneIdByKey, [key]: zoneId },
         })),
-      // fillKeyZone: (zone) =>
-      //   set({
-      //     zoneByKey: getRowByKey(keyboardConfigs.USEnglish.keyGrid, zone),
-      //   }),
-      setSelectedZone: (selectedZone) => set({ selectedZone }),
+      setSelectedZone: (selectedZone) =>
+        set({ selectedZone, appSettingsIsOpen: false, appDocsIsOpen: false }),
       keydown: (key) =>
         set((state) => ({ pressedKeys: [...state.pressedKeys, key] })),
 
@@ -126,6 +130,12 @@ const useStoreBase = create<State>()(
         })
       },
       setIsKeyMapping: (isKeyMapping) => set({ isKeyMapping }),
+      setAppSettingsIsOpen: (appSettingsIsOpen) =>
+        set({ appSettingsIsOpen, selectedZone: null, appDocsIsOpen: false }),
+      setAppDocsIsOpen: (appDocsIsOpen) =>
+        set({ appDocsIsOpen, selectedZone: null, appSettingsIsOpen: false }),
+      isUsingMidi: false,
+      setUseMidi: (isUsingMidi) => set({ isUsingMidi }),
     }),
     {
       name: 'food-storage', // name of the item in the storage (must be unique) // TODO give name

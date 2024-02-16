@@ -3,6 +3,7 @@ import {
   Box,
   IconButton,
   List,
+  ListDivider,
   ListItem,
   ListItemButton,
   ListSubheader,
@@ -11,6 +12,8 @@ import { ZoneSettingsPanel } from './zone-settings/ZoneSettings'
 import { getDefaultNoteZone } from '../zone-settings'
 import { KeyMappingSwitch } from './KeyMappingSwitch'
 import { Add } from '@mui/icons-material'
+import { AppSettingsPanel } from './AppSettingsPanel'
+import { AppDocsPanel } from './AppDocsPanel'
 
 const AddZoneButton = () => {
   const createZone = useStore.use.createZone()
@@ -29,12 +32,22 @@ const AddZoneButton = () => {
 export const SideNav = () => {
   const selectedZone = useStore.use.selectedZone()
   const setSelectedZone = useStore.use.setSelectedZone()
+  const appSettingsIsOpen = useStore.use.appSettingsIsOpen()
+  const appDocsIsOpen = useStore.use.appDocsIsOpen()
+  const setAppSettingsIsOpen = useStore.use.setAppSettingsIsOpen()
+  const setAppDocsIsOpen = useStore.use.setAppDocsIsOpen()
   const zoneIds = useStore.use.zoneIds()
   const zoneById = useStore.use.zoneById()
   const zones = zoneIds.map((id) => zoneById[id])
 
-  const zoneSelected = (id: string) => {
+  const zoneSelected = (id: string | null) => {
     setSelectedZone(selectedZone === id ? null : id)
+  }
+  const settingsSelected = () => {
+    setAppSettingsIsOpen(true)
+  }
+  const docsSelected = () => {
+    setAppDocsIsOpen(true)
   }
   return (
     <Box sx={{ display: 'flex', height: '100vh' }}>
@@ -59,6 +72,16 @@ export const SideNav = () => {
             </ListItemButton>
           </ListItem>
         ))}
+        <Box sx={{ flexGrow: 1 }} />
+        <ListDivider />
+        <ListItem>
+          <ListItemButton onClick={settingsSelected}>Settings</ListItemButton>
+        </ListItem>
+        <ListDivider />
+        <ListItem>
+          <ListItemButton onClick={docsSelected}>Docs</ListItemButton>
+        </ListItem>
+        <ListDivider />
         <ListItem>
           <KeyMappingSwitch />
         </ListItem>
@@ -66,6 +89,8 @@ export const SideNav = () => {
       {selectedZone !== null && (
         <ZoneSettingsPanel zone={zoneById[selectedZone]} />
       )}
+      {appSettingsIsOpen && <AppSettingsPanel />}
+      {appDocsIsOpen && <AppDocsPanel />}
     </Box>
   )
 }

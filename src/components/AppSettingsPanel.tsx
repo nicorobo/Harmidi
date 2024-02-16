@@ -41,8 +41,8 @@ export const AppSettingsPanel = () => {
               Enable MIDI
             </FormLabel>
             <FormHelperText>
-              When MIDI is enabled, notes are sent to selected MIDI device
-              instead of internal instruments.
+              When enabled, notes are sent to selected MIDI device instead of
+              internal instruments.
             </FormHelperText>
           </Box>
           <Switch

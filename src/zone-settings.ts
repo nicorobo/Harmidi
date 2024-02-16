@@ -1,4 +1,5 @@
 import { nanoid } from 'nanoid'
+import { ZoneInstrument, availableInstruments } from './zone-instruments'
 
 export const DEFAULT_VELOCITY = 100
 
@@ -20,6 +21,7 @@ type Common = {
   color: string
   name: string
 }
+
 /* 
 
   Note Zone Settings
@@ -38,6 +40,7 @@ export type NoteZone = Common & {
   root: number
   scale: number[]
   order: ZoneOrderSettings
+  instrument: ZoneInstrument
 }
 
 const defaultNoteZone: Omit<NoteZone, 'id'> = {
@@ -53,6 +56,10 @@ const defaultNoteZone: Omit<NoteZone, 'id'> = {
   voices: [{ offset: 0, velocity: DEFAULT_VELOCITY }],
   root: 0,
   scale: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // chromatic
+  instrument: {
+    id: availableInstruments[0].id,
+    instrument: availableInstruments[0].factory(),
+  },
   order: defaultOrderSettings,
 }
 

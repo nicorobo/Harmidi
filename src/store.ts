@@ -1,9 +1,10 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { StorageValue, persist } from 'zustand/middleware'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
 import { Zone, getDefaultNoteZone } from './zone-settings'
 import { createSelectors } from './create-selectors'
-import { invertBy, keyBy } from 'lodash'
+import { invertBy, keyBy, mapValues } from 'lodash'
+import { availableInstruments } from './zone-instruments'
 
 export type ZoneIds = string[]
 export type ZoneById = { [id: string]: Zone }
@@ -145,6 +146,45 @@ const useStoreBase = create<State>()(
         zoneIdByKey: state.zoneIdByKey,
         selectedZone: state.selectedZone,
       }),
+      storage: {
+        getItem: (name) => {
+          const str = localStorage.getItem(name)
+          if (!str) return null
+          const { state } = JSON.parse(str)
+          return {
+            state: {
+              ...state,
+              zoneById: mapValues(state.zoneById, (zone) => {
+                const instrument = availableInstruments.find(
+                  (inst) => inst.id === zone.instrument.id
+                )
+                if (!instrument) return zone
+                return {
+                  ...zone,
+                  instrument: {
+                    id: instrument.id,
+                    instrument: instrument.factory(),
+                  },
+                }
+              }),
+            },
+          }
+        },
+        setItem: (name, newValue: StorageValue<State>) => {
+          // functions cannot be JSON encoded
+          const str = JSON.stringify({
+            state: {
+              ...newValue.state,
+              zoneById: mapValues(newValue.state.zoneById, (zone) => ({
+                ...zone,
+                instrument: { id: zone.instrument.id },
+              })),
+            },
+          })
+          localStorage.setItem(name, str)
+        },
+        removeItem: (name) => localStorage.removeItem(name),
+      },
     }
   )
 )

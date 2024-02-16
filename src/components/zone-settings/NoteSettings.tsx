@@ -12,10 +12,12 @@ import {
   VelocityInput,
   VoicesInput,
 } from './inputs'
+import { InstrumentInput } from './inputs/InstrumentInput'
 
 type Props = { zone: NoteZone }
 
 export const NoteSettings: React.FC<Props> = ({ zone }) => {
+  const isUsingMidi = useStore.use.isUsingMidi()
   const updateZoneSettings = useStore((state) => state.updateZone)
   const onUpdate = (update: Partial<NoteZone>) => {
     updateZoneSettings(zone.id, { ...zone, ...update })
@@ -24,10 +26,17 @@ export const NoteSettings: React.FC<Props> = ({ zone }) => {
     <Stack spacing={4}>
       <Stack spacing={2}>
         <Stack direction="row" spacing={4}>
-          <MidiChannelInput
-            channel={zone.channel}
-            onChange={(channel) => onUpdate({ channel })}
-          />
+          {isUsingMidi ? (
+            <MidiChannelInput
+              channel={zone.channel}
+              onChange={(channel) => onUpdate({ channel })}
+            />
+          ) : (
+            <InstrumentInput
+              instrument={zone.instrument}
+              onChange={(instrument) => onUpdate({ instrument })}
+            />
+          )}
           <OrderInput
             order={zone.order}
             onChange={(orientation) => onUpdate({ order: orientation })}

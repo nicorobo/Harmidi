@@ -3,7 +3,7 @@ import { KeyActions } from './use-actions-by-key'
 import { getNotes } from './note-getters'
 import { Zone } from './zone-settings'
 import { useStore } from './store'
-
+import * as Tone from 'tone'
 export const useActions = () => {
   const isUsingMidi = useStore.use.isUsingMidi()
   const { noteOn, noteOff } = useMIDIOutput()
@@ -39,12 +39,22 @@ export const useActions = () => {
       const noteFactory = getNotes(zone)
       for (let i = 0; i < keys.length; i++) {
         const noteInfo = noteFactory(i)
+        const frequencies = noteInfo.midiNotes.map((midiNote) =>
+          Tone.Midi(midiNote).toFrequency()
+        )
         actions[keys[i]] = {
           on: () => {
-            console.log('Note on', noteInfo.midiNotes)
+            zone.instrument.instrument.triggerAttack(
+              frequencies,
+              Tone.context.currentTime,
+              zone.velocity / 127
+            )
           },
           off: () => {
-            console.log('Note off', noteInfo.midiNotes)
+            zone.instrument.instrument.triggerRelease(
+              frequencies,
+              Tone.context.currentTime
+            )
           },
           noteInfo,
         }

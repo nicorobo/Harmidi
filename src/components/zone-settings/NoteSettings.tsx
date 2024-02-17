@@ -11,8 +11,8 @@ import {
   TranslateInput,
   VelocityInput,
   VoicesInput,
+  InstrumentInput,
 } from './inputs'
-import { InstrumentInput } from './inputs/InstrumentInput'
 
 type Props = { zone: NoteZone }
 

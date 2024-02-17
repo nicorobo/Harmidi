@@ -34,15 +34,20 @@ export const MultiPointSliderInput: React.FC<Props> = ({
   const [initialX, setInitialX] = useState(0)
   const [dragValue, setDragValue] = useState(0)
   const [dragging, setDragging] = useState<number | null>(null)
+  const [deletePoint, setDeletePoint] = useState<boolean>(false)
   const [ghostPoint, setGhostPoint] = useState<number | null>(null)
 
   const trackRef = useRef<HTMLSpanElement>(null)
-  const range = max - min // Do I need to add one to this because I can choose 0?
+  const range = max - min
   const oneSeg = (trackRef.current?.clientWidth ?? 0) / range
   const valueToPercentage = (value: number) => (value - min) / range
 
   const occupiedValues = points.map((v, i) => (i === dragging ? min - 1 : v))
   const onPointMouseMove = (e: React.PointerEvent, i: number) => {
+    e.preventDefault()
+    if (deletePoint) {
+      setDeletePoint(false)
+    }
     const distance = e.clientX - initialX
     const segCount = distance / oneSeg
     const newValueRaw = points[i] + segCount
@@ -52,22 +57,35 @@ export const MultiPointSliderInput: React.FC<Props> = ({
     }
   }
   const onPointMouseDown = (e: React.PointerEvent, i: number) => {
+    e.preventDefault()
     setDragging(i)
+    setDeletePoint(true)
     setInitialX(e.clientX)
     setDragValue(points[i])
     e.currentTarget.setPointerCapture(e.pointerId)
   }
   const onPointMouseUp = (e: React.PointerEvent, i: number) => {
-    if (dragValue !== points[i]) {
+    e.preventDefault()
+    if (deletePoint) {
+      onPointRemoved(i)
+    } else if (dragValue !== points[i]) {
       onPointUpdated(i, dragValue)
     }
     setDragging(null)
+    setDeletePoint(false)
     e.currentTarget.releasePointerCapture(e.pointerId)
   }
 
+  /**
+   * Handles the mouse move event on the track element.
+   * This function is responsible for rendering a ghost point when mousing over the track.
+   * @param e - The React pointer event.
+   */
   const onMouseMoveTrack = (e: React.PointerEvent) => {
-    if (!canAddPoint) return
+    e.preventDefault()
     // This is to prevent rendering a ghost point when mousing over an existing point.
+    if (!canAddPoint) return
+    // This prevents rendering a ghost point when mousing over another point.
     if (e.target !== trackRef.current) {
       setGhostPoint(null)
       return
@@ -79,14 +97,15 @@ export const MultiPointSliderInput: React.FC<Props> = ({
     }
   }
 
-  const onMouseOutTrack = () => {
+  const onMouseOutTrack = (e: React.PointerEvent) => {
+    e.preventDefault()
     if (ghostPoint !== null && canAddPoint) {
       setGhostPoint(null)
     }
   }
 
-  // TODO debug the mischief that happens when you create a new point and drag before releasing.
-  const onMouseDown = () => {
+  const onMouseDown = (e: React.PointerEvent) => {
+    e.preventDefault()
     if (ghostPoint !== null && canAddPoint) {
       onPointAdded(ghostPoint)
       setGhostPoint(null)
@@ -127,7 +146,6 @@ export const MultiPointSliderInput: React.FC<Props> = ({
                   onPointerMove={
                     isDragging ? (e) => onPointMouseMove(e, i) : noop
                   }
-                  onDoubleClick={() => onPointRemoved(i)}
                   style={{ left: `${per * 100}%` }}
                 />
               </Tooltip>

@@ -75,7 +75,7 @@ export const NoteSettings: React.FC<Props> = ({ zone }) => {
         <ScaleInput
           root={zone.root}
           scale={zone.scale}
-          color={'#0a6bcb'}
+          color={'#333'}
           onChange={(root, scale) => onUpdate({ root, scale })}
         />
       </Stack>

@@ -52,11 +52,11 @@ export const PianoInput: React.FC<Props> = ({
             {notes[key] > 0 && (
               <Box
                 sx={{
-                  height: 8,
-                  width: 8,
+                  height: root === key ? 10 : 8,
+                  width: root === key ? 10 : 8,
                   background: color,
                   position: 'relative',
-                  borderRadius: '5px',
+                  borderRadius: root === key ? '0px' : '5px',
                   top: '70%',
                   left: '50%',
                   transform: 'translateX(-50%)',
@@ -86,18 +86,18 @@ export const PianoInput: React.FC<Props> = ({
               border: `${BORDER_THICKNESS}px solid ${color}`,
               bgcolor: color,
               ':hover': {
-                bgcolor: onClick ? '#eee' : 'default',
+                bgcolor: onClick ? '#444' : 'default',
               },
             }}
           >
             {notes[key] > 0 && (
               <Box
                 sx={{
-                  height: 8,
-                  width: 8,
+                  height: root === key ? 10 : 8,
+                  width: root === key ? 10 : 8,
                   background: '#fff',
                   position: 'relative',
-                  borderRadius: '5px',
+                  borderRadius: root === key ? '0px' : '5px',
                   top: '70%',
                   left: '50%',
                   transform: 'translate(-50%, -50%)',

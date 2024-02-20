@@ -14,14 +14,18 @@ const chordTypeToName: { [type: string]: string } = {
   'major ninth': 'M9',
   'minor ninth': 'm9',
   'dominant eleventh': '11',
-  'major eleventh': 'M11',
+  eleventh: '11',
   'minor eleventh': 'm11',
+  thirteenth: '13',
+  'major thirteenth': 'M13',
+  'minor thirteenth': 'm13',
   augmented: '+',
   'minor augmented': 'm#5',
   'augmented seventh': '+7',
   diminished: 'o',
   'suspended second': 'sus2',
   'suspended fourth': 'sus4',
+  'suspended fourth seventh': '7sus4',
 }
 
 export const getChordNameFromMidiNotes = (notes: number[]) => {

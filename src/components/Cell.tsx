@@ -4,10 +4,18 @@ import { useEngine } from '../use-engine'
 import { Midi } from 'tonal'
 import { getChordNameFromMidiNotes } from '../chord-names-from-midi-notes'
 
+// The Cell component is a single key on the grid.
+// It displays the note name and chord name for the zone that the key belongs to.
+// If the key is active, it will be highlighted.
+
+/* 
+The ideal solution for handling color in the cells would be using a 
+color library like chroma.js to calculate the color of the text based 
+on the background color. This would ensure that the text is always readable.
+*/
 export const Cell = ({ cell }: { cell: string }) => {
   const zoneById = useStore.use.zoneById()
   const zoneId = useStore((state) => state.zoneIdByKey[cell])
-  console.log('zoneId', zoneId)
 
   const { activeKeys, getNoteInfoByKey } = useEngine()
   const noteInfo = getNoteInfoByKey(cell)

@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid'
 import { ZoneInstrument, availableInstruments } from './zone-instruments'
+import { randomColor } from './colors'
 
 export const DEFAULT_VELOCITY = 100
 
@@ -68,6 +69,7 @@ export const getDefaultNoteZone = (
 ): NoteZone => ({
   id: nanoid(),
   ...defaultNoteZone,
+  color: randomColor(),
   ...overrides,
 })
 

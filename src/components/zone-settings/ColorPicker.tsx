@@ -1,5 +1,6 @@
 import { Box, Dropdown, Menu, MenuButton } from '@mui/joy'
 import Compact from '@uiw/react-color-compact'
+import { zoneColors } from '../../colors'
 
 type Props = {
   color: string
@@ -15,6 +16,7 @@ export const ColorPicker: React.FC<Props> = ({ color, onChange }) => {
       <Menu sx={{ '--ListDivider-gap': 0 }}>
         <Compact
           color={color}
+          colors={zoneColors}
           style={{
             boxShadow:
               'rgb(0 0 0 / 15%) 0px 0px 0px 1px, rgb(0 0 0 / 15%) 0px 8px 16px',

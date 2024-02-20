@@ -6,6 +6,7 @@ import {
   Menu,
   MenuButton,
   MenuItem,
+  Stack,
 } from '@mui/joy'
 import { Zone } from '../../zone-settings'
 import { Check, Delete, MoreVert } from '@mui/icons-material'
@@ -43,8 +44,10 @@ export const ZoneSettingsHeader: React.FC<Props> = ({ zone }) => {
         justifyContent: 'space-between',
       }}
     >
-      <ColorPicker color={zone.color} onChange={onColorChange} />
-      <EditableText text={zone.name} onChange={onNameChange} />
+      <Stack direction={'row'} gap={'1rem'} alignItems={'center'}>
+        <ColorPicker color={zone.color} onChange={onColorChange} />
+        <EditableText text={zone.name} onChange={onNameChange} />
+      </Stack>
       <ContextMenu id={zone.id} />
     </Box>
   )

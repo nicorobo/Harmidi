@@ -50,8 +50,10 @@ export const SideNav = () => {
     setAppDocsIsOpen(true)
   }
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
-      <List size="sm">
+    <Box
+      sx={{ display: 'flex', height: '100vh', borderRight: '1px solid #ddd' }}
+    >
+      <List size="sm" sx={{ borderRight: '1px solid #ddd' }}>
         <ListSubheader sx={{ gap: 1 }}>
           Zones <AddZoneButton />
         </ListSubheader>

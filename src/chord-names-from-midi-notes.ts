@@ -35,6 +35,5 @@ export const getChordNameFromMidiNotes = (notes: number[]) => {
   const chord = Chord.detect(noteNames)[0]
   if (!chord) return '?'
   const chordType = Chord.get(chord).type
-  console.log(chordType)
   return chordTypeToName[chordType] ?? '?'
 }

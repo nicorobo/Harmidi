@@ -1,33 +1,80 @@
 import * as Tone from 'tone'
 // Factories for creating a new instruments
-const pianoFactory = () =>
+const limiter = new Tone.Limiter(-10).chain(Tone.Destination)
+
+const sineFactory = () =>
   new Tone.PolySynth(Tone.Synth, {
+    volume: -10,
     envelope: {
-      attack: 0.02,
+      attack: 0.001,
       decay: 0.1,
-      sustain: 0.3,
-      release: 1,
+      sustain: 0.5,
+      release: 1.2,
     },
-  }).toDestination()
-const steelpanFactory = () =>
+  }).connect(limiter)
+
+const sawFactory = () =>
   new Tone.PolySynth(Tone.Synth, {
+    volume: -10,
     oscillator: {
-      type: 'fatcustom',
-      partials: [0.2, 1, 0, 0.5, 0.1],
-      spread: 40,
+      type: 'fatsawtooth',
       count: 3,
+      spread: 30,
+    },
+    envelope: {
+      attack: 0.01,
+      decay: 0.1,
+      sustain: 0.5,
+      release: 0.4,
+      attackCurve: 'exponential',
+    },
+  }).connect(limiter)
+
+const kalimbaFactory = () =>
+  new Tone.PolySynth(Tone.FMSynth, {
+    volume: -10,
+    harmonicity: 8,
+    modulationIndex: 2,
+    oscillator: {
+      type: 'sine',
     },
     envelope: {
       attack: 0.001,
-      decay: 1.6,
-      sustain: 0,
-      release: 1.6,
+      decay: 2,
+      sustain: 0.1,
+      release: 2,
     },
-  }).toDestination()
+    modulation: {
+      type: 'square',
+    },
+    modulationEnvelope: {
+      attack: 0.002,
+      decay: 0.2,
+      sustain: 0,
+      release: 0.2,
+    },
+  }).connect(limiter)
+
+const windFactory = () =>
+  new Tone.PolySynth(Tone.Synth, {
+    volume: -15,
+    portamento: 0.0,
+    oscillator: {
+      type: 'square4',
+    },
+    envelope: {
+      attack: 2,
+      decay: 1,
+      sustain: 0.2,
+      release: 2,
+    },
+  }).connect(limiter)
 
 export const availableInstruments = [
-  { id: 'piano', name: 'Piano', factory: pianoFactory },
-  { id: 'steelpan', name: 'Steel Pan', factory: steelpanFactory },
+  { id: 'sin', name: 'Sine', factory: sineFactory },
+  { id: 'saw', name: 'Saw', factory: sawFactory },
+  { id: 'kalimba', name: 'Kalimba', factory: kalimbaFactory },
+  { id: 'wind', name: 'Wind', factory: windFactory },
 ]
 
 export type ZoneInstrument = {

@@ -1,8 +1,10 @@
+import { uniq } from 'lodash'
 import { Chord, Midi } from 'tonal'
 
 const chordTypeToName: { [type: string]: string } = {
   major: 'M',
   minor: 'm',
+  fifth: '5',
   'major seventh': 'M7',
   'minor seventh': 'm7',
   'dominant seventh': '7',
@@ -23,12 +25,12 @@ const chordTypeToName: { [type: string]: string } = {
 }
 
 export const getChordNameFromMidiNotes = (notes: number[]) => {
-  const flattenedNotes = notes.map((note) => note % 12)
+  const flattenedNotes = uniq(notes.map((note) => note % 12))
   if (flattenedNotes.length === 1) return null
   const noteNames = flattenedNotes.map((note) => Midi.midiToNoteName(note))
   const chord = Chord.detect(noteNames)[0]
-  if (!chord) return 'unknown'
+  if (!chord) return '?'
   const chordType = Chord.get(chord).type
-  //   console.log(chord, Chord.get(chord), chordTypeToName[chordType] ?? chordType)
-  return chordTypeToName[chordType] ?? 'unknown'
+  console.log(chordType)
+  return chordTypeToName[chordType] ?? '?'
 }

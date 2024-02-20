@@ -12,7 +12,6 @@ export const Cell = ({ cell }: { cell: string }) => {
   const noteInfo = getNoteInfoByKey(cell)
   const root = Midi.midiToNoteName(noteInfo.rootNote)
   const chord = getChordNameFromMidiNotes(noteInfo.midiNotes)
-  const title = root + (chord ? ` ${chord}` : '')
 
   const isActive = activeKeys.includes(cell)
   // const selectedZone = useStore.use.selectedZone()
@@ -21,16 +20,15 @@ export const Cell = ({ cell }: { cell: string }) => {
     <Box
       display="flex"
       height={'3rem'}
-      width={'3rem'}
+      width={'3.5rem'}
       mx={'0.25rem'}
-      p={'0rem 0.15rem'}
       borderRadius={'15% 15% 15% 0'}
       border={color === '#fff' ? `1px solid #eee` : ''}
       boxSizing={'border-box'}
       // sx={{
       //   opacity: isActive ? 1 : 0.5,
       // }}
-      bgcolor={color + (isActive ? 'ff' : 44)}
+      bgcolor={color + (isActive ? 88 : 44)}
     >
       <Box
         display={'flex'}
@@ -39,9 +37,19 @@ export const Cell = ({ cell }: { cell: string }) => {
         overflow={'clip'}
         color={'#333'}
         fontSize={'0.6rem'}
+        width={'100%'}
       >
-        <Box color={'#999'}>{cell}</Box>
-        <Box>{title}</Box>
+        <Box color={color} m="0.1rem 0.3rem">
+          {cell}
+        </Box>
+        <Box
+          m="0.1rem 0.3rem 0.1rem 0.2rem"
+          display={'flex'}
+          justifyContent={'space-between'}
+        >
+          <b>{root}</b>
+          <span style={{ color }}>{chord && ` ${chord}`}</span>
+        </Box>
       </Box>
     </Box>
   )

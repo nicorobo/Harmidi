@@ -103,6 +103,8 @@ const useStoreBase = create<State>()(
       createZone: (zone) => {
         set(({ zoneIds, zoneById }) => ({
           selectedZone: zone.id,
+          appSettingsIsOpen: false,
+          appDocsIsOpen: false,
           zoneIds: [...zoneIds, zone.id],
           zoneById: { ...zoneById, [zone.id]: zone },
         }))
@@ -145,6 +147,7 @@ const useStoreBase = create<State>()(
         zoneById: state.zoneById,
         zoneIdByKey: state.zoneIdByKey,
         selectedZone: state.selectedZone,
+        isUsingMidi: state.isUsingMidi,
       }),
       storage: {
         getItem: (name) => {

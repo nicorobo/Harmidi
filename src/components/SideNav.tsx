@@ -17,12 +17,15 @@ import { AppDocsPanel } from './AppDocsPanel'
 
 const AddZoneButton = () => {
   const createZone = useStore.use.createZone()
+  const zoneIds = useStore.use.zoneIds()
   return (
     <IconButton
       size="sm"
       variant="plain"
       sx={{ paddingInline: 'inherit' }}
-      onClick={() => createZone(getDefaultNoteZone())}
+      onClick={() =>
+        createZone(getDefaultNoteZone({ name: `Zone ${zoneIds.length + 1}` }))
+      }
     >
       <Add />
     </IconButton>

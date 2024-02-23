@@ -44,6 +44,17 @@ export type NoteZone = Common & {
   instrument: ZoneInstrument
 }
 
+export const getInstrumentById = (id: string): ZoneInstrument => {
+  const instrument = availableInstruments.find((i) => i.id === id)
+  if (!instrument) {
+    throw new Error(`No instrument found with id ${id}`)
+  }
+  return {
+    id: instrument.id,
+    instrument: instrument.factory(),
+  }
+}
+
 const defaultNoteZone: Omit<NoteZone, 'id'> = {
   name: 'Note Zone',
   color: '#333',
@@ -57,13 +68,9 @@ const defaultNoteZone: Omit<NoteZone, 'id'> = {
   voices: [{ offset: 0, velocity: DEFAULT_VELOCITY }],
   root: 0,
   scale: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], // chromatic
-  instrument: {
-    id: availableInstruments[0].id,
-    instrument: availableInstruments[0].factory(),
-  },
+  instrument: getInstrumentById('sine'),
   order: defaultOrderSettings,
 }
-
 export const getDefaultNoteZone = (
   overrides?: Partial<NoteZone>
 ): NoteZone => ({

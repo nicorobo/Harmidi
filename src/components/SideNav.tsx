@@ -7,6 +7,7 @@ import {
   ListItem,
   ListItemButton,
   ListSubheader,
+  Stack,
 } from '@mui/joy'
 import { ZoneSettingsPanel } from './zone-settings/ZoneSettings'
 import { getDefaultNoteZone } from '../zone-settings'
@@ -21,8 +22,12 @@ const AddZoneButton = () => {
   return (
     <IconButton
       size="sm"
-      variant="plain"
-      sx={{ paddingInline: 'inherit' }}
+      variant="outlined"
+      sx={{
+        '--IconButton-size': '1rem',
+        scale: 0.5,
+        color: '#555',
+      }}
       onClick={() =>
         createZone(getDefaultNoteZone({ name: `Zone ${zoneIds.length + 1}` }))
       }
@@ -54,43 +59,57 @@ export const SideNav = () => {
   }
   return (
     <Box
-      sx={{ display: 'flex', height: '100vh', borderRight: '1px solid #ddd' }}
+      sx={{
+        display: 'flex',
+        height: '100vh',
+        borderRight: selectedZone ? '1px solid #ddd' : '',
+      }}
     >
-      <List size="sm" sx={{ borderRight: '1px solid #ddd' }}>
-        <ListSubheader sx={{ gap: 1 }}>
-          Zones <AddZoneButton />
-        </ListSubheader>
-        {zones.map(({ id, name, color }) => (
-          <ListItem
-            key={id}
-            sx={{
-              boxSizing: 'border-box',
-              borderLeft: '12px solid',
-              borderColor: color,
-            }}
-          >
-            <ListItemButton
-              selected={selectedZone === id}
-              onClick={() => zoneSelected(id)}
+      <Stack sx={{ borderRight: '1px solid #ddd' }}>
+        {/* <Logo /> */}
+        <List size="sm">
+          <ListSubheader sx={{ gap: 1 }}>
+            Zones <AddZoneButton />
+          </ListSubheader>
+          {zones.map(({ id, name, color }) => (
+            <ListItem
+              key={id}
+              sx={{
+                boxSizing: 'border-box',
+                borderLeft: '12px solid',
+                borderColor: color,
+              }}
             >
-              {name}
+              <ListItemButton
+                selected={selectedZone === id}
+                onClick={() => zoneSelected(id)}
+              >
+                {name}
+              </ListItemButton>
+            </ListItem>
+          ))}
+          <Box sx={{ flexGrow: 1 }} />
+          <Divider />
+          <ListItem>
+            <ListItemButton
+              selected={appSettingsIsOpen}
+              onClick={settingsSelected}
+            >
+              Settings
             </ListItemButton>
           </ListItem>
-        ))}
-        <Box sx={{ flexGrow: 1 }} />
-        <ListDivider />
-        <ListItem>
-          <ListItemButton onClick={settingsSelected}>Settings</ListItemButton>
-        </ListItem>
-        <ListDivider />
-        <ListItem>
-          <ListItemButton onClick={docsSelected}>Docs</ListItemButton>
-        </ListItem>
-        <ListDivider />
-        <ListItem>
-          <KeyMappingSwitch />
-        </ListItem>
-      </List>
+          <Divider />
+          <ListItem>
+            <ListItemButton selected={appDocsIsOpen} onClick={docsSelected}>
+              Manual
+            </ListItemButton>
+          </ListItem>
+          <Divider />
+          <ListItem>
+            <KeyMappingSwitch />
+          </ListItem>
+        </List>
+      </Stack>
       {selectedZone !== null && (
         <ZoneSettingsPanel zone={zoneById[selectedZone]} />
       )}
@@ -99,3 +118,21 @@ export const SideNav = () => {
     </Box>
   )
 }
+
+// TODO create logo
+// const Logo = () => (
+//   <Box
+//     sx={{
+//       display: 'flex',
+//       alignItems: 'center',
+//       justifyContent: 'center',
+//       fontSize: '1.5rem',
+//       fontWeight: 'bold',
+//       borderBottom: '1px solid #ddd',
+//     }}
+//   >
+//     Joy
+//   </Box>
+// )
+
+const Divider = () => <ListDivider sx={{ margin: 0 }} />

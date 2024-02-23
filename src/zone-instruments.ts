@@ -71,7 +71,7 @@ const windFactory = () =>
   }).connect(limiter)
 
 export const availableInstruments = [
-  { id: 'sin', name: 'Sine', factory: sineFactory },
+  { id: 'sine', name: 'Sine', factory: sineFactory },
   { id: 'saw', name: 'Saw', factory: sawFactory },
   { id: 'kalimba', name: 'Kalimba', factory: kalimbaFactory },
   { id: 'wind', name: 'Wind', factory: windFactory },

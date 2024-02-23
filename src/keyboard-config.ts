@@ -32,8 +32,8 @@ const USEnglishKeysFull = [
 
 export const keyboardConfigs: { [key: string]: KeyboardConfig } = {
   USEnglish: {
-    keyGrid: USEnglishKeysFull,
-    keyList: USEnglishKeysFull.flat(),
-    keyCoordinates: getKeyCoordinates(USEnglishKeysFull),
+    keyGrid: USEnglishKeys,
+    keyList: USEnglishKeys.flat(),
+    keyCoordinates: getKeyCoordinates(USEnglishKeys),
   },
 }

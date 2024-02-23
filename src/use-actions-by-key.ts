@@ -26,7 +26,11 @@ export const useActionsByKey = (): KeyActions => {
   for (const zoneId in keysByZoneId) {
     const zone = zones[zoneId]
     if (!zone) continue
-    const keys = sortZoneKeys(zone, keysByZoneId[zoneId], keyCoordinates)
+    // This is necessary in case the keyboard config is updated.
+    const availableKeys = keysByZoneId[zoneId].filter(
+      (key) => key in keyCoordinates
+    )
+    const keys = sortZoneKeys(zone, availableKeys, keyCoordinates)
     Object.assign(actions, getActionsByZone(keys, zone))
   }
   return actions

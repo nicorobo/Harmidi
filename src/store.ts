@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { StorageValue, persist } from 'zustand/middleware'
 import { keyboardConfigs, KeyboardConfig } from './keyboard-config'
-import { Zone, getDefaultNoteZone } from './zone-settings'
+import { Zone, getDefaultNoteZone, getInstrumentById } from './zone-settings'
 import { createSelectors } from './create-selectors'
 import { invertBy, keyBy, mapValues } from 'lodash'
 import { availableInstruments } from './zone-instruments'
@@ -34,38 +34,83 @@ interface State {
   setAppDocsIsOpen: (appDocsIsOpen: boolean) => void
   isUsingMidi: boolean // change to midiEnabled
   setUseMidi: (isUsingMidi: boolean) => void
+  resetSettings: () => void
 }
 
-const initialZones = [
-  getDefaultNoteZone({ color: '#AEA1FF', name: 'Zone 1' }),
-  getDefaultNoteZone({ color: '#009CE0', name: 'Zone 2' }),
-  getDefaultNoteZone({ color: '#0C797D', name: 'Zone 3' }),
-  getDefaultNoteZone({ color: '#AB149E', name: 'Zone 4' }),
-]
+type Defaults = Pick<
+  State,
+  | 'pressedKeys'
+  | 'appSettingsIsOpen'
+  | 'appDocsIsOpen'
+  | 'zoneIds'
+  | 'zoneById'
+  | 'selectedZone'
+  | 'zoneIdByKey'
+  | 'keyboardConfig'
+  | 'isKeyMapping'
+  | 'isUsingMidi'
+>
 
-// Initially, each row is its own zone
-const initialZoneIdByKey = keyboardConfigs.USEnglish.keyGrid.reduce(
-  (map, row, i) => {
+const getInitialZones = () => {
+  return [
+    getDefaultNoteZone({
+      color: '#AEA1FF',
+      name: 'Zone 1',
+      instrument: getInstrumentById('sine'),
+    }),
+    getDefaultNoteZone({
+      color: '#009CE0',
+      name: 'Zone 2',
+      instrument: getInstrumentById('saw'),
+    }),
+    getDefaultNoteZone({
+      color: '#0C797D',
+      name: 'Zone 3',
+      instrument: getInstrumentById('kalimba'),
+    }),
+    getDefaultNoteZone({
+      color: '#AB149E',
+      name: 'Zone 4',
+      instrument: getInstrumentById('wind'),
+    }),
+  ]
+}
+
+const getDefaultSettings = ({
+  keyboardConfig,
+  overrides = {},
+}: {
+  keyboardConfig: KeyboardConfig
+  overrides?: Partial<Defaults>
+}): Defaults => {
+  const initialZones = getInitialZones()
+  // Initially, each row is its own zone
+  const initialZoneIdByKey = keyboardConfig.keyGrid.reduce((map, row, i) => {
     for (const key of row) {
       map[key] = initialZones[i].id
     }
     return map
-  },
-  {} as ZoneIdByKey
-)
+  }, {} as ZoneIdByKey)
+
+  return {
+    pressedKeys: [] as string[],
+    appSettingsIsOpen: false,
+    appDocsIsOpen: false,
+    zoneIds: initialZones.map(({ id }) => id),
+    zoneById: keyBy(initialZones, ({ id }) => id),
+    selectedZone: initialZones[0].id,
+    zoneIdByKey: initialZoneIdByKey,
+    keyboardConfig,
+    isKeyMapping: false,
+    isUsingMidi: false,
+    ...overrides,
+  }
+}
 
 const useStoreBase = create<State>()(
   persist(
     (set) => ({
-      pressedKeys: [] as string[],
-      appSettingsIsOpen: false,
-      appDocsIsOpen: false,
-      zoneIds: initialZones.map(({ id }) => id),
-      zoneById: keyBy(initialZones, ({ id }) => id),
-      selectedZone: initialZones[0].id,
-      zoneIdByKey: initialZoneIdByKey,
-      keyboardConfig: keyboardConfigs.USEnglish,
-      isKeyMapping: false,
+      ...getDefaultSettings({ keyboardConfig: keyboardConfigs.USEnglish }),
       updateKeyZone: (key, zoneId) =>
         set((state) => ({
           zoneIdByKey: { ...state.zoneIdByKey, [key]: zoneId },
@@ -137,8 +182,14 @@ const useStoreBase = create<State>()(
         set({ appSettingsIsOpen, selectedZone: null, appDocsIsOpen: false }),
       setAppDocsIsOpen: (appDocsIsOpen) =>
         set({ appDocsIsOpen, selectedZone: null, appSettingsIsOpen: false }),
-      isUsingMidi: false,
       setUseMidi: (isUsingMidi) => set({ isUsingMidi }),
+      resetSettings: () =>
+        set(
+          getDefaultSettings({
+            keyboardConfig: keyboardConfigs.USEnglish,
+            overrides: { selectedZone: null, appSettingsIsOpen: true },
+          })
+        ),
     }),
     {
       name: 'food-storage', // name of the item in the storage (must be unique) // TODO give name

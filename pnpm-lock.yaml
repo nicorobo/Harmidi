@@ -23,9 +23,6 @@ dependencies:
   '@uiw/react-color-compact':
     specifier: ^2.0.3
     version: 2.0.3(@babel/runtime@7.23.9)(react-dom@18.2.0)(react@18.2.0)
-  gsap:
-    specifier: ^3.12.3
-    version: 3.12.3
   lodash:
     specifier: ^4.17.21
     version: 4.17.21
@@ -1900,10 +1897,6 @@ packages:
   /graphemer@1.4.0:
     resolution: {integrity: sha512-EtKwoO6kxCL9WO5xipiHTZlSzBm7WLT627TqC/uVRd0HKmq8NXyebnNYxDoBi7wt8eTWrUrKXCOVaFq9x1kgag==}
     dev: true
-
-  /gsap@3.12.3:
-    resolution: {integrity: sha512-TySXTE+ABiAVa61W+h5wv2p5GkJT1Uj//4nWpK8EjmhcDqwH++35IvtbQlVVFj+rdcJdFCdCt0SKgb+SwdPq/A==}
-    dev: false
 
   /has-flag@3.0.0:
     resolution: {integrity: sha512-sKJf1+ceQBr4SMkvQnBDNDtf4TXpVhVGateu0t918bl30FnbE2m4vNLX+VWe/dpjlb+HugGYzW7uQXH98HPEYw==}

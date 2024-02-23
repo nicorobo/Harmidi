@@ -192,7 +192,7 @@ const useStoreBase = create<State>()(
         ),
     }),
     {
-      name: 'food-storage', // name of the item in the storage (must be unique) // TODO give name
+      name: 'harmidi-001',
       partialize: (state) => ({
         zoneIds: state.zoneIds,
         zoneById: state.zoneById,

@@ -40,13 +40,27 @@ export const AppDocsPanel = () => {
           <Typography mt="1rem" level="h4">
             Zones
           </Typography>
-          A Zone is a group of keys that share settings. <b>Create</b> a new
-          zone by pressing on the "+" icon in the sidebar. <b>Delete</b> a zone
-          by clicking the trash icon in the zone panel. <b>Rename</b> a zone by
-          clicking on the name in the zone panel. <br />
-          Add keys to a zone by enabling <i>key mapping mode</i> with the switch
-          on the bottom of the sidebar. After pressing the keys you would like
-          to add, disable <i>key mapping mode.</i>
+          A Zone is a group of keys that share settings.{' '}
+          <List
+            sx={{ lineHeight: 'inherit', fontSize: '0.8rem' }}
+            marker="disc"
+          >
+            <ListItem>
+              <b>Create</b> a new zone by pressing on the "+" icon in the
+              sidebar.
+            </ListItem>
+            <ListItem>
+              <b>Delete</b> a zone by clicking the trash icon in the zone panel.
+            </ListItem>
+            <ListItem>
+              <b>Rename</b> a zone by clicking on the name in the zone panel.
+            </ListItem>
+            <ListItem>
+              <b>Add keys</b> to a zone by enabling <i>key mapping mode</i> with
+              the switch on the bottom of the sidebar. After pressing the keys
+              you would like to add, disable <i>key mapping mode.</i>
+            </ListItem>
+          </List>
           <Typography mt="1rem" level="h4">
             Zone Settings
           </Typography>

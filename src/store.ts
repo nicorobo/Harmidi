@@ -52,26 +52,59 @@ type Defaults = Pick<
 >
 
 const getInitialZones = () => {
+  const zone1Id = 'zone-1'
+  const zone2Id = 'zone-2'
+  const minorScale = [1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0]
   return [
     getDefaultNoteZone({
+      id: zone1Id,
       color: '#AEA1FF',
       name: 'Zone 1',
       instrument: getInstrumentById('sine'),
+      octave: 5,
+      muteZones: [zone1Id],
+      velocity: 75,
+      scale: minorScale,
+      voices: [
+        {
+          offset: 0,
+          velocity: 100,
+        },
+        {
+          offset: 3,
+          velocity: 100,
+        },
+        {
+          offset: 7,
+          velocity: 100,
+        },
+        {
+          offset: 12,
+          velocity: 100,
+        },
+      ],
     }),
     getDefaultNoteZone({
+      id: zone2Id,
       color: '#009CE0',
       name: 'Zone 2',
       instrument: getInstrumentById('saw'),
+      octave: 3,
+      muteZones: [zone2Id],
+      scale: minorScale,
     }),
     getDefaultNoteZone({
       color: '#0C797D',
       name: 'Zone 3',
       instrument: getInstrumentById('kalimba'),
+      octave: 6,
+      scale: minorScale,
     }),
     getDefaultNoteZone({
       color: '#AB149E',
       name: 'Zone 4',
       instrument: getInstrumentById('wind'),
+      scale: minorScale,
     }),
   ]
 }
@@ -141,6 +174,7 @@ const useStoreBase = create<State>()(
         }),
       // Consider allowing partial updates here.
       updateZone: (id, zone) => {
+        console.log(zone)
         set(({ zoneById }) => ({
           zoneById: { ...zoneById, [id]: zone },
         }))

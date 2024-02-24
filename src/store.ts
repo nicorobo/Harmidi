@@ -227,7 +227,9 @@ const useStoreBase = create<State>()(
     }),
     {
       name: 'harmidi-001',
-      partialize: (state) => ({
+      // TODO Figure out how to type this
+      // @ts-ignore
+      partialize: (state: State): Partial<State> => ({
         zoneIds: state.zoneIds,
         zoneById: state.zoneById,
         zoneIdByKey: state.zoneIdByKey,

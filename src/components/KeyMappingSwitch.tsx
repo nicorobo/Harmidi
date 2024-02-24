@@ -1,7 +1,6 @@
 import { Switch, Tooltip } from '@mui/joy'
 import { useStore } from '../store'
 import { Keyboard } from '@mui/icons-material'
-import { useEffect } from 'react'
 
 // A switch to toggle between play mode and key mapping mode.
 export const KeyMappingSwitch = () => {

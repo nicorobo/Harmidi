@@ -1,3 +1,5 @@
+import { mapValues } from 'lodash'
+
 export type KeyCoordinates = { [key: string]: { x: number; y: number } }
 
 export type KeyboardConfig = {
@@ -30,10 +32,13 @@ const USEnglishKeysFull = [
   ['z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/'],
 ]
 
-export const keyboardConfigs: { [key: string]: KeyboardConfig } = {
-  USEnglish: {
-    keyGrid: USEnglishKeys,
-    keyList: USEnglishKeys.flat(),
-    keyCoordinates: getKeyCoordinates(USEnglishKeys),
-  },
+const KeyboardLayouts = {
+  USEnglish: USEnglishKeys,
+  USEnglishFull: USEnglishKeysFull,
 }
+
+export const keyboardConfigs = mapValues(KeyboardLayouts, (keyGrid) => ({
+  keyGrid,
+  keyList: keyGrid.flat(),
+  keyCoordinates: getKeyCoordinates(keyGrid),
+}))

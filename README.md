@@ -18,8 +18,8 @@ A Zone is a group of keys that share settings.
 
 | Setting    | Description                                                                                                   |
 | ---------- | ------------------------------------------------------------------------------------------------------------- |
-| Instrument | Select a built-in sound for testing (if MIDI is disabled)                                                     |
-| Channel    | Select the zone's MIDI channel (if MIDI is enabled)                                                           |
+| Instrument | Select a built-in sound for testing _(if MIDI is disabled)_                                                   |
+| Channel    | Select the zone's MIDI channel _(if MIDI is enabled)_                                                         |
 | Order      | Choose the order of the zone's progression. Default is left-to-right, top-to-bottom.                          |
 | Hold       | When enabled, keys in this zone will act as switches, remaining held until pressed again.                     |
 | Velocity   | Choose the zone's note velocity                                                                               |

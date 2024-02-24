@@ -79,11 +79,16 @@ export const AppDocsPanel = () => {
             <tbody>
               <tr>
                 <td>Instrument</td>
-                <td>Select a built-in sound for testing</td>
+                <td>
+                  Select a built-in sound for testing{' '}
+                  <i>(if MIDI is disabled)</i>
+                </td>
               </tr>
               <tr>
                 <td>Channel</td>
-                <td>Select the zone's MIDI channel</td>
+                <td>
+                  Select the zone's MIDI channel <i>(if MIDI is enabled)</i>
+                </td>
               </tr>
               <tr>
                 <td>Order</td>

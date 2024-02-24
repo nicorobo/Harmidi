@@ -128,10 +128,10 @@ const getDefaultSettings = ({
   return {
     pressedKeys: [] as string[],
     appSettingsIsOpen: false,
-    appDocsIsOpen: false,
+    appDocsIsOpen: true,
     zoneIds: initialZones.map(({ id }) => id),
     zoneById: keyBy(initialZones, ({ id }) => id),
-    selectedZone: initialZones[0].id,
+    selectedZone: null,
     zoneIdByKey: initialZoneIdByKey,
     keyboardConfig,
     isKeyMapping: false,
@@ -221,7 +221,10 @@ const useStoreBase = create<State>()(
         set(
           getDefaultSettings({
             keyboardConfig: keyboardConfigs.USEnglish,
-            overrides: { selectedZone: null, appSettingsIsOpen: true },
+            overrides: {
+              appSettingsIsOpen: true,
+              appDocsIsOpen: false,
+            },
           })
         ),
     }),

@@ -57,6 +57,16 @@ export const SideNav = () => {
   const docsSelected = () => {
     setAppDocsIsOpen(true)
   }
+
+  let panel = null
+  if (selectedZone !== null) {
+    panel = <ZoneSettingsPanel zone={zoneById[selectedZone]} />
+  } else if (appSettingsIsOpen) {
+    panel = <AppSettingsPanel />
+  } else if (appDocsIsOpen) {
+    panel = <AppDocsPanel />
+  }
+
   return (
     <Box
       sx={{
@@ -66,7 +76,6 @@ export const SideNav = () => {
       }}
     >
       <Stack sx={{ borderRight: '1px solid #ddd' }}>
-        {/* <Logo /> */}
         <List size="sm">
           <ListSubheader sx={{ gap: 1 }}>
             Zones <AddZoneButton />
@@ -110,29 +119,9 @@ export const SideNav = () => {
           </ListItem>
         </List>
       </Stack>
-      {selectedZone !== null && (
-        <ZoneSettingsPanel zone={zoneById[selectedZone]} />
-      )}
-      {appSettingsIsOpen && <AppSettingsPanel />}
-      {appDocsIsOpen && <AppDocsPanel />}
+      {panel}
     </Box>
   )
 }
-
-// TODO create logo
-// const Logo = () => (
-//   <Box
-//     sx={{
-//       display: 'flex',
-//       alignItems: 'center',
-//       justifyContent: 'center',
-//       fontSize: '1.5rem',
-//       fontWeight: 'bold',
-//       borderBottom: '1px solid #ddd',
-//     }}
-//   >
-//     Joy
-//   </Box>
-// )
 
 const Divider = () => <ListDivider sx={{ margin: 0 }} />

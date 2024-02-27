@@ -5,8 +5,6 @@ import { NoteZone } from './zone-settings'
 export type NoteInfo = { rootNote: number; midiNotes: number[] }
 export const getNotes = ({
   voices: intervals,
-  // TODO Use root
-  // @ts-ignore
   root,
   scale,
   octave,

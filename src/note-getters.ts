@@ -31,13 +31,7 @@ export const getNotes = ({
     const octaveOffset = naturalOctave + octave
     const noteOffset = octaveOffset * 12
     const centerNote = midiVal + noteOffset
-    if (translate < 2) {
-      console.log({
-        scaleChroma,
-        pcset,
-        root,
-      })
-    }
+
     // Currently not using velocity
     const voices = intervals.map(({ offset }) => centerNote + offset)
     // TODO Here we'll quantize them again

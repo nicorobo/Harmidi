@@ -174,7 +174,6 @@ const useStoreBase = create<State>()(
         }),
       // Consider allowing partial updates here.
       updateZone: (id, zone) => {
-        console.log(zone)
         set(({ zoneById }) => ({
           zoneById: { ...zoneById, [id]: zone },
         }))

@@ -11,7 +11,13 @@ export const ColorPicker: React.FC<Props> = ({ color, onChange }) => {
   return (
     <Dropdown>
       <MenuButton size="sm" slots={{ root: 'div' }} sx={{ display: 'flex' }}>
-        <Box height={25} width={25} borderRadius={'50%'} bgcolor={color}></Box>
+        <Box
+          height={25}
+          width={25}
+          borderRadius={'50%'}
+          bgcolor={color}
+          sx={{ cursor: 'pointer' }}
+        ></Box>
       </MenuButton>
       <Menu sx={{ '--ListDivider-gap': 0 }}>
         <Compact

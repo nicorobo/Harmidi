@@ -1,31 +1,14 @@
-import {
-  Box,
-  Dropdown,
-  IconButton,
-  Input,
-  Menu,
-  MenuButton,
-  MenuItem,
-  Stack,
-} from '@mui/joy'
+import React, { useEffect } from 'react'
+import { Box, IconButton, Input, Stack, Tooltip } from '@mui/joy'
 import { Zone } from '../../zone-settings'
-import { Check, Delete, MoreVert } from '@mui/icons-material'
+import { Check, Delete } from '@mui/icons-material'
 import { useStore } from '../../store'
 import { ColorPicker } from './ColorPicker'
-import React, { useEffect } from 'react'
-
-/* 
-A header for the zone settings panel.
-Display a color picker, the zone name, and a context menu button.
-The context menu button will open a menu with options to:
-  - Rename the zone
-  - Duplicate the zone
-  - Delete the zone 
-*/
 
 type Props = { zone: Zone }
 
 export const ZoneSettingsHeader: React.FC<Props> = ({ zone }) => {
+  const deleteZone = useStore.use.deleteZone()
   const updateZone = useStore.use.updateZone()
 
   const onColorChange = (color: string) => {
@@ -48,7 +31,11 @@ export const ZoneSettingsHeader: React.FC<Props> = ({ zone }) => {
         <ColorPicker color={zone.color} onChange={onColorChange} />
         <EditableText text={zone.name} onChange={onNameChange} />
       </Stack>
-      <ContextMenu id={zone.id} />
+      <Tooltip title="Delete zone">
+        <IconButton size="sm" onClick={() => deleteZone(zone.id)}>
+          <Delete />
+        </IconButton>
+      </Tooltip>
     </Box>
   )
 }
@@ -95,28 +82,5 @@ const EditableText: React.FC<{
     >
       {text}{' '}
     </Box>
-  )
-}
-
-/*
-ContextMenu will display a MUI Icon Button with a MUI menu that will open when clicked.
-The menu has options for renaming, duplicating, and deleting the zone.
-*/
-
-type ContextMenuProps = { id: string }
-
-const ContextMenu: React.FC<ContextMenuProps> = ({ id }) => {
-  const deleteZone = useStore.use.deleteZone()
-  return (
-    <Dropdown>
-      <MenuButton size="sm" variant="plain" sx={{ paddingInline: '0.5rem' }}>
-        <MoreVert />
-      </MenuButton>
-      <Menu placement="right-end">
-        <MenuItem onClick={() => deleteZone(id)}>
-          <Delete color="error" /> Delete
-        </MenuItem>
-      </Menu>
-    </Dropdown>
   )
 }

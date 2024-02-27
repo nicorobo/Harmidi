@@ -20,9 +20,16 @@ export const getNotes = ({
   // 2. Map voices to notes
   // 3. Quantize individual voices if needed
   return (i: number): NoteInfo => {
-    const centerNote =
-      pcset[i % pcset.length] +
-      ((Math.floor(i / pcset.length) + octave) * 12 + translate)
+    const translatedIndex = i + translate
+    const collapsedIndex = translatedIndex % pcset.length
+    const wrappedIndex =
+      collapsedIndex < 0 ? pcset.length + collapsedIndex : collapsedIndex
+    const midiVal = pcset[wrappedIndex]
+    const naturalOctave = Math.floor(translatedIndex / pcset.length)
+    const octaveOffset = naturalOctave + octave
+    const noteOffset = octaveOffset * 12
+    const centerNote = midiVal + noteOffset
+
     // Currently not using velocity
     const voices = intervals.map(({ offset }) => centerNote + offset)
     // TODO Here we'll quantize them again
